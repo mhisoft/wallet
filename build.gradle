@@ -1,0 +1,8 @@
+group = 'org.mhisoft.wallet'
+description = 'org.mhisoft - wallet'
+apply from: "../common-util/gradle-allprojects.gradle"
+dependencies {
+  compile project(':common-util')
+
+  compile group: 'org.jasypt', name: 'jasypt', version: '1.9.2'
+}

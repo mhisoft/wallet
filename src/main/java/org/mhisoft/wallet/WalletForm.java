@@ -18,7 +18,7 @@
  * under the License.
  */
 
-package main.java.com.mhisoft.wallet;
+package org.mhisoft.wallet;
 
 import java.util.ArrayList;
 import java.util.List;
