@@ -8,173 +8,211 @@
     <properties/>
     <border type="none"/>
     <children>
-      <splitpane id="704eb">
+      <tabbedpane id="e9df5" binding="tabbedPane1" default-binding="true">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="2" use-parent-layout="false">
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="200" height="200"/>
           </grid>
         </constraints>
-        <properties>
-          <dividerLocation value="160"/>
-        </properties>
+        <properties/>
         <border type="none"/>
         <children>
-          <component id="adccf" class="javax.swing.JTree" binding="tree1" default-binding="true">
+          <grid id="13e43" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <splitpane position="left"/>
-            </constraints>
-            <properties>
-              <font name="Arial" size="20" style="0"/>
-            </properties>
-          </component>
-          <scrollpane id="b30f3">
-            <constraints>
-              <splitpane position="right"/>
+              <tabbedpane title="Main"/>
             </constraints>
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="15107" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
-                <constraints/>
-                <properties/>
+              <splitpane id="704eb">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="2" use-parent-layout="false">
+                    <preferred-size width="200" height="200"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <dividerLocation value="160"/>
+                </properties>
                 <border type="none"/>
                 <children>
-                  <component id="81be5" class="javax.swing.JTextField" binding="fldName">
+                  <component id="adccf" class="javax.swing.JTree" binding="tree1" default-binding="true">
                     <constraints>
-                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <font size="22"/>
-                    </properties>
-                  </component>
-                  <component id="16c6c" class="javax.swing.JTextField" binding="fldURL">
-                    <constraints>
-                      <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <font size="18"/>
-                    </properties>
-                  </component>
-                  <component id="e46a8" class="javax.swing.JTextArea" binding="fldNotes">
-                    <constraints>
-                      <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="50"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <font size="18"/>
-                    </properties>
-                  </component>
-                  <component id="b7e09" class="javax.swing.JLabel" binding="labelName">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                      <splitpane position="left"/>
                     </constraints>
                     <properties>
                       <font name="Arial" size="20" style="0"/>
-                      <text value="Name"/>
                     </properties>
                   </component>
-                  <component id="85bea" class="javax.swing.JLabel">
+                  <scrollpane id="b30f3">
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="20"/>
-                      <text value="URL"/>
-                    </properties>
-                  </component>
-                  <component id="f511b" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="20"/>
-                      <text value="Notes"/>
-                    </properties>
-                  </component>
-                  <component id="97806" class="javax.swing.JPasswordField" binding="fldPassword">
-                    <constraints>
-                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <font size="18"/>
-                    </properties>
-                  </component>
-                  <component id="598ce" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="20"/>
-                      <text value="Password"/>
-                    </properties>
-                  </component>
-                  <component id="266e3" class="javax.swing.JTextField" binding="fldUserName">
-                    <constraints>
-                      <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <font size="18"/>
-                    </properties>
-                  </component>
-                  <component id="487f9" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="20"/>
-                      <text value="User Name"/>
-                    </properties>
-                  </component>
-                  <component id="b0771" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="20"/>
-                      <text value="Account #"/>
-                    </properties>
-                  </component>
-                  <component id="96b22" class="javax.swing.JTextField" binding="fldAccountNumber">
-                    <constraints>
-                      <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                    </constraints>
-                    <properties>
-                      <font size="18"/>
-                    </properties>
-                  </component>
-                  <component id="a90de" class="javax.swing.JSpinner" binding="fldFontSize">
-                    <constraints>
-                      <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <splitpane position="right"/>
                     </constraints>
                     <properties/>
-                  </component>
-                  <component id="3bdaf" class="javax.swing.JLabel">
-                    <constraints>
-                      <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <font size="20"/>
-                      <text value="Font Size"/>
-                    </properties>
-                  </component>
+                    <border type="none"/>
+                    <children>
+                      <grid id="15107" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                        <margin top="0" left="0" bottom="0" right="0"/>
+                        <constraints/>
+                        <properties/>
+                        <border type="none"/>
+                        <children>
+                          <component id="81be5" class="javax.swing.JTextField" binding="fldName">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="-1"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <font size="22"/>
+                            </properties>
+                          </component>
+                          <component id="16c6c" class="javax.swing.JTextField" binding="fldURL">
+                            <constraints>
+                              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="-1"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <font size="18"/>
+                            </properties>
+                          </component>
+                          <component id="e46a8" class="javax.swing.JTextArea" binding="fldNotes">
+                            <constraints>
+                              <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="50"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <font size="18"/>
+                            </properties>
+                          </component>
+                          <component id="b7e09" class="javax.swing.JLabel" binding="labelName">
+                            <constraints>
+                              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font name="Arial" size="20" style="0"/>
+                              <text value="Name"/>
+                            </properties>
+                          </component>
+                          <component id="85bea" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font size="20"/>
+                              <text value="URL"/>
+                            </properties>
+                          </component>
+                          <component id="f511b" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font size="20"/>
+                              <text value="Notes"/>
+                            </properties>
+                          </component>
+                          <component id="97806" class="javax.swing.JPasswordField" binding="fldPassword">
+                            <constraints>
+                              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="-1"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <font size="18"/>
+                            </properties>
+                          </component>
+                          <component id="598ce" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font size="20"/>
+                              <text value="Password"/>
+                            </properties>
+                          </component>
+                          <component id="266e3" class="javax.swing.JTextField" binding="fldUserName">
+                            <constraints>
+                              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="-1"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <font size="18"/>
+                            </properties>
+                          </component>
+                          <component id="487f9" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font size="20"/>
+                              <text value="User Name"/>
+                            </properties>
+                          </component>
+                          <component id="b0771" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font size="20"/>
+                              <text value="Account #"/>
+                            </properties>
+                          </component>
+                          <component id="96b22" class="javax.swing.JTextField" binding="fldAccountNumber">
+                            <constraints>
+                              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                                <preferred-size width="150" height="-1"/>
+                              </grid>
+                            </constraints>
+                            <properties>
+                              <font size="18"/>
+                            </properties>
+                          </component>
+                          <component id="3bdaf" class="javax.swing.JLabel">
+                            <constraints>
+                              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font size="20"/>
+                              <text value="Font Size"/>
+                            </properties>
+                          </component>
+                          <component id="a90de" class="javax.swing.JSpinner" binding="fldFontSize">
+                            <constraints>
+                              <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <font size="20"/>
+                            </properties>
+                          </component>
+                        </children>
+                      </grid>
+                    </children>
+                  </scrollpane>
                 </children>
-              </grid>
+              </splitpane>
             </children>
-          </scrollpane>
+          </grid>
+          <grid id="2df70" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <tabbedpane title="Options"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <vspacer id="a40a1">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+            </children>
+          </grid>
         </children>
-      </splitpane>
+      </tabbedpane>
     </children>
   </grid>
 </form>
