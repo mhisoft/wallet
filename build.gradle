@@ -1,6 +1,8 @@
-group = 'org.mhisoft.wallet'
-description = 'org.mhisoft - wallet'
 apply from: "../common-utils/gradle-allprojects.gradle"
+group = 'org.mhisoft.java.apps'
+version=PROJECT_VERSION
+
+description = 'org.mhisoft - wallet'
 dependencies {
   compile project(':common-utils')
 

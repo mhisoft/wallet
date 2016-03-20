@@ -3,11 +3,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.mhisoft</groupId>
-    <artifactId>eWallet</artifactId>
+    <groupId>org.mhisoft.java.apps</groupId>
+    <artifactId>wallet</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <name>eWallet</name>
+    <name>wallet</name>
     <description>Wallet</description>
 
 
@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>org.mhisoft</groupId>
-            <artifactId>common-util</artifactId>
+            <artifactId>common-utils</artifactId>
             <version>1.0</version>
         </dependency>
 
