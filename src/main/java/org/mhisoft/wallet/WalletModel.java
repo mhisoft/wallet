@@ -1,4 +1,3 @@
-
 /*
  *
  *  * Copyright (c) 2014- MHISoft LLC and/or its affiliates. All rights reserved.
@@ -24,8 +23,8 @@
 
 package org.mhisoft.wallet;
 
-import org.junit.Test;
-import org.mhisoft.common.util.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description:
@@ -33,27 +32,33 @@ import org.mhisoft.common.util.StringUtils;
  * @author Tony Xue
  * @since Mar, 2016
  */
-public class EncryptorTest {
-	@Test
-	public void testPBEEncryption() {
-		try {
-			StandardPBEByteEncryptor encryptor = new StandardPBEByteEncryptor();
-			encryptor.setAlgorithm("PBEWithHmacSHA512AndAES_256");
-			encryptor.setPassword("testpassword");
-			encryptor.setProviderName("SunJCE");
+public class WalletModel {
+	List<WalletItem> items= new ArrayList<>();
+
+	public WalletModel() {
+	}
 
 
-			encryptor.initialize();
-			String s1 = "FooBar 23974034 &&^23 时尚 ~!)\\u";
-			byte[] enc = encryptor.encrypt(StringUtils.getBytes(s1));
-			System.out.println(StringUtils.toHexString(enc));
-
-			byte[]  dec = encryptor.decrypt(enc);
-			System.out.println(StringUtils.bytesToString(dec));
+	public void setupTestData() {
+		//root node
+		items.add(new WalletItem(ItemType.category, "My Default Wallet 1"));
 
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		WalletItem item1 = new WalletItem(ItemType.item, "PNC Bank");
+		item1.setURL("https://pnc.com");
+		WalletItem item2 = new WalletItem(ItemType.item, "GE Bank");
+		item1.setURL("https://gecapital.com");
+
+		WalletItem item3 = new WalletItem(ItemType.item, "Audi");
+		WalletItem item4 = new WalletItem(ItemType.item, "Honda");
+
+
+
+		items.add(new WalletItem(ItemType.category, "Bank Info"));
+		items.add(item1);
+		items.add(item2);
+		items.add(new WalletItem(ItemType.category, "Car"));
+		items.add(item3);
+		items.add(item4);
 	}
 }

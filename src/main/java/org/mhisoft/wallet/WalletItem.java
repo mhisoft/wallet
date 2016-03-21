@@ -11,6 +11,7 @@ import java.io.Serializable;
  * @since Mar, 2016
  */
 public class WalletItem implements Serializable {
+	private String sysGUID;
     private ItemType type;
 	private String name;
 	private String URL;
@@ -24,6 +25,14 @@ public class WalletItem implements Serializable {
 	private Timestamp createdDate;
 	private Timestamp lastViewdDate;
 	private Timestamp lastModifiedDate;
+
+	public String getSysGUID() {
+		return sysGUID;
+	}
+
+	public void setSysGUID(String sysGUID) {
+		this.sysGUID = sysGUID;
+	}
 
 	public ItemType getType() {
 		return type;

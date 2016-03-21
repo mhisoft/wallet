@@ -26,6 +26,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -73,6 +75,9 @@ public class WalletForm {
 	private JTabbedPane tabbedPane1;
 	private JButton button1;
 	private JSplitPane splitPanel;
+	private JButton btnAddNode;
+	private JButton btnDeleteNode;
+	private JPanel treeButtonPanel;
 	private JLabel labelURL;
 	private JLabel labelNotes;
 	private JLabel labelPassword;
@@ -81,10 +86,18 @@ public class WalletForm {
 	private JLabel labelFontSize;
 
 	List<Component> componetsList;
+	WalletModel model ;
 
 
 	public WalletForm() {
+		model = new WalletModel();
 		//constructor
+		btnAddNode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
 	}
 
 	public void init() {
@@ -192,36 +205,41 @@ public class WalletForm {
 	 */
 	public void setupTree() {
 
-
 		tree.setModel(null);
-		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(
-				new WalletItem(ItemType.category, "My Default Wallet 1"));
-		DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
-		tree.setModel(treeModel);
-
-
-		DefaultMutableTreeNode cat1 = new DefaultMutableTreeNode(
-				new WalletItem(ItemType.category, "Bank Info"));
-		rootNode.add(cat1);
-
-		WalletItem item1 = new WalletItem(ItemType.item, "PNC Bank");
-		item1.setURL("https://pnc.com");
-		cat1.add(new DefaultMutableTreeNode(item1));
-		WalletItem item2 = new WalletItem(ItemType.item, "GE Bank");
-		item1.setURL("https://gecapital.com");
-		cat1.add(new DefaultMutableTreeNode(item2));
-
-		DefaultMutableTreeNode cat2 = new DefaultMutableTreeNode(
-				new WalletItem(ItemType.category, "Car"));
-		rootNode.add(cat2);
-
-		WalletItem item3 = new WalletItem(ItemType.item, "Audi");
-		cat2.add(new DefaultMutableTreeNode(item3));
-		WalletItem item4 = new WalletItem(ItemType.item, "Honda");
-		cat2.add(new DefaultMutableTreeNode(item4));
-
+		model.setupTestData();
+		//DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new WalletItem(ItemType.category, "My Default Wallet 1"));
+		DefaultTreeModel treeModel = null;
 
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+
+		//load model into tree
+		DefaultMutableTreeNode lastParentNode=null;
+		DefaultMutableTreeNode rootNode=null;
+
+		for (WalletItem item : model.items) {
+			if (item.getType()==ItemType.category) {
+				DefaultMutableTreeNode catNode = new DefaultMutableTreeNode( item);
+				//this is root node
+				if (treeModel==null) {
+					rootNode= catNode;
+					treeModel = new DefaultTreeModel(rootNode);
+					tree.setModel(treeModel);
+					lastParentNode= catNode;
+				}
+				else {
+					lastParentNode.add(catNode);
+					lastParentNode = catNode;
+				}
+			}
+			else if (item.getType()==ItemType.item) {
+				DefaultMutableTreeNode itemNode = new DefaultMutableTreeNode( item);
+				lastParentNode.add(itemNode);
+			}
+		}
+
+
+		tree.getSelectionModel().setSelectionPath(new TreePath(rootNode.getPath()));
 
 		expandRoot(rootNode);
 
@@ -232,9 +250,12 @@ public class WalletForm {
 			public void valueChanged(TreeSelectionEvent e) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
-				if (node == null)
+				if (node == null) {
+					btnAddNode.setVisible(false);
+					btnDeleteNode.setVisible(false);
 					//Nothing is selected.
 					return;
+				}
 
 				WalletItem item = (WalletItem) node.getUserObject();
 				displayWalletItemDetails(item);
@@ -258,8 +279,18 @@ public class WalletForm {
 		if (item.getType() == ItemType.category) {
 			fldName.setText(item.getName());
 			//todo hide all other fields
+			btnAddNode.setVisible(true);
+
+			//todo only allow to delete if there are no items under
+			btnDeleteNode.setVisible(true);
+
 
 		} else {
+
+			btnAddNode.setVisible(false);
+			btnDeleteNode.setVisible(true);
+
+
 			fldName.setText(item.getName());
 			fldURL.setText(item.getURL());
 			fldUserName.setText(item.getUserName());

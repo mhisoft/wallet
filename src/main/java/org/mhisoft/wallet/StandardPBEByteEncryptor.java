@@ -1,3 +1,6 @@
+/*
+license see http://www.jasypt.org/license.html
+ */
 package org.mhisoft.wallet;
 
 import java.security.InvalidKeyException;
@@ -936,7 +939,7 @@ public class StandardPBEByteEncryptor implements PBEByteCleanablePasswordEncrypt
 //						new PBEParameterSpec(salt, this.keyObtentionIterations);
 
 				synchronized (this.decryptCipher) {
-//changed here
+//MHISoft changed here  to support PBEWithHmacSHA512AndAES_256
 //					this.decryptCipher.init(
 //							Cipher.DECRYPT_MODE, this.key, parameterSpec);
 
