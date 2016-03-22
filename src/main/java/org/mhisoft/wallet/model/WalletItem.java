@@ -1,8 +1,35 @@
-package org.mhisoft.wallet;
+/*
+ *
+ *  * Copyright (c) 2014- MHISoft LLC and/or its affiliates. All rights reserved.
+ *  * Licensed to MHISoft LLC under one or more contributor
+ *  * license agreements. See the NOTICE file distributed with
+ *  * this work for additional information regarding copyright
+ *  * ownership. MHISoft LLC licenses this file to you under
+ *  * the Apache License, Version 2.0 (the "License"); you may
+ *  * not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *    http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing,
+ *  * software distributed under the License is distributed on an
+ *  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  * KIND, either express or implied.  See the License for the
+ *  * specific language governing permissions and limitations
+ *  * under the License.
+ *
+ *
+ */
+
+package org.mhisoft.wallet.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.io.Serializable;
+
+import org.mhisoft.common.util.StringUtils;
 
 /**
  * Description:
@@ -25,6 +52,24 @@ public class WalletItem implements Serializable {
 	private Timestamp createdDate;
 	private Timestamp lastViewdDate;
 	private Timestamp lastModifiedDate;
+	private  transient WalletItem parent;
+	private  transient List<WalletItem> children;
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		WalletItem that = (WalletItem) o;
+
+		return sysGUID.equals(that.sysGUID);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return sysGUID.hashCode();
+	}
 
 	public String getSysGUID() {
 		return sysGUID;
@@ -139,13 +184,58 @@ public class WalletItem implements Serializable {
 	}
 
 	public WalletItem(ItemType type, String name) {
+		this.sysGUID = StringUtils.getGUID();
 		this.type = type;
 		this.name = name;
 		this.createdDate = new Timestamp(System.currentTimeMillis());
 	}
 
+	public WalletItem getParent() {
+		return parent;
+	}
+
+	public void setParent(WalletItem parent) {
+		this.parent = parent;
+	}
+
+	public List<WalletItem> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<WalletItem> children) {
+		this.children = children;
+	}
+
 	@Override
 	public String toString() {
-		return name;
+		return "WalletItem{" +
+				"sysGUID='" + sysGUID + '\'' +
+				", type=" + type +
+				", name='" + name + '\'' +
+				'}';
+	}
+
+	public boolean hasChildren() {
+		return getChildren()!=null && getChildren().size()>0;
+	}
+
+	public void addChild(final WalletItem childItem) {
+		if (this.getType()!=ItemType.category)
+			throw new RuntimeException("Can't add a child to a none category node. parent: " + this.toString()
+					+", child:" + childItem.toString() );
+		if (this.children==null)
+			this.children = new ArrayList<>();
+		this.children.add(childItem);
+		childItem.parent = this;
+	}
+
+
+	public void removeChild(final WalletItem childItem) {
+		if (this.getType()!=ItemType.category)
+			throw new RuntimeException("Not a  category node: " + this.toString() );
+		if (children!=null) {
+			this.children.remove(childItem);
+			childItem.setParent(null);
+		}
 	}
 }

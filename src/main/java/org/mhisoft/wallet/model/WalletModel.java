@@ -21,27 +21,31 @@
  *
  */
 
-package org.mhisoft.wallet;
+package org.mhisoft.wallet.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Description:
+ * Description: The model for the wallet view.
  *
  * @author Tony Xue
  * @since Mar, 2016
  */
 public class WalletModel {
-	List<WalletItem> items= new ArrayList<>();
+	List<WalletItem> itemsFlatList = new ArrayList<>();
 
 	public WalletModel() {
+		//
 	}
 
+	public List<WalletItem> getItemsFlatList() {
+		return itemsFlatList;
+	}
 
 	public void setupTestData() {
 		//root node
-		items.add(new WalletItem(ItemType.category, "My Default Wallet 1"));
+		itemsFlatList.add(new WalletItem(ItemType.category, "My Default Wallet 1"));
 
 
 		WalletItem item1 = new WalletItem(ItemType.item, "PNC Bank");
@@ -54,11 +58,41 @@ public class WalletModel {
 
 
 
-		items.add(new WalletItem(ItemType.category, "Bank Info"));
-		items.add(item1);
-		items.add(item2);
-		items.add(new WalletItem(ItemType.category, "Car"));
-		items.add(item3);
-		items.add(item4);
+		itemsFlatList.add(new WalletItem(ItemType.category, "Bank Info"));
+		itemsFlatList.add(item1);
+		itemsFlatList.add(item2);
+		itemsFlatList.add(new WalletItem(ItemType.category, "Car"));
+		itemsFlatList.add(item3);
+		itemsFlatList.add(item4);
+
+		buildRelations();
 	}
+
+	/**
+	 * build the hierarchical relationships from the flat list.
+	 * The parent and children of each item will be set.
+	 */
+	public void buildRelations() {
+		if (itemsFlatList.size()==0)
+			return;
+
+		WalletItem rootNode =itemsFlatList.get(0) ;
+		WalletItem lastParent = rootNode;
+		for (int i = 1; i < itemsFlatList.size(); i++) {
+			WalletItem item = itemsFlatList.get(i);
+			if (ItemType.category==item.getType()) {
+				rootNode.addChild(item);
+				lastParent = item;
+			}
+			else  {
+				lastParent.addChild(item);
+
+			}
+		}
+	}
+
+	public boolean isRoot(WalletItem item) {
+		return  itemsFlatList.get(0).equals(item);
+	}
+
 }

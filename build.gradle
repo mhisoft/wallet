@@ -6,5 +6,5 @@ description = 'org.mhisoft - wallet'
 dependencies {
   compile project(':common-utils')
 
-  compile group: 'org.jasypt', name: 'jasypt', version: '1.9.2'
+
 }
