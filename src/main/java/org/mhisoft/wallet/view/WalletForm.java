@@ -47,7 +47,10 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
+import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 
@@ -78,7 +81,9 @@ public class WalletForm {
 	 JButton btnAddNode;
 	 JButton btnDeleteNode;
 	 JPanel treeButtonPanel;
-	 JLabel labelURL;
+	private JButton btnEditForm;
+	private JButton btnSave;
+	JLabel labelURL;
 	 JLabel labelNotes;
 	 JLabel labelPassword;
 	 JLabel labelUserName;
@@ -103,8 +108,25 @@ public class WalletForm {
 		itemDetailView = new ItemDetailView(model, this);
 
 
+//		fldName.addPropertyChangeListener( this);
+//		fldURL.addPropertyChangeListener( this);
+
+		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "name", model));
+		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "URL", model));
 	}
 
+
+//	/** Called when a field's "value" property changes. */
+//	public void propertyChange(PropertyChangeEvent e) {
+//		if (model.getCurrentItem() != null) {
+//			Object source = e.getSource();
+//			if (source == fldName) {
+//				model.getCurrentItem().setName(fldName.getText());
+//			} else if (source == fldURL) {
+//				model.getCurrentItem().setURL(fldURL.getText());
+//			}
+//		}
+//	}
 
 
 	public void init() {
@@ -130,6 +152,7 @@ public class WalletForm {
 
 		treeExploreView.setupTreeView();
 		setupFontSpinner();
+
 
 
 		frame.setVisible(true);
@@ -171,6 +194,8 @@ public class WalletForm {
 		}
 		return compList;
 	}
+
+
 
 
 	/**
@@ -218,7 +243,48 @@ public class WalletForm {
 
 
 	public void displayWalletItemDetails(final WalletItem item) {
-		itemDetailView.displayWalletItemDetails(item);
+		itemDetailView.displayWalletItemDetails(item, DisplayMode.view);
+	}
+
+}
+
+
+class MyDocumentListener implements DocumentListener {
+	// implement the methods
+	JTextField field;
+	String itemFieldName; //name, URL etc
+	WalletModel model ;
+
+	public MyDocumentListener(JTextField field, String itemFieldName, WalletModel model) {
+		this.field = field;
+		this.itemFieldName = itemFieldName;
+		this.model = model;
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		valueChanged();
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		valueChanged();
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		valueChanged();
+
+	}
+
+	public void valueChanged() {
+		try {
+			if (model.getCurrentItem() != null) {
+				ReflectionUtil.setFieldValue( model.getCurrentItem(), itemFieldName, field.getText()  );
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

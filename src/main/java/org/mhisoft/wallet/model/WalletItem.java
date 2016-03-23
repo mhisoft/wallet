@@ -208,11 +208,7 @@ public class WalletItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "WalletItem{" +
-				"sysGUID='" + sysGUID + '\'' +
-				", type=" + type +
-				", name='" + name + '\'' +
-				'}';
+		return name;
 	}
 
 	public boolean hasChildren() {

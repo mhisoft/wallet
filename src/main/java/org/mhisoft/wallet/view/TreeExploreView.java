@@ -100,8 +100,8 @@ public class TreeExploreView {
 
 		tree.getSelectionModel().setSelectionPath(new TreePath(rootNode.getPath()));
 
+		selectNode(rootNode);
 		expandRoot(rootNode);
-
 
 		//Listen for when the selection changes.
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -116,14 +116,18 @@ public class TreeExploreView {
 					return;
 				}
 
-				WalletItem item = (WalletItem) node.getUserObject();
-				form.displayWalletItemDetails(item);
-				toggleButton(item.getType());
-
-
+				selectNode(node);
 
 			}
 		});
+
+	}
+
+	public void selectNode(DefaultMutableTreeNode node) {
+
+		model.setCurrentItem ((WalletItem) node.getUserObject());
+		form.displayWalletItemDetails(model.getCurrentItem());
+		toggleButton(model.getCurrentItem().getType());
 
 	}
 
@@ -186,7 +190,6 @@ public class TreeExploreView {
 			//this item is node leaf
 			parentItem = item.getParent();
 		}
-
 
 
 		WalletItem newItem;

@@ -34,9 +34,18 @@ import java.util.List;
  */
 public class WalletModel {
 	List<WalletItem> itemsFlatList = new ArrayList<>();
+	WalletItem currentItem;
 
 	public WalletModel() {
 		//
+	}
+
+	public WalletItem getCurrentItem() {
+		return currentItem;
+	}
+
+	public void setCurrentItem(WalletItem currentItem) {
+		this.currentItem = currentItem;
 	}
 
 	public List<WalletItem> getItemsFlatList() {

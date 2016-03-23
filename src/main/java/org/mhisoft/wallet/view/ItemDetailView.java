@@ -23,7 +23,6 @@
 
 package org.mhisoft.wallet.view;
 
-import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 
@@ -42,29 +41,37 @@ public class ItemDetailView {
 		this.model = model;
 	}
 
-	public void displayWalletItemDetails(final WalletItem item) {
-		if (item.getType() == ItemType.category) {
-			form.fldName.setText(item.getName());
-			//todo hide all other fields
-			form.btnAddNode.setVisible(true);
-
-			//todo only allow to delete if there are no items under
-			form.btnDeleteNode.setVisible(true);
-
-
-		} else {
+	public void displayWalletItemDetails(final WalletItem item, DisplayMode displayMode) {
+//		if (item.getType() == ItemType.category) {
+//			form.fldName.setText(item.getName());
+//			//todo hide all other fields
+//
+//
+//		} else {
 
 			form.btnAddNode.setVisible(false);
 			form.btnDeleteNode.setVisible(true);
 
 
 			form.fldName.setText(item.getName());
+			form.fldName.setEditable(displayMode!=DisplayMode.view);
+
 			form.fldURL.setText(item.getURL());
+			form.fldURL.setEditable(displayMode!=DisplayMode.view);
+
 			form.fldUserName.setText(item.getUserName());
+			form.fldUserName.setEditable(displayMode!=DisplayMode.view);
+
 			form.fldPassword.setText(item.getPassword());
+			form.fldPassword.setEditable(displayMode!=DisplayMode.view);
+
 			form.fldAccountNumber.setText(item.getAccountNumber());
+			form.fldAccountNumber.setEditable(displayMode!=DisplayMode.view);
+
 			form.fldNotes.setText(item.getNotes());
-		}
+			form.fldNotes.setEditable(displayMode!=DisplayMode.view);
+
+		//}
 
 	}
 
