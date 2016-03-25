@@ -100,7 +100,7 @@ public class TreeExploreView {
 
 		tree.getSelectionModel().setSelectionPath(new TreePath(rootNode.getPath()));
 
-		selectNode(rootNode);
+		changeNode(rootNode);
 		expandRoot(rootNode);
 
 		//Listen for when the selection changes.
@@ -116,18 +116,19 @@ public class TreeExploreView {
 					return;
 				}
 
-				selectNode(node);
+				changeNode(node);
 
 			}
 		});
 
 	}
 
-	public void selectNode(DefaultMutableTreeNode node) {
+	public void changeNode(DefaultMutableTreeNode node) {
 
 		model.setCurrentItem ((WalletItem) node.getUserObject());
 		form.displayWalletItemDetails(model.getCurrentItem());
 		toggleButton(model.getCurrentItem().getType());
+		form.resetHidePassword();
 
 	}
 

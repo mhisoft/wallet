@@ -65,25 +65,31 @@ public class WalletForm {
 	JFrame frame;
 
 	 JTree tree;
+  	 JPanel mainPanel;
+
+
 	 JTextField fldName;
-	 JPanel mainPanel;
 	 JTextField fldURL;
 	 JTextArea fldNotes;
 	 JPasswordField fldPassword;
 	 JTextField fldUserName;
 	 JTextField fldAccountNumber;
+
+
 	 JSpinner fldFontSize;
 
 	 JLabel labelName;
 	 JTabbedPane tabbedPane1;
-	 JButton button1;
+	 JButton btnTogglePasswordView;
 	 JSplitPane splitPanel;
 	 JButton btnAddNode;
 	 JButton btnDeleteNode;
 	 JPanel treeButtonPanel;
-	private JButton btnEditForm;
-	private JButton btnSave;
-	JLabel labelURL;
+	 JButton btnEditForm;
+	 JButton btnSaveForm;
+	 JButton btnCancelEdit;
+
+	 JLabel labelURL;
 	 JLabel labelNotes;
 	 JLabel labelPassword;
 	 JLabel labelUserName;
@@ -102,31 +108,57 @@ public class WalletForm {
 
 
 
+	boolean hidePassword=true;
+
 	public WalletForm() {
 		model = new WalletModel();
 		treeExploreView = new TreeExploreView(model, tree, this);
 		itemDetailView = new ItemDetailView(model, this);
 
 
-//		fldName.addPropertyChangeListener( this);
-//		fldURL.addPropertyChangeListener( this);
 
-		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "name", model));
-		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "URL", model));
+//		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "name", model));
+//		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "URL", model));
+
+		btnEditForm.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemDetailView.editDetailAction();
+			}
+		});
+		btnCancelEdit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemDetailView.cancelEditAction();
+			}
+		});
+		btnSaveForm.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemDetailView.saveAction();
+			}
+		});
+		btnTogglePasswordView.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				hidePassword = !hidePassword;
+				updatePasswordChar();
+			}
+		});
 	}
 
+	public void resetHidePassword() {
+		hidePassword = true;
+		updatePasswordChar();
+	}
 
-//	/** Called when a field's "value" property changes. */
-//	public void propertyChange(PropertyChangeEvent e) {
-//		if (model.getCurrentItem() != null) {
-//			Object source = e.getSource();
-//			if (source == fldName) {
-//				model.getCurrentItem().setName(fldName.getText());
-//			} else if (source == fldURL) {
-//				model.getCurrentItem().setURL(fldURL.getText());
-//			}
-//		}
-//	}
+	public void updatePasswordChar() {
+		if (hidePassword)
+			fldPassword.setEchoChar('*');
+		else
+			fldPassword.setEchoChar((char)0);
+	}
+
 
 
 	public void init() {

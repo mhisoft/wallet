@@ -23,6 +23,12 @@
 
 package org.mhisoft.wallet.view;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.text.JTextComponent;
+
+import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 
@@ -33,12 +39,27 @@ import org.mhisoft.wallet.model.WalletModel;
  * @since Mar, 2016
  */
 public class ItemDetailView {
-	WalletModel model ;
+	WalletModel model;
 	WalletForm form;
+	DisplayMode currentMode;
 
-	public ItemDetailView(WalletModel model, WalletForm form ) {
+
+	Map<String, JTextComponent> fields = new HashMap<>();
+
+
+
+	public ItemDetailView(WalletModel model, WalletForm form) {
 		this.form = form;
 		this.model = model;
+		fields.put("name", form.fldName);
+		fields.put("URL",  form.fldURL);
+		fields.put("userName",  form.fldUserName);
+		fields.put("accountNumber",  form.fldAccountNumber);
+//		fields.put("expirationYear", fldName);
+//		fields.put("expirationMonth", fldName);
+		fields.put("password",  form.fldPassword);
+		fields.put("notes",  form.fldNotes);
+
 	}
 
 	public void displayWalletItemDetails(final WalletItem item, DisplayMode displayMode) {
@@ -49,30 +70,70 @@ public class ItemDetailView {
 //
 //		} else {
 
-			form.btnAddNode.setVisible(false);
-			form.btnDeleteNode.setVisible(true);
+		currentMode = displayMode;
+		if (displayMode==DisplayMode.edit) {
+			form.btnEditForm.setVisible(false);
+			form.btnCancelEdit.setVisible(true);
+			form.btnSaveForm.setVisible(true);
+		}
+		else if (displayMode==DisplayMode.view) {
+			form.btnEditForm.setVisible(true);
+			form.btnCancelEdit.setVisible(false);
+			form.btnSaveForm.setVisible(false);
+		}
 
 
-			form.fldName.setText(item.getName());
-			form.fldName.setEditable(displayMode!=DisplayMode.view);
+		form.fldName.setText(item.getName());
+		form.fldName.setEditable(displayMode != DisplayMode.view);
 
-			form.fldURL.setText(item.getURL());
-			form.fldURL.setEditable(displayMode!=DisplayMode.view);
+		form.fldURL.setText(item.getURL());
+		form.fldURL.setEditable(displayMode != DisplayMode.view);
 
-			form.fldUserName.setText(item.getUserName());
-			form.fldUserName.setEditable(displayMode!=DisplayMode.view);
+		form.fldUserName.setText(item.getUserName());
+		form.fldUserName.setEditable(displayMode != DisplayMode.view);
 
-			form.fldPassword.setText(item.getPassword());
-			form.fldPassword.setEditable(displayMode!=DisplayMode.view);
+		form.fldPassword.setText(item.getPassword());
+		form.fldPassword.setEditable(displayMode != DisplayMode.view);
 
-			form.fldAccountNumber.setText(item.getAccountNumber());
-			form.fldAccountNumber.setEditable(displayMode!=DisplayMode.view);
+		form.fldAccountNumber.setText(item.getAccountNumber());
+		form.fldAccountNumber.setEditable(displayMode != DisplayMode.view);
 
-			form.fldNotes.setText(item.getNotes());
-			form.fldNotes.setEditable(displayMode!=DisplayMode.view);
+		form.fldNotes.setText(item.getNotes());
+		form.fldNotes.setEditable(displayMode != DisplayMode.view);
 
 		//}
 
 	}
+
+	public void editDetailAction() {
+		if (model.getCurrentItem() != null) {
+			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.edit);
+		}
+
+	}
+
+	public void cancelEditAction() {
+		if (model.getCurrentItem() != null) {
+			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
+		}
+	}
+
+	public void saveAction() {
+		//todo save it
+		if (model.getCurrentItem() != null) {
+
+			try {
+				for (Map.Entry<String, JTextComponent> entry : fields.entrySet()) {
+					ReflectionUtil.setFieldValue( model.getCurrentItem(), entry.getKey(), entry.getValue().getText()  );
+				}
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			}
+
+			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
+		}
+	}
+
+
 
 }
