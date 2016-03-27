@@ -25,6 +25,13 @@ package org.mhisoft.wallet.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import org.mhisoft.common.util.FileUtils;
+import org.mhisoft.common.util.Serializer;
 
 /**
  * Description: The model for the wallet view.
@@ -50,6 +57,10 @@ public class WalletModel {
 
 	public List<WalletItem> getItemsFlatList() {
 		return itemsFlatList;
+	}
+
+	public void setItemsFlatList(List<WalletItem> itemsFlatList) {
+		this.itemsFlatList = itemsFlatList;
 	}
 
 	public void setupTestData() {
@@ -100,8 +111,159 @@ public class WalletModel {
 		}
 	}
 
+
+	/**
+	 * rebuild the flat list from the tree by walking it.
+	 */
+	public void updateFlatList() {
+		WalletItem root = itemsFlatList.get(0);
+		itemsFlatList.clear();
+		walkTree(root, itemsFlatList);
+	}
+
+	void walkTree(WalletItem parent, List<WalletItem> result) {
+		result.add(parent);
+		if (parent.getChildren()!=null) {
+			for (WalletItem child : parent.getChildren()) {
+			     walkTree(child, result);
+			}
+		}
+	}
+
+
 	public boolean isRoot(WalletItem item) {
 		return  itemsFlatList.get(0).equals(item);
+	}
+
+
+	/**
+	 * Find the item with the GUID on the tree.
+	 * @param GUID
+	 * @return
+	 */
+	public WalletItem getNodeByGUID(final String GUID) {
+		updateFlatList();
+		for (WalletItem item : itemsFlatList) {
+			if (item.getSysGUID().equals(GUID))
+				return item;
+		}
+		return null;
+
+	}
+
+	private static  byte[] DELIMITER_bytes ; //=  new byte[] { (byte)0x00, (byte)0x00 };
+	static {
+
+		byte[] b00 =new byte[] { (byte)0x00, (byte)0x00 };
+		byte[] b1 = FileUtils.concatenateByteArrays("<-00|".getBytes(), b00  );
+		DELIMITER_bytes  = FileUtils.concatenateByteArrays( b1, "|00->".getBytes() );
+
+
+		//DELIMITER_bytes = "<-00|+b00+|00->"
+	}
+//	byte[] bytes = new byte[2];
+//	Arrays.fill( bytes, (byte) 0 );
+
+
+//	public static byte[] intToBytes(int aInt) {
+//		return ByteBuffer.allocate(4).putInt(aInt).array();
+//	}
+//
+//	//4 bytes to int
+//	public static int bytesToInt(byte[] bytes ) {
+//		if (bytes.length!=4)
+//			throw new RuntimeException("Byte array for an int is 4 bytes");
+//		ByteBuffer buf = ByteBuffer.wrap(bytes);
+//		return  buf.getInt();
+//	}
+
+	public void saveToFile(final String filename) {
+		FileOutputStream stream = null;
+
+
+		try {
+			stream = new FileOutputStream(filename);
+			DataOutputStream outputStream = new DataOutputStream(stream);
+			updateFlatList();
+			Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
+			outputStream.write(FileUtils.intToByteArray(itemsFlatList.size()));
+
+			int i=0;
+			for (WalletItem item : itemsFlatList) {
+				byte[] byteItem = serializer.serialize(item);
+				int size = byteItem.length;
+
+				//int to byte
+				outputStream.write(FileUtils.intToByteArray(size));
+				//write the object byte stream
+				outputStream.write(byteItem);
+				i++;
+				System.out.println("write " + item.getName()+", size:" + size);
+			}
+
+		} catch ( IOException e) {
+			e.printStackTrace();
+
+		} finally {
+			if (stream!=null)
+				try {
+					stream.close();
+				} catch (IOException e) {
+					//e.printStackTrace();
+				}
+		}
+	}
+
+
+	public List<WalletItem> readFromFile(final String filename) {
+		ByteArrayInputStream input = null;
+		//byte[] readBuf = new byte[DELIMITER_bytes.length];
+		List<WalletItem> ret = new ArrayList<>();
+		Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
+		try {
+
+			byte[] bytesWholeFile = FileUtils.readFile(filename);
+			input = new ByteArrayInputStream(bytesWholeFile);
+
+			//read the size,  int, 4 bytes
+			byte[] bytesInt = new byte[4];
+			input.read(bytesInt);
+
+			int numberOfItems = FileUtils.byteArrayToInt(bytesInt);
+			System.out.println();
+			System.out.println("numberOfItems=" + numberOfItems);
+
+
+			int readBytes = 0;
+			int k = 0;
+			while (k < numberOfItems) {
+				readBytes = input.read(bytesInt);
+				if (readBytes!=4)
+					throw new RuntimeException("didn't read 4 bytes for a integer, k=" + k;);
+				int itemSize = FileUtils.byteArrayToInt(bytesInt);
+				System.out.print("read item , size: " + itemSize);
+				byte[] byteItem = new byte[itemSize];
+				readBytes = input.read(byteItem);
+				if(readBytes!=-1) {
+					WalletItem item = serializer.deserialize(byteItem);
+					System.out.println(", item: " + item.getName());
+					ret.add(item);
+					k++;
+				}
+
+			}
+		} catch (IOException e) {
+			//end
+			e.printStackTrace();
+
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return ret;
+
+
 	}
 
 }
