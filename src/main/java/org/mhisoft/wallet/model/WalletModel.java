@@ -239,7 +239,7 @@ public class WalletModel {
 			while (k < numberOfItems) {
 				readBytes = input.read(bytesInt);
 				if (readBytes!=4)
-					throw new RuntimeException("didn't read 4 bytes for a integer, k=" + k;);
+					throw new RuntimeException("didn't read 4 bytes for a integer, k=" + k);
 				int itemSize = FileUtils.byteArrayToInt(bytesInt);
 				System.out.print("read item , size: " + itemSize);
 				byte[] byteItem = new byte[itemSize];
