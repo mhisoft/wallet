@@ -25,8 +25,9 @@ package org.mhisoft.wallet.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -216,39 +217,46 @@ public class WalletModel {
 
 
 	public List<WalletItem> readFromFile(final String filename) {
-		ByteArrayInputStream input = null;
+		//ByteArrayInputStream input = null;
 		//byte[] readBuf = new byte[DELIMITER_bytes.length];
 		List<WalletItem> ret = new ArrayList<>();
 		Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
+		int readBytes = 0;
 		try {
 
-			byte[] bytesWholeFile = FileUtils.readFile(filename);
-			input = new ByteArrayInputStream(bytesWholeFile);
+			//don't read the whole file
+			//byte[] bytesWholeFile = FileUtils.readFile(filename);
+			FileInputStream fileInputStream = new FileInputStream( new File(filename));
+
 
 			//read the size,  int, 4 bytes
 			byte[] bytesInt = new byte[4];
-			input.read(bytesInt);
+			readBytes = fileInputStream.read(bytesInt);
+			if (readBytes!=4)
+				throw new RuntimeException("didn't read 4 bytes for a integer");
 
 			int numberOfItems = FileUtils.byteArrayToInt(bytesInt);
 			System.out.println();
 			System.out.println("numberOfItems=" + numberOfItems);
 
 
-			int readBytes = 0;
 			int k = 0;
 			while (k < numberOfItems) {
-				readBytes = input.read(bytesInt);
+				readBytes = fileInputStream.read(bytesInt);
 				if (readBytes!=4)
 					throw new RuntimeException("didn't read 4 bytes for a integer, k=" + k);
-				int itemSize = FileUtils.byteArrayToInt(bytesInt);
-				System.out.print("read item , size: " + itemSize);
-				byte[] byteItem = new byte[itemSize];
-				readBytes = input.read(byteItem);
-				if(readBytes!=-1) {
+				int objectSize = FileUtils.byteArrayToInt(bytesInt);
+				System.out.print("read item , size: " + objectSize);
+				byte[] byteItem = new byte[objectSize];
+				readBytes = fileInputStream.read(byteItem);
+				if(readBytes==objectSize) {
 					WalletItem item = serializer.deserialize(byteItem);
 					System.out.println(", item: " + item.getName());
 					ret.add(item);
 					k++;
+				}
+				else {
+					throw new RuntimeException("read " + readBytes +" bytes only, expected  objectSize:"+ objectSize);
 				}
 
 			}
