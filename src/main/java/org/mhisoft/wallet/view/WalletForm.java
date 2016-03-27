@@ -31,10 +31,14 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
@@ -64,40 +68,48 @@ public class WalletForm {
 
 	JFrame frame;
 
-	 JTree tree;
-  	 JPanel mainPanel;
+	JTree tree;
+	JPanel mainPanel;
 
 
-	 JTextField fldName;
-	 JTextField fldURL;
-	 JTextArea fldNotes;
-	 JPasswordField fldPassword;
-	 JTextField fldUserName;
-	 JTextField fldAccountNumber;
+	JTextField fldName;
+	JTextField fldURL;
+	JTextArea fldNotes;
+	JPasswordField fldPassword;
+	JTextField fldUserName;
+	JTextField fldAccountNumber;
 
 
-	 JSpinner fldFontSize;
+	JSpinner fldFontSize;
 
-	 JLabel labelName;
-	 JTabbedPane tabbedPane1;
-	 JButton btnTogglePasswordView;
-	 JSplitPane splitPanel;
-	 JButton btnAddNode;
-	 JButton btnDeleteNode;
-	 JPanel treeButtonPanel;
-	 JButton btnEditForm;
-	 JButton btnSaveForm;
-	 JButton btnCancelEdit;
 
-	 JLabel labelURL;
-	 JLabel labelNotes;
-	 JLabel labelPassword;
-	 JLabel labelUserName;
-	 JLabel labelAccount;
-	 JLabel labelFontSize;
+	JTabbedPane tabbedPane1;
+	JButton btnTogglePasswordView;
+	JSplitPane splitPanel;
+	JButton btnAddNode;
+	JButton btnDeleteNode;
+	JPanel treeButtonPanel;
+	JButton btnEditForm;
+	JButton btnSaveForm;
+	JButton btnCancelEdit;
+
+	JLabel labelName;
+	JLabel labelURL;
+	JLabel labelUsername;
+	JLabel labelNotes;
+	JLabel labelPassword;
+	JLabel labelAccount;
+	JLabel labelFontSize;
+
+
+	JMenuBar menuBar;
+	JMenu menuFile;
+	JMenuItem menuOpen, menuClose;
+	//JRadioButtonMenuItem rbMenuItem;
+	//JCheckBoxMenuItem cbMenuItem;
 
 	List<Component> componetsList;
-	WalletModel model ;
+	WalletModel model;
 	TreeExploreView treeExploreView;
 	ItemDetailView itemDetailView;
 
@@ -107,14 +119,12 @@ public class WalletForm {
 	}
 
 
-
-	boolean hidePassword=true;
+	boolean hidePassword = true;
 
 	public WalletForm() {
 		model = new WalletModel();
-		treeExploreView = new TreeExploreView(model, tree, this);
+		treeExploreView = new TreeExploreView(frame, model, tree, this);
 		itemDetailView = new ItemDetailView(model, this);
-
 
 
 //		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "name", model));
@@ -145,6 +155,23 @@ public class WalletForm {
 				updatePasswordChar();
 			}
 		});
+
+
+
+		//constructor
+		btnAddNode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				treeExploreView.addItem();
+			}
+		});
+
+		btnDeleteNode.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				treeExploreView.removeItem();
+			}
+		});
 	}
 
 	public void resetHidePassword() {
@@ -156,9 +183,8 @@ public class WalletForm {
 		if (hidePassword)
 			fldPassword.setEchoChar('*');
 		else
-			fldPassword.setEchoChar((char)0);
+			fldPassword.setEchoChar((char) 0);
 	}
-
 
 
 	public void init() {
@@ -166,10 +192,27 @@ public class WalletForm {
 		frame.setContentPane(mainPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(1200, 800));
-
 		frame.pack();
 
+
+		//menu
+		//Create the menu bar.
+		menuBar = new JMenuBar();
+		menuFile = new JMenu("File");
+		menuFile.setMnemonic(KeyEvent.VK_F);
+		menuBar.add(menuFile);
+		menuOpen = new JMenuItem("Open", KeyEvent.VK_O);
+		menuFile.add(menuOpen);
+		menuClose = new JMenuItem("Close", KeyEvent.VK_C);
+		menuFile.add(menuClose);
+		frame.setJMenuBar(menuBar);
+
+
 		componetsList = getAllComponents(frame);
+		componetsList.add(menuBar);
+		componetsList.add(menuFile);
+		componetsList.add(menuOpen);
+		componetsList.add(menuClose);
 
 		/*position it*/
 		frame.setLocationRelativeTo(null);  // *** this will center your app ***
@@ -186,20 +229,13 @@ public class WalletForm {
 		setupFontSpinner();
 
 
-
 		frame.setVisible(true);
 
 
 
+		PasswordForm passwordForm = new PasswordForm();
+		passwordForm.showPasswordForm(frame);
 
-
-		//constructor
-		btnAddNode.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				treeExploreView.addItem();
-			}
-		});
 
 	}
 
@@ -228,8 +264,6 @@ public class WalletForm {
 	}
 
 
-
-
 	/**
 	 * Use the font spinner to increase and decrease the font size.
 	 */
@@ -254,7 +288,6 @@ public class WalletForm {
 		);
 
 
-
 	}
 
 	void setFontSize(Float newFontSize) {
@@ -266,12 +299,9 @@ public class WalletForm {
 	}
 
 
-
-	 void createUIComponents() {
+	void createUIComponents() {
 		// TODO: place custom component creation code here
 	}
-
-
 
 
 	public void displayWalletItemDetails(final WalletItem item) {
@@ -285,7 +315,7 @@ class MyDocumentListener implements DocumentListener {
 	// implement the methods
 	JTextField field;
 	String itemFieldName; //name, URL etc
-	WalletModel model ;
+	WalletModel model;
 
 	public MyDocumentListener(JTextField field, String itemFieldName, WalletModel model) {
 		this.field = field;
@@ -312,7 +342,7 @@ class MyDocumentListener implements DocumentListener {
 	public void valueChanged() {
 		try {
 			if (model.getCurrentItem() != null) {
-				ReflectionUtil.setFieldValue( model.getCurrentItem(), itemFieldName, field.getText()  );
+				ReflectionUtil.setFieldValue(model.getCurrentItem(), itemFieldName, field.getText());
 			}
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();

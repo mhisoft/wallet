@@ -23,6 +23,7 @@
 
 package org.mhisoft.wallet.view;
 
+import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -42,12 +43,14 @@ import org.mhisoft.wallet.model.WalletModel;
  * @since Mar, 2016
  */
 public class TreeExploreView {
+	JFrame frame;
 	WalletModel model ;
 	JTree tree;
 	WalletForm form;
 	DefaultMutableTreeNode rootNode;
 
-	public TreeExploreView(WalletModel model, JTree tree, WalletForm walletForm) {
+	public TreeExploreView(JFrame frame, WalletModel model, JTree tree, WalletForm walletForm) {
+		this.frame = frame;
 		this.model = model;
 		this.tree = tree;
 		this.form = walletForm;
@@ -127,23 +130,18 @@ public class TreeExploreView {
 
 		model.setCurrentItem ((WalletItem) node.getUserObject());
 		form.displayWalletItemDetails(model.getCurrentItem());
-		toggleButton(model.getCurrentItem().getType());
+		toggleButton(model.getCurrentItem());
 		form.resetHidePassword();
 
 	}
 
 
-	void toggleButton(ItemType  itemType ) {
-		if (itemType == ItemType.category) {
+	void toggleButton(WalletItem currentItem) {
+		if (currentItem.getType() == ItemType.category) {
 			form.btnAddNode.setVisible(true);
-
-			//todo only allow to delete if there are no items under
-			form.btnDeleteNode.setVisible(true);
-
-
+			form.btnDeleteNode.setVisible(!currentItem.hasChildren());
 		} else {
-
-			form.btnAddNode.setVisible(false);
+			form.btnAddNode.setVisible(true);
 			form.btnDeleteNode.setVisible(true);
 
 		}
@@ -196,16 +194,13 @@ public class TreeExploreView {
 		WalletItem newItem;
 		if (model.isRoot(item)) {
 			//add another category to the  root
-			newItem = new WalletItem(ItemType.category, "New Category");
+			newItem = new WalletItem(ItemType.category, "New Category - Untitled");
 		}
 		else
 			newItem = new WalletItem(ItemType.item, "New Item- Untitled");
 
 
-
-		parentItem.addChild(newItem);
-
-
+		model.addItem(parentItem, newItem);
 
 
 
@@ -229,7 +224,46 @@ public class TreeExploreView {
 		//Make sure the user can see the lovely new node.
 		tree.scrollPathToVisible(new TreePath(newChildNode.getPath()));
 
+		if (WalletModel.debug) {
+			form.fldNotes.setText(model.dumpFlatList());
+		}
+
+
 	}
+
+	public void removeItem() {
+		WalletItem item = model.getCurrentItem();
+		if (item.getType()==ItemType.category && item.hasChildren())
+			return;
+
+		if (ConfirmationUtil.getConfirmation(frame, "Delete the '" + item.getName() +"'?")==Confirmation.YES ) {
+
+			DefaultMutableTreeNode thisNode = findNode(rootNode, item);
+			DefaultMutableTreeNode parentNode = findNode(rootNode, item.getParent());
+			if (parentNode==null)
+				throw new RuntimeException("parent node not found for item:" + item);
+
+			//remove from jTree node
+			parentNode.remove(thisNode);
+			DefaultTreeModel treeModel = (DefaultTreeModel)tree.getModel();
+			treeModel.reload(parentNode);
+
+			//remove from the model
+			model.removeItem(item);
+
+
+			//now set selection to this new node
+			tree.getSelectionModel().setSelectionPath(new TreePath(parentNode.getPath()));
+			//Make sure the user can see the lovely new node.
+			tree.scrollPathToVisible(new TreePath(parentNode.getPath()));
+
+			if (WalletModel.debug) {
+				form.fldNotes.setText(model.dumpFlatList());
+			}
+		}
+
+	}
+
 
 
 

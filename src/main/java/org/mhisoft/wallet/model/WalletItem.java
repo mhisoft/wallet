@@ -211,6 +211,15 @@ public class WalletItem implements Serializable {
 		return name;
 	}
 
+
+	public String toStringJson() {
+		return "WalletItem{" +
+				"sysGUID='" + sysGUID + '\'' +
+				", type=" + type +
+				", name='" + name + '\'' +
+				'}';
+	}
+
 	public boolean hasChildren() {
 		return getChildren()!=null && getChildren().size()>0;
 	}

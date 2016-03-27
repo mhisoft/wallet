@@ -41,6 +41,8 @@ import org.mhisoft.common.util.Serializer;
  * @since Mar, 2016
  */
 public class WalletModel {
+	public static boolean debug = Boolean.getBoolean("debug");
+
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
 
@@ -86,14 +88,23 @@ public class WalletModel {
 		itemsFlatList.add(item3);
 		itemsFlatList.add(item4);
 
-		buildRelations();
+		buildTreeFromFlatList();
+	}
+
+	public String dumpFlatList() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < itemsFlatList.size(); i++) {
+			WalletItem item = itemsFlatList.get(i);
+			sb.append(i +":").append(item.toStringJson()).append("\n");
+		}
+		return sb.toString();
 	}
 
 	/**
 	 * build the hierarchical relationships from the flat list.
 	 * The parent and children of each item will be set.
 	 */
-	public void buildRelations() {
+	public void buildTreeFromFlatList() {
 		if (itemsFlatList.size()==0)
 			return;
 
@@ -116,13 +127,13 @@ public class WalletModel {
 	/**
 	 * rebuild the flat list from the tree by walking it.
 	 */
-	public void updateFlatList() {
+	public void buildFlatListFromTree() {
 		WalletItem root = itemsFlatList.get(0);
 		itemsFlatList.clear();
 		walkTree(root, itemsFlatList);
 	}
 
-	void walkTree(WalletItem parent, List<WalletItem> result) {
+	protected void walkTree(WalletItem parent, List<WalletItem> result) {
 		result.add(parent);
 		if (parent.getChildren()!=null) {
 			for (WalletItem child : parent.getChildren()) {
@@ -137,13 +148,51 @@ public class WalletModel {
 	}
 
 
+	public void addItem(final WalletItem parentItem, final WalletItem newItem) {
+		if ( isRoot(parentItem) ) {
+			if (newItem.getType()!= ItemType.category)
+			throw new RuntimeException("Can only add category items to the root.");
+			parentItem.addChild(newItem);
+			itemsFlatList.add(newItem);
+
+		}
+		else {
+
+			//find the last child of the parentItem in the flat list and insert after that
+			WalletItem lastChildren = parentItem.getChildren().get(parentItem.getChildren().size() - 1);
+
+
+			int index = -1;
+			for (int i = 0; i < itemsFlatList.size(); i++) {
+				if (itemsFlatList.get(i).equals(lastChildren)) {
+					index = i;
+					break;
+				}
+			}
+
+			if (index == itemsFlatList.size() - 1)
+				//last one, just append
+				itemsFlatList.add(newItem);
+			else
+				itemsFlatList.add(index+1, newItem);
+
+			parentItem.addChild(newItem);
+		}
+	}
+
+	public void  removeItem(final WalletItem item) {
+		item.getParent().removeChild(item);
+		itemsFlatList.remove(item);
+	}
+
+
 	/**
 	 * Find the item with the GUID on the tree.
 	 * @param GUID
 	 * @return
 	 */
 	public WalletItem getNodeByGUID(final String GUID) {
-		updateFlatList();
+		buildFlatListFromTree();
 		for (WalletItem item : itemsFlatList) {
 			if (item.getSysGUID().equals(GUID))
 				return item;
@@ -154,29 +203,10 @@ public class WalletModel {
 
 	private static  byte[] DELIMITER_bytes ; //=  new byte[] { (byte)0x00, (byte)0x00 };
 	static {
-
 		byte[] b00 =new byte[] { (byte)0x00, (byte)0x00 };
 		byte[] b1 = FileUtils.concatenateByteArrays("<-00|".getBytes(), b00  );
 		DELIMITER_bytes  = FileUtils.concatenateByteArrays( b1, "|00->".getBytes() );
-
-
-		//DELIMITER_bytes = "<-00|+b00+|00->"
 	}
-//	byte[] bytes = new byte[2];
-//	Arrays.fill( bytes, (byte) 0 );
-
-
-//	public static byte[] intToBytes(int aInt) {
-//		return ByteBuffer.allocate(4).putInt(aInt).array();
-//	}
-//
-//	//4 bytes to int
-//	public static int bytesToInt(byte[] bytes ) {
-//		if (bytes.length!=4)
-//			throw new RuntimeException("Byte array for an int is 4 bytes");
-//		ByteBuffer buf = ByteBuffer.wrap(bytes);
-//		return  buf.getInt();
-//	}
 
 	public void saveToFile(final String filename) {
 		FileOutputStream stream = null;
@@ -185,7 +215,7 @@ public class WalletModel {
 		try {
 			stream = new FileOutputStream(filename);
 			DataOutputStream outputStream = new DataOutputStream(stream);
-			updateFlatList();
+			buildFlatListFromTree();
 			Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
 			outputStream.write(FileUtils.intToByteArray(itemsFlatList.size()));
 

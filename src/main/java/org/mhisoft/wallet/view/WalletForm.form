@@ -70,7 +70,7 @@
                               <text value="Name"/>
                             </properties>
                           </component>
-                          <component id="85bea" class="javax.swing.JLabel">
+                          <component id="85bea" class="javax.swing.JLabel" binding="labelURL">
                             <constraints>
                               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false">
                                 <preferred-size width="187" height="24"/>
@@ -81,7 +81,7 @@
                               <text value="URL"/>
                             </properties>
                           </component>
-                          <component id="f511b" class="javax.swing.JLabel">
+                          <component id="f511b" class="javax.swing.JLabel" binding="labelNotes">
                             <constraints>
                               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false">
                                 <preferred-size width="187" height="24"/>
@@ -101,7 +101,7 @@
                               <text value=".."/>
                             </properties>
                           </component>
-                          <component id="598ce" class="javax.swing.JLabel">
+                          <component id="598ce" class="javax.swing.JLabel" binding="labelPassword">
                             <constraints>
                               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                             </constraints>
@@ -120,7 +120,7 @@
                               <font size="18"/>
                             </properties>
                           </component>
-                          <component id="487f9" class="javax.swing.JLabel">
+                          <component id="487f9" class="javax.swing.JLabel" binding="labelUsername">
                             <constraints>
                               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false">
                                 <preferred-size width="187" height="24"/>
@@ -131,7 +131,7 @@
                               <text value="User Name"/>
                             </properties>
                           </component>
-                          <component id="b0771" class="javax.swing.JLabel">
+                          <component id="b0771" class="javax.swing.JLabel" binding="labelAccount">
                             <constraints>
                               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false">
                                 <preferred-size width="187" height="24"/>
@@ -152,7 +152,7 @@
                               <font size="18"/>
                             </properties>
                           </component>
-                          <component id="3bdaf" class="javax.swing.JLabel">
+                          <component id="3bdaf" class="javax.swing.JLabel" binding="labelFontSize">
                             <constraints>
                               <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false">
                                 <preferred-size width="187" height="24"/>

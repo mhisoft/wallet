@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.swing.text.JTextComponent;
 
 import org.mhisoft.common.util.ReflectionUtil;
+import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 
@@ -88,18 +89,28 @@ public class ItemDetailView {
 
 		form.fldURL.setText(item.getURL());
 		form.fldURL.setEditable(displayMode != DisplayMode.view);
+		form.fldURL.setVisible(item.getType() == ItemType.item);
 
 		form.fldUserName.setText(item.getUserName());
 		form.fldUserName.setEditable(displayMode != DisplayMode.view);
+		form.fldUserName.setVisible(item.getType() == ItemType.item);
 
 		form.fldPassword.setText(item.getPassword());
 		form.fldPassword.setEditable(displayMode != DisplayMode.view);
+		form.fldPassword.setVisible(item.getType() == ItemType.item);
 
 		form.fldAccountNumber.setText(item.getAccountNumber());
 		form.fldAccountNumber.setEditable(displayMode != DisplayMode.view);
+		form.fldAccountNumber.setVisible(item.getType() == ItemType.item);
 
 		form.fldNotes.setText(item.getNotes());
 		form.fldNotes.setEditable(displayMode != DisplayMode.view);
+
+		form.labelURL.setVisible(item.getType() == ItemType.item);
+		form.labelUsername.setVisible(item.getType() == ItemType.item);
+		form.labelPassword.setVisible(item.getType() == ItemType.item);
+		form.labelAccount.setVisible(item.getType() == ItemType.item);
+		form.btnTogglePasswordView.setVisible(item.getType() == ItemType.item);
 
 		//}
 
