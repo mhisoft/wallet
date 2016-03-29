@@ -37,6 +37,8 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
+import org.mhisoft.common.util.Encryptor;
+
 /**
  * Description:
  *
@@ -47,8 +49,8 @@ public class PasswordForm {
 	private JPanel mainPanel;
 	private JPasswordField fldPassword;
 	private JSpinner spinner1;
-	private JButton button1;
-	private JButton button2;
+	private JButton btnCancel;
+	private JButton btnOk;
 	private JSpinner spinner2;
 	private JSpinner spinner3;
 	private JLabel labelPassword;
@@ -56,27 +58,47 @@ public class PasswordForm {
 	JDialog dialog;
 
 
+	public PasswordForm() {
+		btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dialog.dispose();
+			}
+		});
+		btnOk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String pass = verifyUserInput();
+				if (pass != null) {
+					//todo verify with hash.
+					Encryptor.createInstance(pass);
+					dialog.dispose();
+
+
+					DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n" + fldPassword.getText()+",dial:"//
+							 + spinner1.getValue()+"-"+ spinner2.getValue()+"-"+ spinner3.getValue() //
+					);
+
+
+				}
+			}
+		});
+	}
+
 	public void showPasswordForm(JFrame parentFrame ) {
 		dialog = new JDialog(parentFrame, "Please enter password", true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getContentPane().add(mainPanel);
-		dialog.setPreferredSize(new Dimension(600, 300));
+		dialog.setPreferredSize(new Dimension(800, 300));
 		dialog.pack();
 		dialog.setLocationRelativeTo(parentFrame);
 
-
-
-
-
-		SpinnerModel spinnerModel = new SpinnerNumberModel(10, //initial value
-				10, //min
-				99, //max
-				1); //step
+		SpinnerModel spinnerModel = new SpinnerNumberModel(10, 10, 99, 1);
+		SpinnerModel spinnerMode2 = new SpinnerNumberModel(10, 10, 99, 1);
+		SpinnerModel spinnerMode3 = new SpinnerNumberModel(10, 10, 99, 1);
 		spinner1.setModel(spinnerModel);
-		spinner2.setModel(spinnerModel);
-		spinner3.setModel(spinnerModel);
-
-
+		spinner2.setModel(spinnerMode2);
+		spinner3.setModel(spinnerMode3);
 
 
 		dialog.setVisible(true);
@@ -92,6 +114,27 @@ public class PasswordForm {
 			dialog.setVisible(false);
 			dialog.dispose();
 		}
+	}
+
+	private String verifyUserInput() {
+
+
+		if (fldPassword.getPassword().length<8) {
+			DialogUtils.getInstance().info("The password is too short.");
+			return null;
+		}
+
+
+		if ( spinner1.getValue()==spinner2.getValue() && spinner2.getValue()==spinner3.getValue()) {
+			DialogUtils.getInstance().info("Three dials can not be  the same.");
+			return null;
+		}
+
+		//todo more rules
+
+		return spinner2.getValue().toString()+fldPassword.getText()+spinner1.getValue().toString()+spinner3.getValue().toString();
+
+
 	}
 
 
