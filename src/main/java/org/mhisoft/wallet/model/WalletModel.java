@@ -31,11 +31,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.AlgorithmParameters;
-import java.security.NoSuchAlgorithmException;
 
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.Serializer;
+import org.mhisoft.wallet.view.DialogUtils;
 
 /**
  * Description: The model for the wallet view.
@@ -242,6 +242,7 @@ public class WalletModel {
 
 		} catch ( IOException e) {
 			e.printStackTrace();
+			DialogUtils.getInstance().error("Error occurred when saveToFile()", e.getMessage());
 
 		} finally {
 			if (stream!=null)
@@ -308,9 +309,10 @@ public class WalletModel {
 				}
 
 			}
-		} catch (IOException | NoSuchAlgorithmException | ClassNotFoundException e) {
+		} catch (Exception e) {
 			//end
 			e.printStackTrace();
+			DialogUtils.getInstance().error("Error occurred in readFromFile()", e.getMessage());
 		}
 
 		return ret;

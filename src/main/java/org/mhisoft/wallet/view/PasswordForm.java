@@ -30,6 +30,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
@@ -44,12 +45,14 @@ import javax.swing.SpinnerNumberModel;
  */
 public class PasswordForm {
 	private JPanel mainPanel;
-	private JPasswordField passwordPasswordField;
+	private JPasswordField fldPassword;
 	private JSpinner spinner1;
 	private JButton button1;
 	private JButton button2;
 	private JSpinner spinner2;
 	private JSpinner spinner3;
+	private JLabel labelPassword;
+	private JLabel labelSafeCombination;
 	JDialog dialog;
 
 

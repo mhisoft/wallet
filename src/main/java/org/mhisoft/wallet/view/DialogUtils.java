@@ -32,9 +32,25 @@ import javax.swing.JOptionPane;
  * @author Tony Xue
  * @since Mar, 2016
  */
-public class ConfirmationUtil {
+public class DialogUtils {
 
-	public static  Confirmation getConfirmation(final JFrame frame, final String question, final Confirmation... options) {
+	JFrame frame;
+	static DialogUtils instance;
+
+	public DialogUtils(JFrame frame) {
+		this.frame = frame;
+	}
+
+	public static DialogUtils getInstance() {
+		return instance;
+	}
+
+	public static DialogUtils create(JFrame frame) {
+		instance = new DialogUtils(frame);
+		return instance;
+	}
+
+	public static Confirmation getConfirmation(final JFrame frame, final String question, final Confirmation... options) {
 		int dialogResult = JOptionPane.showConfirmDialog(frame, question, "Please confirm", JOptionPane.YES_NO_CANCEL_OPTION);
 		if (JOptionPane.YES_OPTION == dialogResult) {
 			return Confirmation.YES;
@@ -46,4 +62,43 @@ public class ConfirmationUtil {
 		//todo support presend a check box to check Yes for all future confirmations
 		//return  Confirmation.YES_TO_ALL
 	}
+
+
+	/**
+	 * Display warning
+	 * @param title
+	 * @param message
+	 */
+	public void warn(  final String title, final String message ) {
+		//custom title, warning icon
+		JOptionPane.showMessageDialog(frame,
+				message, //"Eggs are not supposed to be green.",
+				title, //"Inane warning",
+				JOptionPane.WARNING_MESSAGE);
+	}
+
+	/**
+	 * Display error
+	 * @param title
+	 * @param error
+	 */
+	public void error(  final String title, final String error ) {
+		//custom title, warning icon
+		JOptionPane.showMessageDialog(frame,
+				error, //"Eggs are not supposed to be green.",
+				title, //"Inane warning",
+				JOptionPane.ERROR_MESSAGE);
+	}
+
+	/**
+	 * Display message
+	 * @param message
+	 */
+	public void info(  final String message ) {
+		//custom title, warning icon
+		JOptionPane.showMessageDialog(frame,
+				message //"Eggs are not supposed to be green.",
+				);
+	}
+
 }

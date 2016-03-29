@@ -139,6 +139,7 @@ public class ItemDetailView {
 				}
 			} catch (NoSuchFieldException e) {
 				e.printStackTrace();
+				DialogUtils.getInstance().error("Error occured", e.getMessage());
 			}
 
 			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);

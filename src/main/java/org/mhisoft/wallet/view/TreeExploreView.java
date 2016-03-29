@@ -236,7 +236,7 @@ public class TreeExploreView {
 		if (item.getType()==ItemType.category && item.hasChildren())
 			return;
 
-		if (ConfirmationUtil.getConfirmation(frame, "Delete the '" + item.getName() +"'?")==Confirmation.YES ) {
+		if (DialogUtils.getConfirmation(frame, "Delete the '" + item.getName() + "'?")==Confirmation.YES ) {
 
 			DefaultMutableTreeNode thisNode = findNode(rootNode, item);
 			DefaultMutableTreeNode parentNode = findNode(rootNode, item.getParent());

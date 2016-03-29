@@ -127,6 +127,7 @@ public class WalletForm {
 		itemDetailView = new ItemDetailView(model, this);
 
 
+
 //		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "name", model));
 //		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "URL", model));
 
@@ -193,6 +194,8 @@ public class WalletForm {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(1200, 800));
 		frame.pack();
+
+		 DialogUtils.create(frame);
 
 
 		//menu
@@ -346,6 +349,7 @@ class MyDocumentListener implements DocumentListener {
 			}
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
+			DialogUtils.getInstance().error("Error occured", e.getMessage());
 		}
 	}
 
