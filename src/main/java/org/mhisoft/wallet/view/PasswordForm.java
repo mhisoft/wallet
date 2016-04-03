@@ -23,9 +23,17 @@
 
 package org.mhisoft.wallet.view;
 
+import java.util.List;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.security.AlgorithmParameters;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -38,6 +46,11 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.FileUtils;
+import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.wallet.model.PasswordValidator;
+import org.mhisoft.wallet.model.WalletItem;
+import org.mhisoft.wallet.model.WalletSettings;
 
 /**
  * Description:
@@ -57,26 +70,38 @@ public class PasswordForm {
 	private JLabel labelSafeCombination;
 	JDialog dialog;
 
+	PasswordValidator passwordValidator;
+
 
 	public PasswordForm() {
+		passwordValidator = new PasswordValidator();
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dialog.dispose();
 			}
 		});
+
+
 		btnOk.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String pass = verifyUserInput();
-				if (pass != null) {
-					//todo verify with hash.
+
+				boolean createHash;
+
+				String pass = getUserEnterPassword();
+				if (createHash && pass != null) {
+
+					WalletSettings.instance.setPassPlain(pass);
+
+					createHash(pass);
+
 					Encryptor.createInstance(pass);
 					dialog.dispose();
 
 
-					DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n" + fldPassword.getText()+",dial:"//
-							 + spinner1.getValue()+"-"+ spinner2.getValue()+"-"+ spinner3.getValue() //
+					DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n" + fldPassword.getText() + ",dial:"//
+							+ spinner1.getValue() + "-" + spinner2.getValue() + "-" + spinner3.getValue() //
 					);
 
 
@@ -85,7 +110,7 @@ public class PasswordForm {
 		});
 	}
 
-	public void showPasswordForm(JFrame parentFrame ) {
+	public void showPasswordForm(JFrame parentFrame) {
 		dialog = new JDialog(parentFrame, "Please enter password", true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getContentPane().add(mainPanel);
@@ -116,25 +141,59 @@ public class PasswordForm {
 		}
 	}
 
-	private String verifyUserInput() {
+	private String getUserEnterPassword(boolean create) {
+		if (create) {
+			if (!passwordValidator.validate(fldPassword.getText())) {
+				DialogUtils.getInstance().info("Please use a password following the above rules.");
+				return null;
+			}
+			if (spinner1.getValue() == spinner2.getValue() && spinner2.getValue() == spinner3.getValue()) {
+				DialogUtils.getInstance().info("Three dials can not all be the same.");
+				return null;
+			}
+			//
+			return spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString();
+		} else {
+			//verify with existing pass todo
+			String userInput = spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString();
 
-
-		if (fldPassword.getPassword().length<8) {
-			DialogUtils.getInstance().info("The password is too short.");
-			return null;
 		}
 
+		return null;
 
-		if ( spinner1.getValue()==spinner2.getValue() && spinner2.getValue()==spinner3.getValue()) {
-			DialogUtils.getInstance().info("Three dials can not be  the same.");
-			return null;
+
+	}
+
+	private void createHash(String pass) {
+		try {
+			String hash = HashingUtils.createHash(pass);
+			WalletSettings.instance.setHash(hash);
+			saveSettingsToFile(WalletSettings.instance);
+
+		} catch (HashingUtils.CannotPerformOperationException e1) {
+			e1.printStackTrace();
+			DialogUtils.getInstance().error("An error occurred", "Failed to hash the password:" + e1.getMessage());
 		}
-
-		//todo more rules
-
-		return spinner2.getValue().toString()+fldPassword.getText()+spinner1.getValue().toString()+spinner3.getValue().toString();
+	}
 
 
+	String settingsFile = "walletsettings.dat";
+
+	private void saveSettingsToFile(WalletSettings settings) {
+		ObjectOutputStream outputStream = null;
+		try {
+			outputStream = new ObjectOutputStream(new FileOutputStream(settingsFile));
+			outputStream.writeObject(settings);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (outputStream != null)
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					//
+				}
+		}
 	}
 
 

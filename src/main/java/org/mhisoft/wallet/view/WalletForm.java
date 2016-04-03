@@ -115,6 +115,7 @@ public class WalletForm {
 
 	public static void main(String[] args) {
 		WalletForm form = new WalletForm();
+		initSettings();
 		form.init();
 	}
 
@@ -351,6 +352,11 @@ class MyDocumentListener implements DocumentListener {
 			e.printStackTrace();
 			DialogUtils.getInstance().error("Error occured", e.getMessage());
 		}
+	}
+
+	//read settings
+	private void initSettings() {
+
 	}
 
 }

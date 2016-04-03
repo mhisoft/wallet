@@ -208,8 +208,6 @@ public class WalletModel {
 
 	public void saveToFile(final String filename) {
 		FileOutputStream stream = null;
-
-
 		try {
 
 			stream = new FileOutputStream(filename);
