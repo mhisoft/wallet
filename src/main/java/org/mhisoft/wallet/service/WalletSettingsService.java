@@ -23,11 +23,67 @@
 
 package org.mhisoft.wallet.service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.mhisoft.wallet.model.WalletSettings;
+
 /**
- * Description:
+ * Description: service for the settings.
  *
  * @author Tony Xue
  * @since Apr, 2016
  */
 public class WalletSettingsService {
+	static final String settingsFile =System.getProperty("user.dir")+"WalletSettings.dat"  ;
+
+	/**
+	 * Save the settings to file
+	 * @param settings
+	 */
+	public void saveSettingsToFile(WalletSettings settings) {
+		ObjectOutputStream outputStream = null;
+		try {
+			outputStream = new ObjectOutputStream(new FileOutputStream(settingsFile));
+			outputStream.writeObject(settings);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (outputStream != null)
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					//
+				}
+		}
+	}
+
+	public WalletSettings readSettingsFromFile() {
+			ObjectInputStream stream = null;
+			try {
+				stream = new ObjectInputStream(new FileInputStream(settingsFile));
+				WalletSettings settings = (WalletSettings) stream.readObject();
+				ServiceRegistry.instance.registerSingletonService(settings);
+				return settings;
+			} catch (FileNotFoundException e) {
+				 return null;
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+				return null;
+			} finally {
+				if (stream != null)
+					try {
+						stream.close();
+					} catch (IOException e) {
+						//
+					}
+			}
+	}
+
+
+
 }

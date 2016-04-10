@@ -80,12 +80,12 @@ public class TreeExploreView {
 	}
 
 	/**
-	 * Set up the explore tree.
+	 * Set up the explore tree base on flat list in the model.
 	 */
 	public void setupTreeView() {
 
-		tree.setModel(null);
-		model.setupTestData();
+//		tree.setModel(null);
+//		model.setupTestData();
 		//DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new WalletItem(ItemType.category, "My Default Wallet 1"));
 		DefaultTreeModel treeModel = null;
 

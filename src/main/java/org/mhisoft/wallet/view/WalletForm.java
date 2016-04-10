@@ -57,6 +57,7 @@ import javax.swing.event.DocumentListener;
 import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
  * Description: The Wallet Form UI
@@ -113,20 +114,20 @@ public class WalletForm {
 	TreeExploreView treeExploreView;
 	ItemDetailView itemDetailView;
 
-	public static void main(String[] args) {
-		WalletForm form = new WalletForm();
-		initSettings();
-		form.init();
-	}
 
 
 	boolean hidePassword = true;
+
+	public WalletModel getModel() {
+		return model;
+	}
 
 	public WalletForm() {
 		model = new WalletModel();
 		treeExploreView = new TreeExploreView(frame, model, tree, this);
 		itemDetailView = new ItemDetailView(model, this);
 
+		ServiceRegistry.instance.registerSingletonService(this);
 
 
 //		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "name", model));
@@ -229,13 +230,11 @@ public class WalletForm {
 
 		loadInPreferences();
 
-		treeExploreView.setupTreeView();
+
 		setupFontSpinner();
 
 
 		frame.setVisible(true);
-
-
 
 		PasswordForm passwordForm = new PasswordForm();
 		passwordForm.showPasswordForm(frame);
@@ -311,6 +310,12 @@ public class WalletForm {
 	public void displayWalletItemDetails(final WalletItem item) {
 		itemDetailView.displayWalletItemDetails(item, DisplayMode.view);
 	}
+
+
+	public void loadTree() {
+		treeExploreView.setupTreeView();
+	}
+
 
 }
 

@@ -30,6 +30,9 @@ import org.junit.Test;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.service.WalletService;
 
 import junit.framework.Assert;
 
@@ -48,6 +51,9 @@ public class WalletModelTest {
 	WalletItem cNode;
 	WalletItem dNode;
 
+
+	WalletService walletService;
+
 	@Before
 	public  void setup() {
 
@@ -61,6 +67,10 @@ public class WalletModelTest {
 		 */
 
 		model = new WalletModel();
+		walletService = ServiceRegistry.instance.getService(BeanType.singleton, WalletService.class)  ;
+
+
+
 		//root node
 		root = new WalletItem(ItemType.category, "root");
 		model.getItemsFlatList().add(root);
@@ -193,7 +203,7 @@ public class WalletModelTest {
 		model.getItemsFlatList().clear();
 		model.setupTestData();
 
-		model.saveToFile("test1.dat");
+		walletService.saveToFile("test1.dat", model);
 	}
 
 	@Test
@@ -203,9 +213,9 @@ public class WalletModelTest {
 
 		model.getItemsFlatList().clear();
 		model.setupTestData();
-		model.saveToFile("test2.dat");
+		walletService.saveToFile("test2.dat", model);
 
-		model.setItemsFlatList(model.readFromFile("test2.dat"));
+		model.setItemsFlatList(walletService.readFromFile("test2.dat"));
 		Assert.assertEquals(7, model.getItemsFlatList().size());
 
 

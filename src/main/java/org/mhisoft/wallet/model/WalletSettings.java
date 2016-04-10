@@ -34,7 +34,12 @@ import java.io.Serializable;
 public class WalletSettings implements Serializable	 {
 	private static final long serialVersionUID = 1L;
 
-	public static WalletSettings instance = new WalletSettings();
+	//manage it in the Registry
+//	public static WalletSettings instance ;
+//
+//	public static WalletSettings getInstance() {
+//		return instance;
+//	}
 
 	private String hash;
 	private transient String passPlain;

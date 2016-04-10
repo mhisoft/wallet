@@ -23,17 +23,11 @@
 
 package org.mhisoft.wallet.view;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.security.AlgorithmParameters;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -45,12 +39,10 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
-import org.mhisoft.common.util.Encryptor;
-import org.mhisoft.common.util.FileUtils;
-import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.PasswordValidator;
-import org.mhisoft.wallet.model.WalletItem;
-import org.mhisoft.wallet.model.WalletSettings;
+import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.service.CreatePasswordAction;
+import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
  * Description:
@@ -70,11 +62,38 @@ public class PasswordForm {
 	private JLabel labelSafeCombination;
 	JDialog dialog;
 
+
+
 	PasswordValidator passwordValidator;
+	CreatePasswordAction createPasswordAction;
 
 
 	public PasswordForm() {
 		passwordValidator = new PasswordValidator();
+		init();
+	}
+
+
+	public void exitPasswordForm()  {
+		dialog.dispose();;
+	}
+
+
+	public String getUserInputPass() {
+		return fldPassword.getText();
+	}
+
+
+	public String getCombinationDisplay() {
+		return spinner1.getValue() + "-" + spinner2.getValue() + "-" + spinner3.getValue();
+	}
+
+
+	private void init() {
+
+		createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class) ;
+		createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class) ;
+
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -83,30 +102,16 @@ public class PasswordForm {
 		});
 
 
-		btnOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		btnOk.addActionListener(e -> {
 
-				boolean createHash;
-
-				String pass = getUserEnterPassword();
-				if (createHash && pass != null) {
-
-					WalletSettings.instance.setPassPlain(pass);
-
-					createHash(pass);
-
-					Encryptor.createInstance(pass);
-					dialog.dispose();
+			boolean createHash = ServiceRegistry.instance.getWalletSettings().getHash() == null;
+			String pass = getUserEnterPassword(createHash);
+			Map<String, Object> params = new HashMap<String, Object>() ;
+			params.put("pass", pass)  ;
+			params.put("passwordForm", this)  ;
+			createPasswordAction.execute (params) ;
 
 
-					DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n" + fldPassword.getText() + ",dial:"//
-							+ spinner1.getValue() + "-" + spinner2.getValue() + "-" + spinner3.getValue() //
-					);
-
-
-				}
-			}
 		});
 	}
 
@@ -129,17 +134,7 @@ public class PasswordForm {
 		dialog.setVisible(true);
 	}
 
-	// an action listener to be used when an action is performed
-	// (e.g. button is pressed)
-	class MyActionListener implements ActionListener {
 
-		//close and dispose of the window.
-		public void actionPerformed(ActionEvent e) {
-			System.out.println("disposing the window..");
-			dialog.setVisible(false);
-			dialog.dispose();
-		}
-	}
 
 	private String getUserEnterPassword(boolean create) {
 		if (create) {
@@ -148,7 +143,7 @@ public class PasswordForm {
 				return null;
 			}
 			if (spinner1.getValue() == spinner2.getValue() && spinner2.getValue() == spinner3.getValue()) {
-				DialogUtils.getInstance().info("Three dials can not all be the same.");
+				DialogUtils.getInstance().info("Cant' use the same nubmers for the combinations.");
 				return null;
 			}
 			//
@@ -164,37 +159,8 @@ public class PasswordForm {
 
 	}
 
-	private void createHash(String pass) {
-		try {
-			String hash = HashingUtils.createHash(pass);
-			WalletSettings.instance.setHash(hash);
-			saveSettingsToFile(WalletSettings.instance);
-
-		} catch (HashingUtils.CannotPerformOperationException e1) {
-			e1.printStackTrace();
-			DialogUtils.getInstance().error("An error occurred", "Failed to hash the password:" + e1.getMessage());
-		}
-	}
 
 
-	String settingsFile = "walletsettings.dat";
-
-	private void saveSettingsToFile(WalletSettings settings) {
-		ObjectOutputStream outputStream = null;
-		try {
-			outputStream = new ObjectOutputStream(new FileOutputStream(settingsFile));
-			outputStream.writeObject(settings);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (outputStream != null)
-				try {
-					outputStream.close();
-				} catch (IOException e) {
-					//
-				}
-		}
-	}
 
 
 }
