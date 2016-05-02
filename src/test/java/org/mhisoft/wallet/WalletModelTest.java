@@ -27,6 +27,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -86,6 +87,8 @@ public class WalletModelTest {
 		gNode = new WalletItem(ItemType.item, "g");
 		model.getItemsFlatList().add(gNode);
 		model.buildTreeFromFlatList();
+
+		 Encryptor.createInstance("testit&(9938447");
 	}
 
 

@@ -27,12 +27,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Description:
+ * Description:  PasswordValidator
  *
  * @author Tony Xue
  * @since Mar, 2016
  */
 
+//use it as singleton.
 public class PasswordValidator{
 
 	private Pattern pattern;

@@ -26,8 +26,6 @@ package org.mhisoft.wallet.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mhisoft.common.util.Encryptor;
-
 /**
  * Description: The model for the wallet view.
  *
@@ -41,7 +39,7 @@ public class WalletModel {
 	WalletItem currentItem;
 
 	public WalletModel() {
-		Encryptor.createInstance("testit&(9938447");
+		//Encryptor.createInstance("testit&(9938447");
 	}
 
 	public WalletItem getCurrentItem() {
@@ -82,6 +80,12 @@ public class WalletModel {
 		itemsFlatList.add(item3);
 		itemsFlatList.add(item4);
 
+		buildTreeFromFlatList();
+	}
+
+	public void setupEmptyWalletData() {
+		//root node
+		itemsFlatList.add(new WalletItem(ItemType.category, "Default Wallet"));
 		buildTreeFromFlatList();
 	}
 

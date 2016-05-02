@@ -23,6 +23,7 @@
 
 package org.mhisoft.wallet.model;
 
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -32,7 +33,12 @@ import java.io.Serializable;
  * @since Apr, 2016
  */
 public class WalletSettings implements Serializable	 {
+
 	private static final long serialVersionUID = 1L;
+	public static final String userHome =System.getProperty("user.home") + File.separator;
+	public static final String settingsFile =userHome + "WalletSettings.dat"  ;
+	public static final String defaultWalletFile = userHome + "DefaultWallet.dat";
+
 
 	//manage it in the Registry
 //	public static WalletSettings instance ;

@@ -8,7 +8,7 @@ import org.mhisoft.wallet.view.DialogUtils;
 import org.mhisoft.wallet.view.PasswordForm;
 
 /**
- * Description:
+ * Description:   action for creating the password.
  *
  * @author Tony Xue
  * @since Apr, 2016
@@ -18,25 +18,25 @@ public class CreatePasswordAction {
 	public void execute(Map<String, Object> params)   {
 		String pass = (String)params.get("pass");
 		boolean createHash = (Boolean)params.get("createHash");
-		PasswordForm form  = (PasswordForm)params.get("passwordForm");
+		PasswordForm passwordForm  = (PasswordForm)params.get("passwordForm");
 
-		if (createHash && pass != null) {
+		if (createHash) {
 			if (createPassword(pass)) {
-				form.exitPasswordForm();
+				passwordForm.exitPasswordForm();
 				DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n"
-						+ form.getUserInputPass() + ", combination:"
-						+ form.getCombinationDisplay());
+						+ passwordForm.getUserInputPass() + ", combination:"
+						+ passwordForm.getCombinationDisplay());
 
 				//proceed to load wallet
 				LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
-				loadWalletAction.execute();
+				loadWalletAction.execute(null);
 			}
 
 		}
 		else {
 			//verify the pass
 			if (verifyPassword(params)) {
-				form.exitPasswordForm();
+				passwordForm.exitPasswordForm();
 				//proceed to form
 
 

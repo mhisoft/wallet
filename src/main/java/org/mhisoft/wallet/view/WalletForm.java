@@ -237,7 +237,7 @@ public class WalletForm {
 		frame.setVisible(true);
 
 		PasswordForm passwordForm = new PasswordForm();
-		passwordForm.showPasswordForm(frame);
+		passwordForm.showPasswordForm(this);
 
 
 	}
@@ -247,6 +247,10 @@ public class WalletForm {
 		//divider location
 		splitPanel.setDividerLocation(0.2);
 		setFontSize(Float.valueOf(20));
+	}
+
+	public void exit() {
+		frame.dispose();
 	}
 
 	/**

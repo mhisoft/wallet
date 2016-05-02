@@ -81,7 +81,7 @@ public class WalletService {
 		Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
 		int readBytes = 0;
 		try {
-			Encryptor encryptor = Encryptor.createInstance("testit&(9938447");
+			//Encryptor encryptor = Encryptor.createInstance("testit&(9938447");
 
 
 			//don't read the whole file
@@ -116,7 +116,7 @@ public class WalletService {
 				readBytes = fileInputStream.read(_byteItem);
 				if(readBytes==objectSize) {
 					_byteItem = FileUtils.trimByteArray(_byteItem);
-					byte[] byteItem = encryptor.decrypt(_byteItem, algorithmParameters);
+					byte[] byteItem = Encryptor.getInstance().decrypt(_byteItem, algorithmParameters);
 					WalletItem item = serializer.deserialize(byteItem);
 					System.out.println(", item: " + item.getName());
 					ret.add(item);

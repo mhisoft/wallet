@@ -31,7 +31,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -62,15 +61,37 @@ public class PasswordForm {
 	private JLabel labelSafeCombination;
 	JDialog dialog;
 
+	WalletForm walletForm;
 
 
-	PasswordValidator passwordValidator;
-	CreatePasswordAction createPasswordAction;
+	PasswordValidator passwordValidator=ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class) ;
 
 
 	public PasswordForm() {
 		passwordValidator = new PasswordValidator();
 		init();
+	}
+
+
+	//entry point
+	public void showPasswordForm(WalletForm walletForm) {
+		this.walletForm = walletForm;
+		dialog = new JDialog(walletForm.frame, "Please enter password", true);
+		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.getContentPane().add(mainPanel);
+		dialog.setPreferredSize(new Dimension(800, 300));
+		dialog.pack();
+		dialog.setLocationRelativeTo(walletForm.frame);
+
+		SpinnerModel spinnerModel = new SpinnerNumberModel(10, 10, 99, 1);
+		SpinnerModel spinnerMode2 = new SpinnerNumberModel(10, 10, 99, 1);
+		SpinnerModel spinnerMode3 = new SpinnerNumberModel(10, 10, 99, 1);
+		spinner1.setModel(spinnerModel);
+		spinner2.setModel(spinnerMode2);
+		spinner3.setModel(spinnerMode3);
+
+
+		dialog.setVisible(true);
 	}
 
 
@@ -91,13 +112,11 @@ public class PasswordForm {
 
 	private void init() {
 
-		createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class) ;
-		createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class) ;
-
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dialog.dispose();
+				walletForm.exit();
 			}
 		});
 
@@ -106,33 +125,23 @@ public class PasswordForm {
 
 			boolean createHash = ServiceRegistry.instance.getWalletSettings().getHash() == null;
 			String pass = getUserEnterPassword(createHash);
-			Map<String, Object> params = new HashMap<String, Object>() ;
-			params.put("pass", pass)  ;
-			params.put("passwordForm", this)  ;
-			createPasswordAction.execute (params) ;
+			if (createHash && pass==null) {
+				//user password is no good, did not pass validation.
+			}
+			else {
+				Map<String, Object> params = new HashMap<String, Object>();
+				params.put("pass", pass);
+				params.put("passwordForm", this);
+				params.put("createHash", Boolean.valueOf(createHash));
+
+				CreatePasswordAction createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class) ;
+				createPasswordAction.execute(params);
+			}
 
 
 		});
 	}
 
-	public void showPasswordForm(JFrame parentFrame) {
-		dialog = new JDialog(parentFrame, "Please enter password", true);
-		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		dialog.getContentPane().add(mainPanel);
-		dialog.setPreferredSize(new Dimension(800, 300));
-		dialog.pack();
-		dialog.setLocationRelativeTo(parentFrame);
-
-		SpinnerModel spinnerModel = new SpinnerNumberModel(10, 10, 99, 1);
-		SpinnerModel spinnerMode2 = new SpinnerNumberModel(10, 10, 99, 1);
-		SpinnerModel spinnerMode3 = new SpinnerNumberModel(10, 10, 99, 1);
-		spinner1.setModel(spinnerModel);
-		spinner2.setModel(spinnerMode2);
-		spinner3.setModel(spinnerMode3);
-
-
-		dialog.setVisible(true);
-	}
 
 
 

@@ -39,7 +39,8 @@ import org.mhisoft.wallet.model.WalletSettings;
  * @since Apr, 2016
  */
 public class WalletSettingsService {
-	static final String settingsFile =System.getProperty("user.dir")+"WalletSettings.dat"  ;
+	//user.dir --> app launch dir
+
 
 	/**
 	 * Save the settings to file
@@ -48,7 +49,7 @@ public class WalletSettingsService {
 	public void saveSettingsToFile(WalletSettings settings) {
 		ObjectOutputStream outputStream = null;
 		try {
-			outputStream = new ObjectOutputStream(new FileOutputStream(settingsFile));
+			outputStream = new ObjectOutputStream(new FileOutputStream(WalletSettings.settingsFile));
 			outputStream.writeObject(settings);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -65,7 +66,7 @@ public class WalletSettingsService {
 	public WalletSettings readSettingsFromFile() {
 			ObjectInputStream stream = null;
 			try {
-				stream = new ObjectInputStream(new FileInputStream(settingsFile));
+				stream = new ObjectInputStream(new FileInputStream(WalletSettings.settingsFile));
 				WalletSettings settings = (WalletSettings) stream.readObject();
 				ServiceRegistry.instance.registerSingletonService(settings);
 				return settings;
