@@ -95,6 +95,14 @@ public class ServiceRegistry {
 		return ServiceRegistry.instance.getService(BeanType.singleton, WalletForm.class);
 	}
 
+	/**
+	 * get the singleton WalletSettingsService
+	 * @return
+	 */
+	public  WalletSettingsService getWalletSettingsService() {
+		return ServiceRegistry.instance.getService(BeanType.singleton, WalletSettingsService.class);
+	}
+
 
 	/**
 	 * get the model from the singleton WalletForm

@@ -1,7 +1,5 @@
 package org.mhisoft.wallet.service;
 
-import java.util.Map;
-
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.view.DialogUtils;
@@ -13,12 +11,13 @@ import org.mhisoft.wallet.view.PasswordForm;
  * @author Tony Xue
  * @since Apr, 2016
  */
-public class CreatePasswordAction {
+public class CreatePasswordAction implements Action {
 
-	public void execute(Map<String, Object> params)   {
-		String pass = (String)params.get("pass");
-		boolean createHash = (Boolean)params.get("createHash");
-		PasswordForm passwordForm  = (PasswordForm)params.get("passwordForm");
+	@Override
+	public void execute(Object... params)    {
+		String pass = (String)params[0];
+		boolean createHash = (Boolean)params[1];
+		PasswordForm passwordForm  = (PasswordForm)params[2];
 
 		if (createHash) {
 			if (createPassword(pass)) {
@@ -29,13 +28,13 @@ public class CreatePasswordAction {
 
 				//proceed to load wallet
 				LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
-				loadWalletAction.execute(null);
+				loadWalletAction.execute();
 			}
 
 		}
 		else {
 			//verify the pass
-			if (verifyPassword(params)) {
+			if (verifyPassword(pass )) {
 				passwordForm.exitPasswordForm();
 				//proceed to form
 
@@ -54,8 +53,7 @@ public class CreatePasswordAction {
 			String hash = HashingUtils.createHash(pass);
 			ServiceRegistry.instance.getWalletModel().setPassHash(hash);
 			ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
-			ServiceRegistry.instance.getService(BeanType.singleton, WalletSettingsService.class)
-					.saveSettingsToFile(ServiceRegistry.instance.getWalletSettings());
+
 
 		} catch (HashingUtils.CannotPerformOperationException e1) {
 			e1.printStackTrace();
@@ -74,7 +72,7 @@ public class CreatePasswordAction {
 
 	}
 
-	public boolean verifyPassword(Map<String, Object> params)   {
+	public boolean verifyPassword(String pass)   {
 		return true;
 	}
 

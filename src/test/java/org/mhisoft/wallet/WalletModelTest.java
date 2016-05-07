@@ -209,7 +209,10 @@ public class WalletModelTest {
 			model.getItemsFlatList().clear();
 			model.setupTestData();
 			String hash = HashingUtils.createHash("testPa!ss213%");
-			walletService.saveToFile("test1.dat", model, hash);
+			model.setPassHash(hash);
+			//protype model is used in test
+			ServiceRegistry.instance.getWalletForm().setModel(model);
+			walletService.saveToFile("test1.dat");
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -223,10 +226,12 @@ public class WalletModelTest {
 
 			model.getItemsFlatList().clear();
 			model.setupTestData();
+			//protype model is used in test
+			ServiceRegistry.instance.getWalletForm().setModel(model);
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
-
-			walletService.saveToFile("test2.dat", model, hash );
+			model.setPassHash(hash);
+			walletService.saveToFile("test2.dat");
 
 			FileContentVO fileContentVO = walletService.readFromFile("test2.dat");
 			model.setItemsFlatList(fileContentVO.getWalletItems());

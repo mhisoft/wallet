@@ -1,10 +1,8 @@
 package org.mhisoft.wallet.service;
 
-import java.util.Map;
 import java.io.File;
 
 import org.mhisoft.wallet.model.WalletSettings;
-import org.mhisoft.wallet.view.WalletForm;
 
 /**
  * Description: Action for loading the wallet.
@@ -12,37 +10,32 @@ import org.mhisoft.wallet.view.WalletForm;
  * @author Tony Xue
  * @since Apr, 2016
  */
-public class LoadWalletAction {
+public class LoadWalletAction implements Action {
 
 
-	public WalletForm getWalletForm() {
-		return  ServiceRegistry.instance.getService(BeanType.singleton, WalletForm.class);
-	}
-
-	public WalletService getWalletService() {
-		return  ServiceRegistry.instance.getService(BeanType.singleton, WalletService.class);
-	}
 
 
-	public void execute(Map<String, Object> params) {
+
+	@Override
+	public void execute(Object... params) {
 		String  fileName;
 		if (params==null)
 			fileName = WalletSettings.defaultWalletFile;
 		else
-			fileName = (String)params.get("filename") ;
+			fileName = (String)params[0] ;
 
 
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
-			FileContentVO vo=getWalletService().readFromFile(fileName);
-			getWalletForm().getModel().setItemsFlatList(vo.getWalletItems());
-			getWalletForm().getModel().setPassHash(vo.getPassHash());
+			FileContentVO vo= ServiceRegistry.instance.getWalletService().readFromFile(fileName);
+			ServiceRegistry.instance.getWalletModel().setItemsFlatList(vo.getWalletItems());
+			ServiceRegistry.instance.getWalletModel().setPassHash(vo.getPassHash());
 		}
 		else {
 			//create an empty tree with one root.
-			getWalletForm().getModel().setupEmptyWalletData();
+			ServiceRegistry.instance.getWalletForm().getModel().setupEmptyWalletData();
 		}
-		getWalletForm().loadTree();
+		ServiceRegistry.instance.getWalletForm().loadTree();
 
 	}
 

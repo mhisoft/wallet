@@ -27,9 +27,11 @@ public class WalletService {
 	private static int FIXED_RECORD_LENGTH =2000;
 
 
-	public void saveToFile(final String filename, final WalletModel model, final String passHash) {
+	public void saveToFile(final String filename) {
 		FileOutputStream stream = null;
 		try {
+
+			final WalletModel model = ServiceRegistry.instance.getWalletModel();
 
 			stream = new FileOutputStream(filename);
 			DataOutputStream outputStream = new DataOutputStream(stream);
@@ -37,7 +39,7 @@ public class WalletService {
 			Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
 
 			/*#1: hash*/
-			writeString(outputStream, passHash );
+			writeString( outputStream, model.getPassHash() );
 
 			/*#2: list size 4 bytes*/
 			outputStream.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));

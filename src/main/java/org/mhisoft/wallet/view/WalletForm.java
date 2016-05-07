@@ -57,6 +57,8 @@ import javax.swing.event.DocumentListener;
 import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.service.CloseWalletAction;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
@@ -120,6 +122,10 @@ public class WalletForm {
 
 	public WalletModel getModel() {
 		return model;
+	}
+
+	public void setModel(WalletModel model) {
+		this.model = model;
 	}
 
 	public WalletForm() {
@@ -238,6 +244,17 @@ public class WalletForm {
 
 		PasswordForm passwordForm = new PasswordForm();
 		passwordForm.showPasswordForm(this);
+
+
+
+		Runtime.getRuntime().addShutdownHook(new Thread()
+		{
+			@Override
+			public void run() {
+				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
+				closeWalletAction.execute();
+			}
+		});
 
 
 	}

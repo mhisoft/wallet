@@ -23,8 +23,6 @@
 
 package org.mhisoft.wallet.view;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -129,13 +127,8 @@ public class PasswordForm {
 				//user password is no good, did not pass validation.
 			}
 			else {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("pass", pass);
-				params.put("passwordForm", this);
-				params.put("createHash", Boolean.valueOf(createHash));
-
 				CreatePasswordAction createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class) ;
-				createPasswordAction.execute(params);
+				createPasswordAction.execute(pass, Boolean.valueOf(createHash), this  );
 			}
 
 
