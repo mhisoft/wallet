@@ -34,7 +34,9 @@ public class LoadWalletAction {
 
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
-			getWalletForm().getModel().setItemsFlatList(getWalletService().readFromFile(fileName));
+			FileContentVO vo=getWalletService().readFromFile(fileName);
+			getWalletForm().getModel().setItemsFlatList(vo.getWalletItems());
+			getWalletForm().getModel().setPassHash(vo.getPassHash());
 		}
 		else {
 			//create an empty tree with one root.

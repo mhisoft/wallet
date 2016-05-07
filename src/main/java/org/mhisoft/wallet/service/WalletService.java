@@ -12,6 +12,7 @@ import java.security.AlgorithmParameters;
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.Serializer;
+import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.view.DialogUtils;
@@ -26,7 +27,7 @@ public class WalletService {
 	private static int FIXED_RECORD_LENGTH =2000;
 
 
-	public void saveToFile(final String filename, WalletModel model) {
+	public void saveToFile(final String filename, final WalletModel model, final String passHash) {
 		FileOutputStream stream = null;
 		try {
 
@@ -34,7 +35,11 @@ public class WalletService {
 			DataOutputStream outputStream = new DataOutputStream(stream);
 			model.buildFlatListFromTree();
 			Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
-			/*#1: list size 4 bytes*/
+
+			/*#1: hash*/
+			writeString(outputStream, passHash );
+
+			/*#2: list size 4 bytes*/
 			outputStream.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));
 
 			int i=0;
@@ -43,15 +48,15 @@ public class WalletService {
 				byte[] _byteItem = serializer.serialize(item);
 				byte[] enc = Encryptor.getInstance().encrypt(_byteItem);
 				cipherParameters = Encryptor.getInstance().getCipherParameters();
-				/*#2: cipherParameters size 4 bytes*/
+				/*#3: cipherParameters size 4 bytes*/
 				outputStream.write(FileUtils.intToByteArray(cipherParameters.length));
 
-				/*#3: cipherParameters body*/
+				/*#4: cipherParameters body*/
 				outputStream.write(cipherParameters);
 
 				byte[] byteItem = FileUtils.padByteArray(enc, FIXED_RECORD_LENGTH);
 
-				/*#4: item body*/
+				/*#5: item body*/
 				//write the object byte stream
 				outputStream.write(byteItem);
 				i++;
@@ -72,12 +77,37 @@ public class WalletService {
 		}
 	}
 
+	protected void writeString(DataOutputStream out, String str) throws IOException  {
+		if (str==null)
+			throw new RuntimeException("input str is null");
+
+		byte[] _byte = StringUtils.getBytes(str);
+		//write size
+		out.write(FileUtils.intToByteArray(_byte.length));
+		out.write(_byte);
+
+	}
 
 
-	public List<WalletItem> readFromFile(final String filename) {
+	protected String readString(FileInputStream fileInputStream) throws IOException  {
+		int numBytes = FileUtils.readInt(fileInputStream);
+		byte[] _byte = new byte[numBytes];
+		int readBytes = fileInputStream.read(_byte);
+		if (readBytes!=numBytes)
+			throw new RuntimeException("readString() failed, " + "read " + readBytes +" bytes only, expected to read:"+ numBytes);
+
+	    return StringUtils.bytesToString(_byte);
+
+	}
+
+
+	public FileContentVO readFromFile(final String filename) {
 		//ByteArrayInputStream input = null;
 		//byte[] readBuf = new byte[DELIMITER_bytes.length];
-		List<WalletItem> ret = new ArrayList<>();
+		FileContentVO ret  = new FileContentVO();
+		List<WalletItem> walletItems = new ArrayList<>();
+		ret.setWalletItems(walletItems);
+
 		Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
 		int readBytes = 0;
 		try {
@@ -88,8 +118,11 @@ public class WalletService {
 			//byte[] bytesWholeFile = FileUtils.readFile(filename);
 			FileInputStream fileInputStream = new FileInputStream( new File(filename));
 
+			/*#1*/
+			ret.setPassHash(readString(fileInputStream));
 
-			/*//read the size,  int, 4 bytes*/
+
+			/*#2 read the size,  int, 4 bytes*/
 			int numberOfItems = FileUtils.readInt(fileInputStream);
 			System.out.println();
 			System.out.println("numberOfItems=" + numberOfItems);
@@ -98,10 +131,10 @@ public class WalletService {
 			int k = 0;
 			while (k < numberOfItems) {
 
-                /*#2: ciperParameters size 4 bytes*/
+                /*#3: ciperParameters size 4 bytes*/
 				int cipherParametersLength  = FileUtils.readInt(fileInputStream);
 
-			    /*#3: cipherParameters body*/
+			    /*#4: cipherParameters body*/
 				byte[] _byteCiper = new byte[cipherParametersLength];
 				readBytes = fileInputStream.read(_byteCiper);
 				if (readBytes!=cipherParametersLength)
@@ -110,7 +143,7 @@ public class WalletService {
 				AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance(Encryptor.ALGORITHM);
 				algorithmParameters.init(_byteCiper);
 
-				/*#4: item body*/
+				/*#5: item body*/
 				int objectSize =FIXED_RECORD_LENGTH;
 				byte[] _byteItem = new byte[FIXED_RECORD_LENGTH];
 				readBytes = fileInputStream.read(_byteItem);
@@ -119,7 +152,7 @@ public class WalletService {
 					byte[] byteItem = Encryptor.getInstance().decrypt(_byteItem, algorithmParameters);
 					WalletItem item = serializer.deserialize(byteItem);
 					System.out.println(", item: " + item.getName());
-					ret.add(item);
+					walletItems.add(item);
 					k++;
 				}
 				else {

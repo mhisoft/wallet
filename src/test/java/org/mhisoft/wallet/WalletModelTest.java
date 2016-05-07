@@ -28,10 +28,12 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.service.FileContentVO;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.WalletService;
 
@@ -203,23 +205,36 @@ public class WalletModelTest {
 
 	@Test
 	public void testSaveFile() {
-		model.getItemsFlatList().clear();
-		model.setupTestData();
-
-		walletService.saveToFile("test1.dat", model);
+		try {
+			model.getItemsFlatList().clear();
+			model.setupTestData();
+			String hash = HashingUtils.createHash("testPa!ss213%");
+			walletService.saveToFile("test1.dat", model, hash);
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Test
 	public void testReadFile() {
-		File f = new File("test2.dat");
-		f.delete();
+		try {
+			File f = new File("test2.dat");
+			f.delete();
 
-		model.getItemsFlatList().clear();
-		model.setupTestData();
-		walletService.saveToFile("test2.dat", model);
+			model.getItemsFlatList().clear();
+			model.setupTestData();
 
-		model.setItemsFlatList(walletService.readFromFile("test2.dat"));
-		Assert.assertEquals(7, model.getItemsFlatList().size());
+			String hash = HashingUtils.createHash("testPa!ss213%");
+
+			walletService.saveToFile("test2.dat", model, hash );
+
+			FileContentVO fileContentVO = walletService.readFromFile("test2.dat");
+			model.setItemsFlatList(fileContentVO.getWalletItems());
+			Assert.assertEquals(7, model.getItemsFlatList().size());
+			Assert.assertEquals(hash, fileContentVO.getPassHash());
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
+		}
 
 
 	}

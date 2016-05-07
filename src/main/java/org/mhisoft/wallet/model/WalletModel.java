@@ -37,6 +37,7 @@ public class WalletModel {
 
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
+	String passHash;
 
 	public WalletModel() {
 		//Encryptor.createInstance("testit&(9938447");
@@ -56,6 +57,14 @@ public class WalletModel {
 
 	public void setItemsFlatList(List<WalletItem> itemsFlatList) {
 		this.itemsFlatList = itemsFlatList;
+	}
+
+	public String getPassHash() {
+		return passHash;
+	}
+
+	public void setPassHash(String passHash) {
+		this.passHash = passHash;
 	}
 
 	public void setupTestData() {

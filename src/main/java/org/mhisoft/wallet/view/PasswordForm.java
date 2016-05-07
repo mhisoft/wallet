@@ -123,7 +123,7 @@ public class PasswordForm {
 
 		btnOk.addActionListener(e -> {
 
-			boolean createHash = ServiceRegistry.instance.getWalletSettings().getHash() == null;
+			boolean createHash = ServiceRegistry.instance.getWalletModel().getPassHash() == null;
 			String pass = getUserEnterPassword(createHash);
 			if (createHash && pass==null) {
 				//user password is no good, did not pass validation.

@@ -52,7 +52,7 @@ public class CreatePasswordAction {
 	protected void createHash(String pass) {
 		try {
 			String hash = HashingUtils.createHash(pass);
-			ServiceRegistry.instance.getWalletSettings().setHash(hash);
+			ServiceRegistry.instance.getWalletModel().setPassHash(hash);
 			ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
 			ServiceRegistry.instance.getService(BeanType.singleton, WalletSettingsService.class)
 					.saveSettingsToFile(ServiceRegistry.instance.getWalletSettings());

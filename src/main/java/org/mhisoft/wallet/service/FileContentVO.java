@@ -21,50 +21,36 @@
  *
  */
 
-package org.mhisoft.wallet.model;
+package org.mhisoft.wallet.service;
 
-import java.io.File;
-import java.io.Serializable;
+import java.util.List;
+
+import org.mhisoft.wallet.model.WalletItem;
 
 /**
  * Description:
  *
  * @author Tony Xue
- * @since Apr, 2016
+ * @since May, 2016
  */
-public class WalletSettings implements Serializable	 {
+public class FileContentVO {
 
-	private static final long serialVersionUID = 1L;
-	public static final String userHome =System.getProperty("user.home") + File.separator;
-	public static final String settingsFile =userHome + "WalletSettings.dat"  ;
-	public static final String defaultWalletFile = userHome + "DefaultWallet.dat";
+	private String passHash;
+	private  List<WalletItem> walletItems;
 
-
-	//manage it in the Registry
-//	public static WalletSettings instance ;
-//
-//	public static WalletSettings getInstance() {
-//		return instance;
-//	}
-
-
-	private transient String passPlain;
-	private int fontSize;
-
-
-	public int getFontSize() {
-		return fontSize;
+	public String getPassHash() {
+		return passHash;
 	}
 
-	public void setFontSize(int fontSize) {
-		this.fontSize = fontSize;
+	public void setPassHash(String passHash) {
+		this.passHash = passHash;
 	}
 
-	public String getPassPlain() {
-		return passPlain;
+	public List<WalletItem> getWalletItems() {
+		return walletItems;
 	}
 
-	public void setPassPlain(String passPlain) {
-		this.passPlain = passPlain;
+	public void setWalletItems(List<WalletItem> walletItems) {
+		this.walletItems = walletItems;
 	}
 }
