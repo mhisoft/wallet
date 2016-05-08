@@ -38,6 +38,7 @@ public class WalletModel {
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
 	String passHash;
+	boolean modified =false;
 
 	public WalletModel() {
 		//Encryptor.createInstance("testit&(9938447");
@@ -65,6 +66,14 @@ public class WalletModel {
 
 	public void setPassHash(String passHash) {
 		this.passHash = passHash;
+	}
+
+	public boolean isModified() {
+		return modified;
+	}
+
+	public void setModified(boolean modified) {
+		this.modified = modified;
 	}
 
 	public void setupTestData() {
@@ -95,6 +104,11 @@ public class WalletModel {
 	public void setupEmptyWalletData() {
 		//root node
 		itemsFlatList.add(new WalletItem(ItemType.category, "Default Wallet"));
+		itemsFlatList.add(new WalletItem(ItemType.category, "Category 1"));
+		itemsFlatList.add(new WalletItem(ItemType.item, "Item 1"));
+		setModified(true);
+
+
 		buildTreeFromFlatList();
 	}
 
@@ -185,11 +199,13 @@ public class WalletModel {
 
 			parentItem.addChild(newItem);
 		}
+		setModified(true);
 	}
 
 	public void  removeItem(final WalletItem item) {
 		item.getParent().removeChild(item);
 		itemsFlatList.remove(item);
+		setModified(true);
 	}
 
 

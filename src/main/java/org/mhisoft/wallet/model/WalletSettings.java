@@ -26,6 +26,8 @@ package org.mhisoft.wallet.model;
 import java.io.File;
 import java.io.Serializable;
 
+import org.mhisoft.wallet.service.ServiceRegistry;
+
 /**
  * Description:
  *
@@ -43,9 +45,9 @@ public class WalletSettings implements Serializable	 {
 	//manage it in the Registry
 //	public static WalletSettings instance ;
 //
-//	public static WalletSettings getInstance() {
-//		return instance;
-//	}
+	public static WalletSettings getInstance() {
+		return ServiceRegistry.instance.getWalletSettings();
+	}
 
 
 	private transient String passPlain;
@@ -53,7 +55,7 @@ public class WalletSettings implements Serializable	 {
 
 
 	public int getFontSize() {
-		return fontSize;
+		return fontSize==0?20:fontSize;
 	}
 
 	public void setFontSize(int fontSize) {
@@ -66,5 +68,13 @@ public class WalletSettings implements Serializable	 {
 
 	public void setPassPlain(String passPlain) {
 		this.passPlain = passPlain;
+	}
+
+	@Override
+	public String toString() {
+		return "WalletSettings{" +
+				"passPlain='" + passPlain + '\'' +
+				", fontSize=" + fontSize +
+				'}';
 	}
 }

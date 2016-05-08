@@ -36,23 +36,24 @@ public class CloseWalletAction implements Action {
 
 
 	@Override
-	public void execute(Object... params) {
+	public ActionResult execute(Object... params) {
 
 		String  fileName;
-		if (params==null)
+		if (params==null || params.length==0)
 			fileName = WalletSettings.defaultWalletFile;
 		else
 			fileName = (String)params[0];
 
 
 		//save the wallet
-		if (ServiceRegistry.instance.getWalletModel().getPassHash()!=null) {
+		if (ServiceRegistry.instance.getWalletModel().isModified()) {
 			ServiceRegistry.instance.getWalletService().saveToFile(fileName);
 		}
 
 		//save the settings
 		ServiceRegistry.instance.getWalletSettingsService().saveSettingsToFile(ServiceRegistry.instance.getWalletSettings());
 
+		return new ActionResult(true);
 
 
 	}

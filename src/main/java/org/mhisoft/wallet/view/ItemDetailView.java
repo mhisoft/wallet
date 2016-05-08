@@ -137,6 +137,7 @@ public class ItemDetailView {
 				for (Map.Entry<String, JTextComponent> entry : fields.entrySet()) {
 					ReflectionUtil.setFieldValue( model.getCurrentItem(), entry.getKey(), entry.getValue().getText()  );
 				}
+				model.setModified(true);
 			} catch (NoSuchFieldException e) {
 				e.printStackTrace();
 				DialogUtils.getInstance().error("Error occured", e.getMessage());

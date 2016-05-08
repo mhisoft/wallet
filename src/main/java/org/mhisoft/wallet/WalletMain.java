@@ -5,7 +5,7 @@ import java.io.File;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.FileContentVO;
+import org.mhisoft.wallet.service.FileContentHeader;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.WalletSettingsService;
 import org.mhisoft.wallet.view.WalletForm;
@@ -20,15 +20,15 @@ public class WalletMain {
 
 
 	public static void main(String[] args) {
+
+		WalletMain app = new WalletMain();
 		//read the settings if exists
 		WalletSettingsService walletSettingsService = ServiceRegistry.instance.getService(
 				BeanType.singleton, WalletSettingsService.class);
 		walletSettingsService.readSettingsFromFile();
 
-
-
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
-
+		app.openWalletFile(null);
 		form.init();
 	}
 
@@ -42,10 +42,8 @@ public class WalletMain {
 		WalletModel model = ServiceRegistry.instance.getWalletForm().getModel();
 
 		if (new File(fileName).isFile()) {
-			//read tree from the existing file
-			FileContentVO vo=ServiceRegistry.instance.getWalletService().readFromFile(fileName);
-			model.setItemsFlatList(vo.getWalletItems());
-			model.setPassHash(vo.getPassHash());
+			FileContentHeader header=ServiceRegistry.instance.getWalletService().readHeader(fileName);
+			model.setPassHash(header.getPassHash());
 		}
 		else {
 			//create an empty tree with one root.

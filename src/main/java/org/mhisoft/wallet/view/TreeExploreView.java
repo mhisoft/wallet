@@ -58,6 +58,7 @@ public class TreeExploreView {
 
 	/**
 	 * load all the items recursively into the tree
+	 * hierarchical relationships from the flat list need to be built first.
 	 */
 
 	public void buildTree(DefaultMutableTreeNode parentNode) {
@@ -80,7 +81,8 @@ public class TreeExploreView {
 	}
 
 	/**
-	 * Set up the explore tree base on flat list in the model.
+	 * Set up the explorer tree base on flat list in the model.
+	 * buildTreeFromFlatList will be called.
 	 */
 	public void setupTreeView() {
 
@@ -90,6 +92,8 @@ public class TreeExploreView {
 		DefaultTreeModel treeModel = null;
 
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+		model.buildTreeFromFlatList();
 
 		//set up root node
 		WalletItem rootItem=model.getItemsFlatList().get(0);

@@ -102,11 +102,46 @@ public class WalletService {
 
 	}
 
+	/**
+	 * Read the file header info and close it.
+	 * @param filename
+	 * @return
+	 */
+	public  FileContentHeader readHeader(final String filename)  {
+		FileInputStream fileInputStream =null;
+		FileContentHeader header = new FileContentHeader();
+		try {
 
-	public FileContentVO readFromFile(final String filename) {
+			//don't read the whole file
+			//byte[] bytesWholeFile = FileUtils.readFile(filename);
+			fileInputStream = new FileInputStream(new File(filename));
+
+			/*#1*/
+			header.setPassHash(readString(fileInputStream));
+
+
+			/*#2 read the size,  int, 4 bytes*/
+			header.setNumberOfItems(FileUtils.readInt(fileInputStream));
+		}catch (IOException e) {
+			throw new RuntimeException("failed to read file header", e);
+		} finally {
+			if (fileInputStream!=null)
+				try {
+					fileInputStream.close();
+				} catch (IOException e) {
+					//
+				}
+		}
+		return header;
+
+	}
+
+
+	//   need Encryptor to be intialized first.
+	public FileContent readFromFile(final String filename) {
 		//ByteArrayInputStream input = null;
 		//byte[] readBuf = new byte[DELIMITER_bytes.length];
-		FileContentVO ret  = new FileContentVO();
+		FileContent ret  = new FileContent();
 		List<WalletItem> walletItems = new ArrayList<>();
 		ret.setWalletItems(walletItems);
 
@@ -167,7 +202,7 @@ public class WalletService {
 			e.printStackTrace();
 			DialogUtils.getInstance().error("Error occurred in readFromFile()", e.getMessage());
 		}
-
+		ServiceRegistry.instance.getWalletModel().setModified(false);
 		return ret;
 
 

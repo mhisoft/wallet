@@ -57,6 +57,7 @@ import javax.swing.event.DocumentListener;
 import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.CloseWalletAction;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -246,7 +247,6 @@ public class WalletForm {
 		passwordForm.showPasswordForm(this);
 
 
-
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
 			@Override
@@ -259,11 +259,10 @@ public class WalletForm {
 
 	}
 
-	//todo load from config
 	void loadInPreferences() {
 		//divider location
 		splitPanel.setDividerLocation(0.2);
-		setFontSize(Float.valueOf(20));
+		setFontSize(WalletSettings.getInstance().getFontSize());
 	}
 
 	public void exit() {
@@ -293,7 +292,7 @@ public class WalletForm {
 	 */
 	public void setupFontSpinner() {
 
-		int fontSize = tree.getFont().getSize();
+		int fontSize = WalletSettings.getInstance().getFontSize();
 
 		SpinnerModel spinnerModel = new SpinnerNumberModel(fontSize, //initial value
 				10, //min
@@ -304,7 +303,7 @@ public class WalletForm {
 										  @Override
 										  public void stateChanged(ChangeEvent e) {
 											  SpinnerModel spinnerModel = fldFontSize.getModel();
-											  Float newFontSize = Float.valueOf((Integer) spinnerModel.getValue());
+											  int newFontSize = (Integer)spinnerModel.getValue();
 											  setFontSize(newFontSize);
 
 										  }
@@ -314,11 +313,13 @@ public class WalletForm {
 
 	}
 
-	void setFontSize(Float newFontSize) {
+	void setFontSize(int newFontSize) {
+		WalletSettings.getInstance().setFontSize(newFontSize);
 		for (Component component : componetsList) {
 			Font original = component.getFont();
-			Font newFont = original.deriveFont(newFontSize);
+			Font newFont = original.deriveFont(Float.valueOf(newFontSize));
 			component.setFont(newFont);
+
 		}
 	}
 

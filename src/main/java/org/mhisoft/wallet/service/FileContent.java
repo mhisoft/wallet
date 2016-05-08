@@ -23,12 +23,34 @@
 
 package org.mhisoft.wallet.service;
 
+import java.util.List;
+
+import org.mhisoft.wallet.model.WalletItem;
+
 /**
  * Description:
  *
  * @author Tony Xue
  * @since May, 2016
  */
-public interface Action {
-	public ActionResult execute(Object... params);
+public class FileContent {
+
+	private String passHash;
+	private  List<WalletItem> walletItems;
+
+	public String getPassHash() {
+		return passHash;
+	}
+
+	public void setPassHash(String passHash) {
+		this.passHash = passHash;
+	}
+
+	public List<WalletItem> getWalletItems() {
+		return walletItems;
+	}
+
+	public void setWalletItems(List<WalletItem> walletItems) {
+		this.walletItems = walletItems;
+	}
 }

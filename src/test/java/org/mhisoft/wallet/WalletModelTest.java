@@ -33,7 +33,7 @@ import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.FileContentVO;
+import org.mhisoft.wallet.service.FileContent;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.WalletService;
 
@@ -233,10 +233,10 @@ public class WalletModelTest {
 			model.setPassHash(hash);
 			walletService.saveToFile("test2.dat");
 
-			FileContentVO fileContentVO = walletService.readFromFile("test2.dat");
-			model.setItemsFlatList(fileContentVO.getWalletItems());
+			FileContent fileContent = walletService.readFromFile("test2.dat");
+			model.setItemsFlatList(fileContent.getWalletItems());
 			Assert.assertEquals(7, model.getItemsFlatList().size());
-			Assert.assertEquals(hash, fileContentVO.getPassHash());
+			Assert.assertEquals(hash, fileContent.getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}

@@ -23,9 +23,10 @@
 
 package org.mhisoft.wallet.service;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import org.mhisoft.wallet.model.WalletItem;
+import java.util.Map;
+import java.io.Serializable;
 
 /**
  * Description:
@@ -33,24 +34,44 @@ import org.mhisoft.wallet.model.WalletItem;
  * @author Tony Xue
  * @since May, 2016
  */
-public class FileContentVO {
+public class ActionResult implements Serializable {
 
-	private String passHash;
-	private  List<WalletItem> walletItems;
+	boolean success;
+	List<ActionError> errors;
+	Map<String, Object> resultlMap;
 
-	public String getPassHash() {
-		return passHash;
+	public ActionResult(boolean success) {
+		this.success = success;
 	}
 
-	public void setPassHash(String passHash) {
-		this.passHash = passHash;
+	public void addError(int code, String errorMsg) {
+		if (errors==null)
+			errors = new ArrayList<>();
+		ActionError error = new ActionError(code, errorMsg);
+		errors.add(error);
 	}
 
-	public List<WalletItem> getWalletItems() {
-		return walletItems;
+	public boolean isSuccess() {
+		return success;
 	}
 
-	public void setWalletItems(List<WalletItem> walletItems) {
-		this.walletItems = walletItems;
+	public void setSuccess(boolean success) {
+		this.success = success;
+	}
+
+	public List<ActionError> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<ActionError> errors) {
+		this.errors = errors;
+	}
+
+	public Map<String, Object> getResultlMap() {
+		return resultlMap;
+	}
+
+	public void setResultlMap(Map<String, Object> resultlMap) {
+		this.resultlMap = resultlMap;
 	}
 }

@@ -14,36 +14,24 @@ import org.mhisoft.wallet.view.PasswordForm;
 public class CreatePasswordAction implements Action {
 
 	@Override
-	public void execute(Object... params)    {
-		String pass = (String)params[0];
-		boolean createHash = (Boolean)params[1];
-		PasswordForm passwordForm  = (PasswordForm)params[2];
+	public ActionResult execute(Object... params) {
+		String pass = (String) params[0];
+		PasswordForm passwordForm = (PasswordForm) params[1];
 
-		if (createHash) {
-			if (createPassword(pass)) {
-				passwordForm.exitPasswordForm();
-				DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n"
-						+ passwordForm.getUserInputPass() + ", combination:"
-						+ passwordForm.getCombinationDisplay());
+		if (createPassword(pass)) {
+			passwordForm.exitPasswordForm();
+			DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n"
+					+ passwordForm.getUserInputPass() + ", combination:"
+					+ passwordForm.getCombinationDisplay());
 
-				//proceed to load wallet
-				LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
-				loadWalletAction.execute();
-			}
-
+			//proceed to load wallet
+			LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
+			loadWalletAction.execute(pass);
 		}
-		else {
-			//verify the pass
-			if (verifyPassword(pass )) {
-				passwordForm.exitPasswordForm();
-				//proceed to form
 
 
-			}
-			else {
-				DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
-			}
-		}
+
+		return new ActionResult(true);
 
 	}
 
@@ -62,22 +50,14 @@ public class CreatePasswordAction implements Action {
 	}
 
 
-	public boolean createPassword(String pass)   {
+	public boolean createPassword(String pass) {
 		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
 		createHash(pass);
-		Encryptor.createInstance(pass);  ;
+		Encryptor.createInstance(pass);
 		return true;
 
 
-
 	}
-
-	public boolean verifyPassword(String pass)   {
-		return true;
-	}
-
-
-
 
 
 }

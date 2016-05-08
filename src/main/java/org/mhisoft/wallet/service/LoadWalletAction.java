@@ -2,6 +2,7 @@ package org.mhisoft.wallet.service;
 
 import java.io.File;
 
+import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.wallet.model.WalletSettings;
 
 /**
@@ -12,30 +13,33 @@ import org.mhisoft.wallet.model.WalletSettings;
  */
 public class LoadWalletAction implements Action {
 
-
-
-
-
 	@Override
-	public void execute(Object... params) {
+	public ActionResult execute(Object... params) {
+		String pass = (String)params[0] ;
+
 		String  fileName;
-		if (params==null)
+		if (params.length==1)
 			fileName = WalletSettings.defaultWalletFile;
 		else
-			fileName = (String)params[0] ;
+			fileName = (String)params[1] ;
+
+
+		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
+		Encryptor.createInstance(pass);
 
 
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
-			FileContentVO vo= ServiceRegistry.instance.getWalletService().readFromFile(fileName);
+			FileContent vo= ServiceRegistry.instance.getWalletService().readFromFile(fileName);
 			ServiceRegistry.instance.getWalletModel().setItemsFlatList(vo.getWalletItems());
 			ServiceRegistry.instance.getWalletModel().setPassHash(vo.getPassHash());
 		}
 		else {
-			//create an empty tree with one root.
-			ServiceRegistry.instance.getWalletForm().getModel().setupEmptyWalletData();
+			//new file, needs to be saved on close.
+			ServiceRegistry.instance.getWalletModel().setModified(true);
 		}
 		ServiceRegistry.instance.getWalletForm().loadTree();
+		return new ActionResult(true);
 
 	}
 

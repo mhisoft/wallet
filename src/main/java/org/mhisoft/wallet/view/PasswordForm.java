@@ -37,9 +37,12 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import org.mhisoft.wallet.model.PasswordValidator;
+import org.mhisoft.wallet.service.ActionResult;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.CreatePasswordAction;
+import org.mhisoft.wallet.service.LoadWalletAction;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.service.VerifyPasswordAction;
 
 /**
  * Description:
@@ -62,7 +65,7 @@ public class PasswordForm {
 	WalletForm walletForm;
 
 
-	PasswordValidator passwordValidator=ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class) ;
+	PasswordValidator passwordValidator = ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class);
 
 
 	public PasswordForm() {
@@ -93,8 +96,8 @@ public class PasswordForm {
 	}
 
 
-	public void exitPasswordForm()  {
-		dialog.dispose();;
+	public void exitPasswordForm() {
+		dialog.dispose();
 	}
 
 
@@ -122,13 +125,27 @@ public class PasswordForm {
 		btnOk.addActionListener(e -> {
 
 			boolean createHash = ServiceRegistry.instance.getWalletModel().getPassHash() == null;
-			String pass = getUserEnterPassword(createHash);
-			if (createHash && pass==null) {
-				//user password is no good, did not pass validation.
-			}
-			else {
-				CreatePasswordAction createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class) ;
-				createPasswordAction.execute(pass, Boolean.valueOf(createHash), this  );
+			String pass = getUserEnterPassword();
+
+			if (pass == null) {
+				//user input is not good. try again.
+			} else {
+				if (createHash) {
+					//user password is no good, did not pass validation.
+					CreatePasswordAction createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class);
+					createPasswordAction.execute(pass, this);
+				} else {
+					VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
+					ActionResult result = verifyPasswordAction.execute(pass);
+					if (result.isSuccess()) {
+						//clsoe the password form
+						exitPasswordForm();
+
+						//load the wallet
+						LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
+						loadWalletAction.execute(pass);
+					}
+				}
 			}
 
 
@@ -136,33 +153,23 @@ public class PasswordForm {
 	}
 
 
+	private String getUserEnterPassword() {
 
-
-	private String getUserEnterPassword(boolean create) {
-		if (create) {
-			if (!passwordValidator.validate(fldPassword.getText())) {
-				DialogUtils.getInstance().info("Please use a password following the above rules.");
-				return null;
-			}
-			if (spinner1.getValue() == spinner2.getValue() && spinner2.getValue() == spinner3.getValue()) {
-				DialogUtils.getInstance().info("Cant' use the same nubmers for the combinations.");
-				return null;
-			}
-			//
-			return spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString();
-		} else {
-			//verify with existing pass todo
-			String userInput = spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString();
-
+		if (!passwordValidator.validate(fldPassword.getText())) {
+			DialogUtils.getInstance().info("Please use a password following the above rules.");
+			return null;
 		}
+		if (spinner1.getValue() == spinner2.getValue() && spinner2.getValue() == spinner3.getValue()) {
+			DialogUtils.getInstance().info("Cant' use the same nubmers for the combinations.");
+			return null;
+		}
+		//
 
-		return null;
+
+		return spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString();
 
 
 	}
-
-
-
 
 
 }

@@ -29,6 +29,31 @@ package org.mhisoft.wallet.service;
  * @author Tony Xue
  * @since May, 2016
  */
-public interface Action {
-	public ActionResult execute(Object... params);
+public class FileContentHeader {
+	private String passHash;
+	private int  numberOfItems;
+
+	public FileContentHeader() {
+	}
+
+	public FileContentHeader(String passHash, int numberOfItems) {
+		this.passHash = passHash;
+		this.numberOfItems = numberOfItems;
+	}
+
+	public String getPassHash() {
+		return passHash;
+	}
+
+	public void setPassHash(String passHash) {
+		this.passHash = passHash;
+	}
+
+	public int getNumberOfItems() {
+		return numberOfItems;
+	}
+
+	public void setNumberOfItems(int numberOfItems) {
+		this.numberOfItems = numberOfItems;
+	}
 }

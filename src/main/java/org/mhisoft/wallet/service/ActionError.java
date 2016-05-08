@@ -23,12 +23,20 @@
 
 package org.mhisoft.wallet.service;
 
+import java.io.Serializable;
+
 /**
  * Description:
  *
  * @author Tony Xue
  * @since May, 2016
  */
-public interface Action {
-	public ActionResult execute(Object... params);
+public class ActionError implements Serializable {
+	int code;
+	String error;
+
+	public ActionError(int code, String error) {
+		this.code = code;
+		this.error = error;
+	}
 }
