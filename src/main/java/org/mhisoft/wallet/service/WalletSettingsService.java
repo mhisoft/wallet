@@ -49,7 +49,6 @@ public class WalletSettingsService {
 	public void saveSettingsToFile(WalletSettings settings) {
 		ObjectOutputStream outputStream = null;
 		try {
-			System.out.println("svae settings:" + settings.toString());
 			outputStream = new ObjectOutputStream(new FileOutputStream(WalletSettings.settingsFile));
 			outputStream.writeObject(settings);
 		} catch (IOException e) {
@@ -71,8 +70,6 @@ public class WalletSettingsService {
 				stream = new ObjectInputStream(new FileInputStream(WalletSettings.settingsFile));
 				WalletSettings settings = (WalletSettings) stream.readObject();
 				ServiceRegistry.instance.registerSingletonService(settings);
-
-				System.out.println("read settings:" + settings.toString());
 
 				return settings;
 			} catch (FileNotFoundException e) {

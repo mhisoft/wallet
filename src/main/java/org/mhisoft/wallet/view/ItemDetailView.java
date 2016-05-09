@@ -76,11 +76,15 @@ public class ItemDetailView {
 			form.btnEditForm.setVisible(false);
 			form.btnCancelEdit.setVisible(true);
 			form.btnSaveForm.setVisible(true);
+			form.btnClose.setVisible(false);
+			form.menuClose.setVisible(false);
 		}
 		else if (displayMode==DisplayMode.view) {
 			form.btnEditForm.setVisible(true);
 			form.btnCancelEdit.setVisible(false);
 			form.btnSaveForm.setVisible(false);
+			form.btnClose.setVisible(true);
+			form.menuClose.setVisible(true);
 		}
 
 

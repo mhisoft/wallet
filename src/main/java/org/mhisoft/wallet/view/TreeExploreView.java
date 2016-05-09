@@ -228,9 +228,13 @@ public class TreeExploreView {
 		//Make sure the user can see the lovely new node.
 		tree.scrollPathToVisible(new TreePath(newChildNode.getPath()));
 
+		form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.edit);
+
 		if (WalletModel.debug) {
 			form.fldNotes.setText(model.dumpFlatList());
 		}
+
+
 
 
 	}

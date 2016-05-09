@@ -58,6 +58,7 @@ import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
+import org.mhisoft.wallet.service.ActionResult;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.CloseWalletAction;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -96,6 +97,7 @@ public class WalletForm {
 	JButton btnEditForm;
 	JButton btnSaveForm;
 	JButton btnCancelEdit;
+	JButton btnClose;
 
 	JLabel labelName;
 	JLabel labelURL;
@@ -104,6 +106,7 @@ public class WalletForm {
 	JLabel labelPassword;
 	JLabel labelAccount;
 	JLabel labelFontSize;
+
 
 
 	JMenuBar menuBar;
@@ -158,6 +161,8 @@ public class WalletForm {
 				itemDetailView.saveAction();
 			}
 		});
+
+
 		btnTogglePasswordView.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -182,6 +187,7 @@ public class WalletForm {
 				treeExploreView.removeItem();
 			}
 		});
+
 	}
 
 	public void resetHidePassword() {
@@ -197,27 +203,32 @@ public class WalletForm {
 	}
 
 
+	public boolean hasUnsavedData() {
+		return itemDetailView.currentMode!=DisplayMode.view;
+	}
+
+	public JFrame getFrame() {
+		return frame;
+	}
+
 	public void init() {
 		frame = new JFrame("Wallet 1.0");
 		frame.setContentPane(mainPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(1200, 800));
+
+//removes the title bar with X button.
+//		frame.setUndecorated(true);
+//		frame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+
+		frame.setDefaultCloseOperation(frame.DO_NOTHING_ON_CLOSE);
+
 		frame.pack();
 
-		 DialogUtils.create(frame);
+		DialogUtils.create(frame);
 
+		setupMenu();
 
-		//menu
-		//Create the menu bar.
-		menuBar = new JMenuBar();
-		menuFile = new JMenu("File");
-		menuFile.setMnemonic(KeyEvent.VK_F);
-		menuBar.add(menuFile);
-		menuOpen = new JMenuItem("Open", KeyEvent.VK_O);
-		menuFile.add(menuOpen);
-		menuClose = new JMenuItem("Close", KeyEvent.VK_C);
-		menuFile.add(menuClose);
-		frame.setJMenuBar(menuBar);
 
 
 		componetsList = getAllComponents(frame);
@@ -247,14 +258,56 @@ public class WalletForm {
 		passwordForm.showPasswordForm(this);
 
 
-		Runtime.getRuntime().addShutdownHook(new Thread()
-		{
+		//remove the X buttons
+		//frame.setUndecorated(true);
+
+
+
+
+
+//		Runtime.getRuntime().addShutdownHook(new Thread()
+//		{
+//			@Override
+//			public void run() {
+//				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
+//				closeWalletAction.execute();
+//			}
+//		});
+
+
+	}
+
+
+
+
+
+	protected void setupMenu() {
+
+		ActionListener closeAction = new ActionListener() {
 			@Override
-			public void run() {
+			public void actionPerformed(ActionEvent e) {
 				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
-				closeWalletAction.execute();
+				ActionResult r = closeWalletAction.execute();
+				if (r.isSuccess())
+					exit();
+
 			}
-		});
+		};
+
+		//menu
+		//Create the menu bar.
+		menuBar = new JMenuBar();
+		menuFile = new JMenu("File");
+		menuFile.setMnemonic(KeyEvent.VK_F);
+		menuBar.add(menuFile);
+		menuOpen = new JMenuItem("Open", KeyEvent.VK_O);
+		menuFile.add(menuOpen);
+		menuClose = new JMenuItem("Close", KeyEvent.VK_C);
+		menuFile.add(menuClose);
+		frame.setJMenuBar(menuBar);
+		menuClose.addActionListener(closeAction);
+
+		btnClose.addActionListener(closeAction);
 
 
 	}
@@ -331,6 +384,11 @@ public class WalletForm {
 
 	public void displayWalletItemDetails(final WalletItem item) {
 		itemDetailView.displayWalletItemDetails(item, DisplayMode.view);
+	}
+
+
+	public void displayWalletItemDetails(final WalletItem item, final DisplayMode mode) {
+		itemDetailView.displayWalletItemDetails(item, mode);
 	}
 
 

@@ -62,7 +62,6 @@ public class WalletService {
 				//write the object byte stream
 				outputStream.write(byteItem);
 				i++;
-				System.out.println("write " + item.getName()+", size:" + byteItem.length);
 			}
 
 		} catch ( IOException e) {
@@ -161,8 +160,6 @@ public class WalletService {
 
 			/*#2 read the size,  int, 4 bytes*/
 			int numberOfItems = FileUtils.readInt(fileInputStream);
-			System.out.println();
-			System.out.println("numberOfItems=" + numberOfItems);
 
 
 			int k = 0;
@@ -188,7 +185,6 @@ public class WalletService {
 					_byteItem = FileUtils.trimByteArray(_byteItem);
 					byte[] byteItem = Encryptor.getInstance().decrypt(_byteItem, algorithmParameters);
 					WalletItem item = serializer.deserialize(byteItem);
-					System.out.println(", item: " + item.getName());
 					walletItems.add(item);
 					k++;
 				}

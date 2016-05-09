@@ -236,6 +236,12 @@
                                       <text value="Cancel"/>
                                     </properties>
                                   </component>
+                                  <component id="7429f" class="javax.swing.JButton" binding="btnClose">
+                                    <constraints/>
+                                    <properties>
+                                      <text value="Close"/>
+                                    </properties>
+                                  </component>
                                 </children>
                               </grid>
                             </children>

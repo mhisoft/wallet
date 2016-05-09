@@ -24,6 +24,8 @@
 package org.mhisoft.wallet.service;
 
 import org.mhisoft.wallet.model.WalletSettings;
+import org.mhisoft.wallet.view.Confirmation;
+import org.mhisoft.wallet.view.DialogUtils;
 
 /**
  * Description: Action for closing the wallet
@@ -37,6 +39,13 @@ public class CloseWalletAction implements Action {
 
 	@Override
 	public ActionResult execute(Object... params) {
+
+		if (ServiceRegistry.instance.getWalletForm().hasUnsavedData()) {
+			if (DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+					, "There are unsaved data and will be lost if you choose to continue to close. Confirm to close?")!= Confirmation.YES ) {
+				return new ActionResult(false);
+			}
+		}
 
 		String  fileName;
 		if (params==null || params.length==0)

@@ -37,6 +37,7 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import org.mhisoft.wallet.model.PasswordValidator;
+import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.ActionResult;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.CreatePasswordAction;
@@ -154,6 +155,10 @@ public class PasswordForm {
 
 
 	private String getUserEnterPassword() {
+
+		if(WalletModel.debug) {
+			return  "12Abc12334&5AB1310";
+		}
 
 		if (!passwordValidator.validate(fldPassword.getText())) {
 			DialogUtils.getInstance().info("Please use a password following the above rules.");
