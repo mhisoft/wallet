@@ -35,15 +35,11 @@ import org.mhisoft.wallet.model.WalletItem;
  */
 public class FileContent {
 
-	private String passHash;
+	private FileContentHeader header;
 	private  List<WalletItem> walletItems;
 
-	public String getPassHash() {
-		return passHash;
-	}
-
-	public void setPassHash(String passHash) {
-		this.passHash = passHash;
+	public FileContent() {
+		header = new FileContentHeader();
 	}
 
 	public List<WalletItem> getWalletItems() {
@@ -52,5 +48,13 @@ public class FileContent {
 
 	public void setWalletItems(List<WalletItem> walletItems) {
 		this.walletItems = walletItems;
+	}
+
+	public FileContentHeader getHeader() {
+		return header;
+	}
+
+	public void setHeader(FileContentHeader header) {
+		this.header = header;
 	}
 }

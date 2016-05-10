@@ -29,49 +29,24 @@ package org.mhisoft.wallet.service;
  * @author Tony Xue
  * @since May, 2016
  */
-public class FileContentHeader {
-	private int version;
-	private int itemSize;
-	private String passHash;
-	private int  numberOfItems;
+public class DataServiceFactory {
 
-	public FileContentHeader() {
+	public static DataService createDataService(int version) {
+
+		if (version==10)
+			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv10.class);
+		else if (version==11)
+			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv11.class);
+
+		throw new RuntimeException("version " + version + " not supported.");
+
 	}
 
-	public FileContentHeader(String passHash, int numberOfItems) {
-		this.passHash = passHash;
-		this.numberOfItems = numberOfItems;
-	}
-
-	public String getPassHash() {
-		return passHash;
-	}
-
-	public void setPassHash(String passHash) {
-		this.passHash = passHash;
-	}
-
-	public int getNumberOfItems() {
-		return numberOfItems;
-	}
-
-	public void setNumberOfItems(int numberOfItems) {
-		this.numberOfItems = numberOfItems;
-	}
-
-	public int getVersion() {
-		return version;
-	}
-
-	public void setVersion(int version) {
-		this.version = version;
-	}
-
-	public int getItemSize() {
-		return itemSize;
-	}
-
-	public void setItemSize(int itemSize) {
-		this.itemSize = itemSize;
+	/**
+	 * Create a latest version of the data service.
+	 * @return
+	 */
+	public static DataService createDataService() {
+		return createDataService(11);
 	}
 }

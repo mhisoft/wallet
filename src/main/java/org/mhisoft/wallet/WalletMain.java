@@ -42,7 +42,7 @@ public class WalletMain {
 		WalletModel model = ServiceRegistry.instance.getWalletForm().getModel();
 
 		if (new File(fileName).isFile()) {
-			FileContentHeader header=ServiceRegistry.instance.getWalletService().readHeader(fileName);
+			FileContentHeader header=ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 			model.setPassHash(header.getPassHash());
 		}
 		else {

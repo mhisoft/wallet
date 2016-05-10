@@ -23,55 +23,21 @@
 
 package org.mhisoft.wallet.service;
 
+import java.io.IOException;
+
+import org.mhisoft.wallet.model.WalletModel;
+
 /**
  * Description:
  *
  * @author Tony Xue
  * @since May, 2016
  */
-public class FileContentHeader {
-	private int version;
-	private int itemSize;
-	private String passHash;
-	private int  numberOfItems;
+public interface DataService {
 
-	public FileContentHeader() {
-	}
+	public  FileContentHeader readHeader(final String filename, boolean closeAfterRead)  throws IOException;
 
-	public FileContentHeader(String passHash, int numberOfItems) {
-		this.passHash = passHash;
-		this.numberOfItems = numberOfItems;
-	}
+	public FileContent readFromFile(final String filename) ;
 
-	public String getPassHash() {
-		return passHash;
-	}
-
-	public void setPassHash(String passHash) {
-		this.passHash = passHash;
-	}
-
-	public int getNumberOfItems() {
-		return numberOfItems;
-	}
-
-	public void setNumberOfItems(int numberOfItems) {
-		this.numberOfItems = numberOfItems;
-	}
-
-	public int getVersion() {
-		return version;
-	}
-
-	public void setVersion(int version) {
-		this.version = version;
-	}
-
-	public int getItemSize() {
-		return itemSize;
-	}
-
-	public void setItemSize(int itemSize) {
-		this.itemSize = itemSize;
-	}
+	public void saveToFile(final String filename, final WalletModel model);
 }

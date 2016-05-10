@@ -23,19 +23,12 @@
 
 package org.mhisoft.wallet;
 
-import java.io.File;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mhisoft.common.util.Encryptor;
-import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.FileContent;
-import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.service.WalletService;
 
 import junit.framework.Assert;
 
@@ -55,7 +48,6 @@ public class WalletModelTest {
 	WalletItem dNode;
 
 
-	WalletService walletService;
 
 	@Before
 	public  void setup() {
@@ -70,9 +62,6 @@ public class WalletModelTest {
 		 */
 
 		model = new WalletModel();
-		walletService = ServiceRegistry.instance.getService(BeanType.singleton, WalletService.class)  ;
-
-
 
 		//root node
 		root = new WalletItem(ItemType.category, "root");
@@ -202,47 +191,6 @@ public class WalletModelTest {
 		Assert.assertEquals(model.getItemsFlatList().get(8).getName(), "h");
 	}
 
-
-	@Test
-	public void testSaveFile() {
-		try {
-			model.getItemsFlatList().clear();
-			model.setupTestData();
-			String hash = HashingUtils.createHash("testPa!ss213%");
-			model.setPassHash(hash);
-			//protype model is used in test
-			ServiceRegistry.instance.getWalletForm().setModel(model);
-			walletService.saveToFile("test1.dat");
-		} catch (HashingUtils.CannotPerformOperationException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Test
-	public void testReadFile() {
-		try {
-			File f = new File("test2.dat");
-			f.delete();
-
-			model.getItemsFlatList().clear();
-			model.setupTestData();
-			//protype model is used in test
-			ServiceRegistry.instance.getWalletForm().setModel(model);
-
-			String hash = HashingUtils.createHash("testPa!ss213%");
-			model.setPassHash(hash);
-			walletService.saveToFile("test2.dat");
-
-			FileContent fileContent = walletService.readFromFile("test2.dat");
-			model.setItemsFlatList(fileContent.getWalletItems());
-			Assert.assertEquals(7, model.getItemsFlatList().size());
-			Assert.assertEquals(hash, fileContent.getPassHash());
-		} catch (HashingUtils.CannotPerformOperationException e) {
-			e.printStackTrace();
-		}
-
-
-	}
 
 
 }

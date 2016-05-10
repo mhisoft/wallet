@@ -30,9 +30,9 @@ public class LoadWalletAction implements Action {
 
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
-			FileContent vo= ServiceRegistry.instance.getWalletService().readFromFile(fileName);
-			ServiceRegistry.instance.getWalletModel().setItemsFlatList(vo.getWalletItems());
-			ServiceRegistry.instance.getWalletModel().setPassHash(vo.getPassHash());
+			FileContent fileContent= ServiceRegistry.instance.getWalletService().readFromFile(fileName);
+			ServiceRegistry.instance.getWalletModel().setItemsFlatList(fileContent.getWalletItems());
+			ServiceRegistry.instance.getWalletModel().setPassHash(fileContent.getHeader().getPassHash());
 		}
 		else {
 			//new file, needs to be saved on close.
