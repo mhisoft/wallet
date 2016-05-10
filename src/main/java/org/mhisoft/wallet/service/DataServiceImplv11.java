@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.security.AlgorithmParameters;
 
 import org.mhisoft.common.util.Encryptor;
@@ -67,7 +68,18 @@ public class DataServiceImplv11 extends AbstractDataService {
 			// no version in this file.
 			//old version
 			version =10;
+			FileChannel fc = fileIN.getChannel();
+			fc.position(0);// set the file pointer to byte position 0;
 		}
+
+		if (version<0 || version>50) {
+			//wrong integer
+			version =10;
+			FileChannel fc = fileIN.getChannel();
+			fc.position(0);// set the file pointer to byte position 0;
+
+		}
+
 
 		header.setVersion(version);
 		header.setPassHash(readString(fileIN));
