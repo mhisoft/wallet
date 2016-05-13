@@ -46,6 +46,7 @@ public class WalletModelTest {
 	WalletItem gNode;
 	WalletItem cNode;
 	WalletItem dNode;
+	WalletItem hNode;
 
 
 
@@ -77,6 +78,11 @@ public class WalletModelTest {
 		model.getItemsFlatList().add(fNode);
 		gNode = new WalletItem(ItemType.item, "g");
 		model.getItemsFlatList().add(gNode);
+
+		hNode = new WalletItem(ItemType.category, "h-empty parent node");
+		model.getItemsFlatList().add(hNode);
+
+
 		model.buildTreeFromFlatList();
 
 		 Encryptor.createInstance("testit&(9938447");
@@ -99,9 +105,13 @@ public class WalletModelTest {
 		WalletItem fChild1 = new WalletItem(ItemType.item, "f-child-1");
 		model.addItem( gNode.getParent(), fChild1);
 
-		Assert.assertEquals(4, root.getChildren().size());
+		WalletItem hChild = new WalletItem(ItemType.item, "hChild");
+		model.addItem( hNode, hChild);
+
+		Assert.assertEquals(5, root.getChildren().size());
 		Assert.assertEquals(3, dNode.getParent().getChildren().size());
 		Assert.assertEquals(2, gNode.getParent().getChildren().size());
+		Assert.assertEquals(1, hNode.getChildren().size());
 
 
 		//veriry the flat list
@@ -129,7 +139,7 @@ public class WalletModelTest {
 
 
 		WalletItem root =model.getItemsFlatList().get(0);
-		Assert.assertEquals(3, root.getChildren().size());
+		Assert.assertEquals(4, root.getChildren().size());
 		WalletItem cNode = model.getNodeByGUID(model.getItemsFlatList().get(2).getSysGUID());
 		Assert.assertEquals(2, cNode.getChildren().size());
 		Assert.assertEquals(cNode.getParent(), root);
@@ -188,7 +198,7 @@ public class WalletModelTest {
 
 		Assert.assertEquals(model.getItemsFlatList().get(6).getName(), "f");
 		Assert.assertEquals(model.getItemsFlatList().get(7).getName(), "g");
-		Assert.assertEquals(model.getItemsFlatList().get(8).getName(), "h");
+		Assert.assertEquals(model.getItemsFlatList().get(8).getName(), "h-empty parent node");
 	}
 
 

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2014- MHISoft LLC and/or its affiliates. All rights reserved.
+  ~  * Licensed to MHISoft LLC under one or more contributor
+  ~  * license agreements. See the NOTICE file distributed with
+  ~  * this work for additional information regarding copyright
+  ~  * ownership. MHISoft LLC licenses this file to you under
+  ~  * the Apache License, Version 2.0 (the "License"); you may
+  ~  * not use this file except in compliance with the License.
+  ~  * You may obtain a copy of the License at
+  ~  *
+  ~  *    http://www.apache.org/licenses/LICENSE-2.0
+  ~  *
+  ~  * Unless required by applicable law or agreed to in writing,
+  ~  * software distributed under the License is distributed on an
+  ~  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  * KIND, either express or implied.  See the License for the
+  ~  * specific language governing permissions and limitations
+  ~  * under the License.
+  ~  */
+  ~
+  -->
+
+<project name="eWallet build" default="dist" >
+
+    <property environment="env"/>
+    <property name="version" value="1.0"/>
+    <property name="AppVersion" value="MHISoft eWallet ${version}"/>
+    <property name="src.dir" value="src"/>
+
+
+    <!--<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>-->
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement path="../dist/lib/ant-contrib-1.0b3.jar" />
+        </classpath>
+    </taskdef>
+
+    <!-- set the operating system test properties -->
+    <condition property="isMac">
+        <os family="mac" />
+    </condition>
+
+    <condition property="isWindows">
+        <os family="windows" />
+    </condition>
+
+    <condition property="isUnix">
+        <os family="unix" />
+    </condition>
+
+
+    <macrodef name="maven">
+        <attribute name="argline"/>
+        <attribute name="dir"/>
+        <sequential>
+            <echo message="******************************************************************************************  @{dir} @{argline}"/>
+            <echo message="MAVEN_HOME=${env.MAVEN_HOME}"/>
+            <exec executable="${env.MAVEN_HOME}/bin/mvn.cmd" osfamily="windows" dir="@{dir}" failonerror="true">
+                <arg line="@{argline} -T 1C -P dev -Ddev=true -ff"/>
+            </exec>
+            <!--<exec executable="/Users/i831964/bin/maven/bin/mvn" dir="@{dir}" failonerror="true">-->
+            <exec executable="${env.MAVEN_HOME}/bin/mvn" osfamily="mac" dir="@{dir}" failonerror="true">
+                <arg line="@{argline} -o -T 1C -P dev -Ddev=true -ff"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <target name="dist" description="package and distribute">
+
+        <maven dir=".." argline="package -DskipTests=true"/>
+
+        <!--copy the jar to the dist folder -->
+        <copy file="target/ewallet-${version}.jar" todir="dist" overwrite="true"/>
+        <copy file="../common-utils/target/common-utils-${version}.jar" todir="dist\lib" overwrite="true"/>
+
+        <if>
+            <equals arg1="${isWindows}" arg2="true"/>
+            <then>
+                <!--<antcall target="package-app"/>-->
+            </then>
+
+
+        </if>
+
+        <!--<antcall target="bundle-mac-app"/>-->
+
+    </target>
+
+
+    <target name="update-version">
+        <echo message="Updating version to ${version}"/>
+
+        <property name="version.match" value="String\s*version\s*=\s*&quot;(.*)&quot;;" />
+        <property name="version.replace" value="String version = &quot;${version}&quot;;" />
+
+        <replaceregexp encoding="UTF-8" flags="g" match="${version.match}" replace="${version.replace}">
+            <fileset dir="${src.dir}/main/java/org/mhisoft/wallet">
+                <include name="WalletMain.java" />
+            </fileset>
+        </replaceregexp>
+
+
+    </target>
+
+
+
+    <target name="bundle-mac-app">
+
+        <delete file="dist/${AppVersion}.app"/>
+
+        <property name="sourceJar" value="rdpro-ui.jar"/>
+        <property name="launch4jFinalJar" value="rdpro-ui-combined.jar"/>
+        <property name="AppMainClass" value="org.mhisoft.rdpro.ui.ReproMainForm"/>
+        <antcall target="_make-one-jar"/>
+        <bundleapp outputdirectory="./dist"
+                   name="${AppVersion}"
+                   displayname="RdPro UI"
+                   identifier="org.mhisoft.rdpro.ui.ReproMainForm"
+                   mainclassname="org.mhisoft.rdpro.ui.ReproMainForm">
+            <classpath file="${launch4j.dir}/rdpro-ui-combined.jar" />
+        </bundleapp>
+    </target>
+
+
+    <!-- =======================================
+        launch 4j package the exe
+    ======================================= -->
+
+    <property name="application.title" value="RdPro"/>
+    <property name="launch4j.dir" value="dist/tmp_make_exe"/>
+    <property name="launch4jexe.dir" location="s:\bin\Launch4j" />
+
+    <if>
+        <equals arg1="${isWindows}" arg2="true"/>
+        <then>
+            <taskdef name="launch4j"
+                     classname="net.sf.launch4j.ant.Launch4jTask"
+                     classpath="${launch4jexe.dir}/launch4j.jar:${launch4jexe.dir}/lib/xstream.jar" />
+
+        </then>
+
+    </if>
+
+
+    <!--https://java.net/downloads/appbundler/appbundler.html-->
+    <taskdef name="bundleapp"
+             classname="com.oracle.appbundler.AppBundlerTask"
+             classpath="../dist/lib/appbundler-1.0.jar" />
+
+
+
+    <target name="package-app">
+        <property name="sourceJar" value="rdpro-ui.jar"/>
+        <property name="launch4jFinalJar" value="rdpro-ui-combined.jar"/>
+        <property name="AppMainClass" value="org.mhisoft.rdpro.ui.ReproMainForm"/>
+
+        <antcall target="_make-one-jar"/>
+
+        <launch4j configFile="launch4j/rdpro-ui-launch4j-config.xml"  />
+        <!--clean up-->
+        <!--<delete dir="${launch4j.dir}" failonerror="false"/>-->
+
+    </target>
+
+
+    <target name="_make-one-jar" description="make the Win Exe Bundle" >
+        <property name="launch4j.jar" value="${launch4j.dir}/${launch4jFinalJar}"/>
+
+
+
+        <echo message="  --> Packaging ${application.title} into a single JAR at ${launch4j.jar}"/>
+        <delete dir="${launch4j.dir}" failonerror="false"/>
+        <mkdir dir="${launch4j.dir}"/>
+
+        <!--make the temp_final.jar-->
+
+        <if>
+            <equals arg1="${sourceJar}" arg2="rdpro-ui.jar"/>
+            <then>
+                <jar destfile="${launch4j.dir}/temp_final.jar" filesetmanifest="skip">
+                    <zipgroupfileset dir="dist" includes="${sourceJar}"/>
+                    <zipgroupfileset dir="dist/lib" includes="*.jar"/>
+                    <manifest>
+                        <attribute name="Main-Class" value="${AppMainClass}"/>
+                    </manifest>
+                </jar>
+            </then>
+            <else>
+                <echo message="  -->use source jar: ${sourceJar}"/>
+                <jar destfile="${launch4j.dir}/temp_final.jar" filesetmanifest="skip">
+                    <zipgroupfileset dir="dist" includes="${sourceJar}"/>
+                    <manifest>
+                        <attribute name="Main-Class" value="${AppMainClass}"/>
+                    </manifest>
+                </jar>
+            </else>
+        </if>
+
+
+        <!--make the combined jar-->
+        <echo message="  --> make the ${launch4j.jar}}"/>
+        <zip destfile="${launch4j.jar}">
+            <zipfileset src="${launch4j.dir}/temp_final.jar"
+                        excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA, META-INF/maven/*, META-INF/jb/*"/>
+        </zip>
+
+    </target>
+
+
+</project>

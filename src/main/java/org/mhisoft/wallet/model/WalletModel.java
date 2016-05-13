@@ -169,6 +169,23 @@ public class WalletModel {
 	}
 
 
+	protected int getItemIndex(WalletItem item) {
+		int index = -1;
+		for (int i = 0; i < itemsFlatList.size(); i++) {
+			if (itemsFlatList.get(i).equals(item)) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index==-1) {
+			throw new RuntimeException("something is wrong, can't find index for the item in the flat list:" + item);
+		}
+
+		return index;
+	}
+
+
 	public void addItem(final WalletItem parentItem, final WalletItem newItem) {
 		if ( isRoot(parentItem) ) {
 			if (newItem.getType()!= ItemType.category)
@@ -179,24 +196,27 @@ public class WalletModel {
 		}
 		else {
 
-			//find the last child of the parentItem in the flat list and insert after that
-			WalletItem lastChildren = parentItem.getChildren().get(parentItem.getChildren().size() - 1);
-
-
-			int index = -1;
-			for (int i = 0; i < itemsFlatList.size(); i++) {
-				if (itemsFlatList.get(i).equals(lastChildren)) {
-					index = i;
-					break;
-				}
+			int index;
+			if (parentItem.getChildren()==null)  {
+				//this parent category is empty, add after it
+				 index = getItemIndex(parentItem);
 			}
+			else {
+				//find the last child of the parentItem in the flat list and insert after that
+				WalletItem lastChildren = parentItem.getChildren().get(parentItem.getChildren().size() - 1);
+				index = getItemIndex(lastChildren);
+
+			}
+
+
 
 			if (index == itemsFlatList.size() - 1)
 				//last one, just append
 				itemsFlatList.add(newItem);
 			else
-				itemsFlatList.add(index+1, newItem);
+				itemsFlatList.add(index + 1, newItem);
 
+			//add to tree structure
 			parentItem.addChild(newItem);
 		}
 		setModified(true);

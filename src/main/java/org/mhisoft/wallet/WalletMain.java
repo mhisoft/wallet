@@ -17,6 +17,8 @@ import org.mhisoft.wallet.view.WalletForm;
  * @since Apr, 2016
  */
 public class WalletMain {
+	public static final String version = "v1.2.2 ";
+	public static final String build = "";
 
 
 	public static void main(String[] args) {

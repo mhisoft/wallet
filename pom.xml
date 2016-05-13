@@ -4,35 +4,151 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mhisoft.java.apps</groupId>
-    <artifactId>wallet</artifactId>
+    <artifactId>ewallet</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <name>wallet</name>
+    <name>ewallet</name>
     <description>Wallet</description>
 
-
-    <repositories>
-
-        <repository>
-            <id>public-central</id>
-            <url>http://repo1.maven.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-
-    </repositories>
+    <parent>
+        <groupId>org.mhisoft.java.apps.common</groupId>
+        <artifactId>common-parent</artifactId>
+        <version>1.0</version>
+        <relativePath>../parent-pom/pom.xml</relativePath>
+    </parent>
 
 
     <dependencies>
 
         <dependency>
-            <groupId>org.mhisoft</groupId>
+            <groupId>org.mhisoft.java.apps</groupId>
             <artifactId>common-utils</artifactId>
             <version>1.0</version>
         </dependency>
 
 
     </dependencies>
+
+
+    <profiles>
+        <profile>
+            <id>rdproui</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <manifest-file>src/main/resources/META-INF/MANIFEST.MF</manifest-file>
+            </properties>
+
+            <dependencies>
+                <dependency>
+                    <groupId>com.intellij</groupId>
+                    <artifactId>forms_rt</artifactId>
+                    <version>14.0</version>
+                </dependency>
+
+                <!-- <dependency>
+                     <groupId>jgoodies</groupId>
+                     <artifactId>forms</artifactId>
+                     <version>1.0.5</version>
+                 </dependency>-->
+
+
+            </dependencies>
+
+
+            <build>
+                <!--<finalName>ewallet</finalName>-->
+
+                <!--resource plug in will out put the below to the target/classes-->
+                <resources>
+                    <!--
+                    <resource>
+                        <filtering>false</filtering>
+                        <directory>${project.basedir}</directory>
+                        <includes>
+                            <include>lib/forms_rt.jar</include>
+                        </includes>
+                    </resource>
+                    -->
+                    <resource>
+                        <filtering>false</filtering>
+                        <directory>${project.basedir}/src/main/resources</directory>
+                        <includes>
+                            <include>images/*.png</include>
+                        </includes>
+                    </resource>
+                </resources>
+
+
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>ideauidesigner-maven-plugin</artifactId>
+                        <version>1.0-beta-2</version>
+                        <executions>
+                            <execution>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>javac2</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+                            <fork>true</fork>
+                            <debug>true</debug>
+                            <failOnError>true</failOnError>
+                            <verbose>true</verbose>
+                        </configuration>
+
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.jdom</groupId>
+                                <artifactId>jdom</artifactId>
+                                <version>1.1</version>
+                            </dependency>
+
+                            <dependency>
+                                <groupId>com.intellij</groupId>
+                                <artifactId>asm-all</artifactId>
+                                <version>14.0</version>
+                            </dependency>
+                        </dependencies>
+
+                    </plugin>
+
+                    <plugin>
+                        <!-- Build an executable JAR -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <!--<outputDirectory>dist\</outputDirectory>-->
+                            <archive>
+                                <manifestFile>${manifest-file}</manifestFile>
+                            </archive>
+                            <!--intelliJ build create these three under classes-->
+                            <includes>
+
+                            </includes>
+                            <excludes>
+                                <exclude>META-INF\MANIFEST.MF*</exclude>
+                                <exclude>images.jar</exclude>
+                                <exclude>forms_rt-*.jar</exclude>
+                                <exclude>maven-archiver/**/*</exclude>
+                                <exclude>maven-archiver/**/*</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+
+            </build>
+        </profile>
+
+    </profiles>
 
 </project>
