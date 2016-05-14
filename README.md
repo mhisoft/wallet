@@ -1,4 +1,4 @@
-MHISoft eWallet
+#MHISoft eWallet - Password Manager and Secure Storage
 
 A ultimate secure wallet for storing the your app, site login passwords and  personal information …etc. 
 I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source.
@@ -11,7 +11,8 @@ I just don't trust any online or third party vault for storing my personal infor
 * Password is stored in the most secured Hash format. In theory the password can't be reverse engineeered from this hash , not under the current human technology. Salted hashing with the  PBKDF2WithHmacSHA512 algorithm is used.   mroe tech details see  https://crackstation.net/hashing-security.htm for more information.
 
 
-* I have always been worried about the data is secretly transmitted across the network without my knowledge while using other applications that connects to the network.  Usually such app allows the data to be shared in the cloud so that it can be access in  multiple devices.  If there are malware or virus, it may steal the personal data. SO YOU SHOULD NOT TRUST ANY VAULT APPLICATION WITH NETWORK ACTIVITIES INVOLVED. DEFINITLY DON'T STORE YOUR DATA ON THE INTERNET. EVEN IN THE ENCRYPTED FORM.  In contrast, the MHISoft eWallet does not use any network activity of any sort. It does not open network port (TCP ports) or use http.  It can be verified by examine the source code or  by using a network sniffer or monitor utility for example. 
+* No netrowk connection required. 
+ I have always been worried about the data is secretly transmitted across the network without my knowledge while using other applications that connects to the network.  Usually such app allows the data to be shared in the cloud so that it can be access in  multiple devices.  If there are malware or virus, it may steal the personal data. SO YOU SHOULD NOT TRUST ANY VAULT APPLICATION WITH NETWORK ACTIVITIES INVOLVED. DEFINITLY DON'T STORE YOUR DATA ON THE INTERNET. EVEN IN THE ENCRYPTED FORM.  In contrast, the MHISoft eWallet does not use any network activity of any sort. It does not open network port (TCP ports) or use http.  It can be verified by examine the source code or  by using a network sniffer or monitor utility for example. 
  
 
 * Then how to share the data in multiple devices? I'll build the import and merge wallet feature so new entries made on another device can be merged into the current device. It can be across the OS Plaform.  
