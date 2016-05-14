@@ -38,12 +38,12 @@ import javax.swing.SpinnerNumberModel;
 
 import org.mhisoft.wallet.model.PasswordValidator;
 import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.ActionResult;
+import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.CreatePasswordAction;
-import org.mhisoft.wallet.service.LoadWalletAction;
+import org.mhisoft.wallet.action.CreatePasswordAction;
+import org.mhisoft.wallet.action.LoadWalletAction;
 import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.service.VerifyPasswordAction;
+import org.mhisoft.wallet.action.VerifyPasswordAction;
 
 /**
  * Description:

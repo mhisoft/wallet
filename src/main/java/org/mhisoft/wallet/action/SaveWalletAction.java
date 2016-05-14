@@ -21,7 +21,7 @@
  *
  */
 
-package org.mhisoft.wallet.service;
+package org.mhisoft.wallet.action;
 
 import java.awt.Dimension;
 
@@ -29,6 +29,7 @@ import javax.swing.JSplitPane;
 
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
+import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.Confirmation;
 import org.mhisoft.wallet.view.DialogUtils;
 

@@ -21,25 +21,36 @@
  *
  */
 
-package org.mhisoft.wallet.service;
+package org.mhisoft.wallet.action;
+
+import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.DialogUtils;
 
 /**
- * Description: Action for closing the wallet
+ * Description:   action for verifying  the password.
  *
  * @author Tony Xue
  * @since Apr, 2016
  */
-public class CloseWalletAction implements Action {
-
+public class VerifyPasswordAction implements Action {
 
 	@Override
-	public ActionResult execute(Object... params) {
+	public ActionResult execute(Object... params)    {
+		String pass = (String)params[0];
+		try {
+			boolean verify = HashingUtils.verifyPassword(pass, ServiceRegistry.instance.getWalletModel().getPassHash() );
+			if (!verify) {
+				DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
+				return new ActionResult(false);
+			}
+			return new ActionResult(true);
 
-		//save file
-		SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, SaveWalletAction.class);
-		return saveWalletAction.execute();
-
-
+		} catch (HashingUtils.CannotPerformOperationException | HashingUtils.InvalidHashException e) {
+			e.printStackTrace();
+			return new ActionResult(false);
+		}
 	}
+
 
 }

@@ -59,10 +59,10 @@ import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
-import org.mhisoft.wallet.service.ActionResult;
+import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.CloseWalletAction;
-import org.mhisoft.wallet.service.SaveWalletAction;
+import org.mhisoft.wallet.action.CloseWalletAction;
+import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**

@@ -21,7 +21,7 @@
  *
  */
 
-package org.mhisoft.wallet.service;
+package org.mhisoft.wallet.action;
 
 import java.io.Serializable;
 
