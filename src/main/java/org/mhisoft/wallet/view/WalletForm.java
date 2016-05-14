@@ -55,6 +55,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.mhisoft.common.util.ReflectionUtil;
+import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
@@ -212,7 +213,7 @@ public class WalletForm {
 	}
 
 	public void init() {
-		frame = new JFrame("Wallet 1.0");
+		frame = new JFrame("MHISoft eWallet " + WalletMain.version);
 		frame.setContentPane(mainPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setPreferredSize(new Dimension(1200, 800));

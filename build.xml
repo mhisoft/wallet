@@ -68,27 +68,33 @@
         </sequential>
     </macrodef>
 
+
+
     <target name="dist" description="package and distribute">
 
-        <maven dir=".." argline="package -DskipTests=true"/>
+
+        <delete file="dist/ewallet-${version}.exe"/>
+        <delete file="dist/ewallet-${version}.jar"/>
+
+
+        <maven dir=".." argline="clean package -DskipTests=true"/>
 
         <!--copy the jar to the dist folder -->
-        <copy file="target/ewallet-${version}.jar" todir="dist" overwrite="true"/>
+        <copy file="target/ewallet-${version}.jar" todir="dist" overwrite="true" failonerror="true"/>
         <copy file="../common-utils/target/common-utils-${version}.jar" todir="dist\lib" overwrite="true"/>
 
         <if>
             <equals arg1="${isWindows}" arg2="true"/>
             <then>
-                <!--<antcall target="package-app"/>-->
+                <antcall target="package-app"/>
             </then>
 
 
         </if>
 
-        <!--<antcall target="bundle-mac-app"/>-->
+        <antcall target="bundle-mac-app"/>
 
     </target>
-
 
     <target name="update-version">
         <echo message="Updating version to ${version}"/>
@@ -111,16 +117,16 @@
 
         <delete file="dist/${AppVersion}.app"/>
 
-        <property name="sourceJar" value="rdpro-ui.jar"/>
-        <property name="launch4jFinalJar" value="rdpro-ui-combined.jar"/>
+        <property name="sourceJar" value="ewallet-${version}.jar"/>
+        <property name="launch4jFinalJar" value="ewallet-combined.jar"/>
         <property name="AppMainClass" value="org.mhisoft.rdpro.ui.ReproMainForm"/>
         <antcall target="_make-one-jar"/>
         <bundleapp outputdirectory="./dist"
                    name="${AppVersion}"
-                   displayname="RdPro UI"
-                   identifier="org.mhisoft.rdpro.ui.ReproMainForm"
-                   mainclassname="org.mhisoft.rdpro.ui.ReproMainForm">
-            <classpath file="${launch4j.dir}/rdpro-ui-combined.jar" />
+                   displayname="${AppVersion}"
+                   identifier="org.mhisoft.wallet.WalletMain"
+                   mainclassname="org.mhisoft.wallet.WalletMain">
+            <classpath file="${launch4j.dir}/ewallet-combined.jar" />
         </bundleapp>
     </target>
 
@@ -153,13 +159,14 @@
 
 
     <target name="package-app">
-        <property name="sourceJar" value="rdpro-ui.jar"/>
-        <property name="launch4jFinalJar" value="rdpro-ui-combined.jar"/>
-        <property name="AppMainClass" value="org.mhisoft.rdpro.ui.ReproMainForm"/>
+
+        <property name="sourceJar" value="ewallet-${version}.jar"/>
+        <property name="launch4jFinalJar" value="ewallet-combined.jar"/>
+        <property name="AppMainClass" value="org.mhisoft.wallet.WalletMain"/>
 
         <antcall target="_make-one-jar"/>
 
-        <launch4j configFile="launch4j/rdpro-ui-launch4j-config.xml"  />
+        <launch4j configFile="dist/ewallet-launch4j-config.xml"  />
         <!--clean up-->
         <!--<delete dir="${launch4j.dir}" failonerror="false"/>-->
 
@@ -178,7 +185,7 @@
         <!--make the temp_final.jar-->
 
         <if>
-            <equals arg1="${sourceJar}" arg2="rdpro-ui.jar"/>
+            <equals arg1="${sourceJar}" arg2="ewallet-${version}.jar"/>
             <then>
                 <jar destfile="${launch4j.dir}/temp_final.jar" filesetmanifest="skip">
                     <zipgroupfileset dir="dist" includes="${sourceJar}"/>
@@ -207,6 +214,10 @@
                         excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA, META-INF/maven/*, META-INF/jb/*"/>
         </zip>
 
+    </target>
+
+    <target name="_test">
+        <copy file="target/ewallet-${version}.jar" todir="dist" overwrite="true" failonerror="true"/>
     </target>
 
 
