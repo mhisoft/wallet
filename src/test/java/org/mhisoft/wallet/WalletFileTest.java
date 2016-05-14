@@ -115,9 +115,9 @@ public class WalletFileTest {
 	}
 
 	@Test
-	public void testReadFilev11() {
+	public void testReadFilev12() {
 		try {
-			File f = new File("test_v11.dat");
+			File f = new File("test_v12.dat");
 			f.delete();
 
 			model.getItemsFlatList().clear();
@@ -130,8 +130,8 @@ public class WalletFileTest {
 			Encryptor.createInstance("testPa!ss213%");
 
 
-			walletService.saveToFile("test_v11.dat", model);
-			FileContent fileContent = walletService.readFromFile("test_v11.dat");
+			walletService.saveToFile("test_v12.dat", model);
+			FileContent fileContent = walletService.readFromFile("test_v12.dat");
 
 			model.setItemsFlatList(fileContent.getWalletItems());
 			Assert.assertEquals(7, model.getItemsFlatList().size());
@@ -173,6 +173,29 @@ public class WalletFileTest {
 
 	}
 
+	@Test
+	public void testReadFilev11() {
+		try {
+			Encryptor.createInstance("12Abc12334&5AB1310");
+
+			DataService dataServicev11 = DataServiceFactory.createDataService(11);
+			FileContent fileContent = dataServicev11.readFromFile("test_DefaultWallet_v11.dat");
+			model.setItemsFlatList(fileContent.getWalletItems());
+
+
+			DataService dataServicev12 = DataServiceFactory.createDataService(12);
+			//save
+			String hash = HashingUtils.createHash("testPa!ss213%");
+			model.setPassHash(hash);
+			dataServicev12.saveToFile("test_DefaultWallet_v12.dat", model);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
 
 	//read from v10 format and write to v11 format.
 	@Test
@@ -180,7 +203,7 @@ public class WalletFileTest {
 		try {
 			File f = new File("test_v10.dat");
 			f.delete();
-			f = new File("test_v11.dat");
+			f = new File("test_v12.dat");
 			f.delete();
 
 			model.getItemsFlatList().clear();
@@ -192,7 +215,9 @@ public class WalletFileTest {
 			Encryptor.createInstance("testPa!ss213%");
 			model.setPassHash(hash);
 			DataService dataServicev10 = DataServiceFactory.createDataService(10);
-			DataService dataServicev11 = DataServiceFactory.createDataService(11);
+
+			//latest
+			DataService dsLatest = DataServiceFactory.createDataService();
 
 
 			dataServicev10.saveToFile("test_v10.dat", model);
@@ -200,10 +225,10 @@ public class WalletFileTest {
 
 			//now save to v11 format
 			model.setItemsFlatList(fileContent.getWalletItems());
-			dataServicev11.saveToFile("test_v11.dat", model);
+			dsLatest.saveToFile("test_v12.dat", model);
 
 			//verify by reding it
-			fileContent = dataServicev11.readFromFile("test_v11.dat");
+			fileContent = dsLatest.readFromFile("test_v12.dat");
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 			model.setItemsFlatList(fileContent.getWalletItems());

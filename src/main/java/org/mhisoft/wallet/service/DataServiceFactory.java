@@ -33,10 +33,10 @@ public class DataServiceFactory {
 
 	public static DataService createDataService(int version) {
 
-		if (version==10)
+		if (version==10 || version==11)
 			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv10.class);
-		else if (version==11)
-			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv11.class);
+		else if (version==12)
+			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv12.class);
 
 		throw new RuntimeException("version " + version + " not supported.");
 
@@ -47,6 +47,6 @@ public class DataServiceFactory {
 	 * @return
 	 */
 	public static DataService createDataService() {
-		return createDataService(11);
+		return createDataService(DataServiceImplv12.DATA_VERSION);
 	}
 }

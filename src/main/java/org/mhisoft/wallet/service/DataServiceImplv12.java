@@ -47,10 +47,10 @@ import org.mhisoft.wallet.view.DialogUtils;
  * @author Tony Xue
  * @since May, 2016
  */
-public class DataServiceImplv11 extends AbstractDataService {
+public class DataServiceImplv12 extends AbstractDataService {
 
 	private static int FIXED_RECORD_LENGTH =2000;
-	private static int DATA_VERSION =11; //
+	public  static int DATA_VERSION =12; //
 
 	public int getVersion() {
 		return DATA_VERSION;
@@ -116,7 +116,7 @@ public class DataServiceImplv11 extends AbstractDataService {
 			int k = 0;
 			while (k < ret.getHeader().getNumberOfItems()) {
 
-                /*#3: ciperParameters size 4 bytes*/
+				  /*#3: ciperParameters size 4 bytes*/
 				int cipherParametersLength  = FileUtils.readInt(fileIn);
 
 			    /*#4: cipherParameters body*/
@@ -128,8 +128,9 @@ public class DataServiceImplv11 extends AbstractDataService {
 				AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance(Encryptor.ALGORITHM);
 				algorithmParameters.init(_byteCiper);
 
+
 				/*#5: item body*/
-				int objectSize =ret.getHeader().getItemSize();
+				int objectSize =FileUtils.readInt(fileIn);
 				byte[] _byteItem = new byte[objectSize];
 				readBytes = fileIn.read(_byteItem);
 				if(readBytes==objectSize) {
@@ -175,23 +176,29 @@ public class DataServiceImplv11 extends AbstractDataService {
 			dataOut.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));
 			dataOut.writeInt(FIXED_RECORD_LENGTH);
 
+
 			int i=0;
 			byte[] cipherParameters;
+
 			for (WalletItem item : model.getItemsFlatList()) {
 				byte[] _byteItem = serializer.serialize(item);
-				byte[] enc = Encryptor.getInstance().encrypt(_byteItem);
-				cipherParameters = Encryptor.getInstance().getCipherParameters();
-				/*#3: cipherParameters size 4 bytes*/
-				dataOut.write(FileUtils.intToByteArray(cipherParameters.length));
+				byte[] encrypted = Encryptor.getInstance().encrypt(_byteItem);
 
+				//have to write for each encryption because a random salt is used.
+				cipherParameters = Encryptor.getInstance().getCipherParameters();
+								/*#3: cipherParameters size 4 bytes*/
+				dataOut.write(FileUtils.intToByteArray(cipherParameters.length));
 				/*#4: cipherParameters body*/
 				dataOut.write(cipherParameters);
 
-				byte[] byteItem = FileUtils.padByteArray(enc, FIXED_RECORD_LENGTH);
+				//byte[] byteItem = FileUtils.padByteArray(encrypted, FIXED_RECORD_LENGTH);
 
+
+				/*//length*/
+				dataOut.write(FileUtils.intToByteArray(encrypted.length));
 				/*#5: item body*/
 				//write the object byte stream
-				dataOut.write(byteItem);
+				dataOut.write(encrypted);
 				i++;
 			}
 
