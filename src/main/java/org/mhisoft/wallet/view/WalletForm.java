@@ -62,6 +62,7 @@ import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ActionResult;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.CloseWalletAction;
+import org.mhisoft.wallet.service.SaveWalletAction;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
@@ -159,7 +160,18 @@ public class WalletForm {
 		btnSaveForm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				itemDetailView.saveAction();
+
+				if (itemDetailView.getDisplayMode()==DisplayMode.view) {
+					//save file
+					SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, SaveWalletAction.class);
+					saveWalletAction.execute();
+				}
+
+				else {
+					//save item
+					itemDetailView.saveAction();
+				}
+
 			}
 		});
 
@@ -212,11 +224,19 @@ public class WalletForm {
 		return frame;
 	}
 
+	public JSplitPane getSplitPanel() {
+		return splitPanel;
+	}
+
 	public void init() {
 		frame = new JFrame("MHISoft eWallet " + WalletMain.version);
 		frame.setContentPane(mainPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setPreferredSize(new Dimension(1200, 800));
+
+
+
+		frame.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX(), WalletSettings.getInstance().getDimensionY()));
+
 
 //removes the title bar with X button.
 //		frame.setUndecorated(true);
@@ -315,7 +335,7 @@ public class WalletForm {
 
 	void loadInPreferences() {
 		//divider location
-		splitPanel.setDividerLocation(0.2);
+		splitPanel.setDividerLocation(WalletSettings.getInstance().getDividerLocation());
 		setFontSize(WalletSettings.getInstance().getFontSize());
 	}
 

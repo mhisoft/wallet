@@ -23,11 +23,6 @@
 
 package org.mhisoft.wallet.service;
 
-import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.model.WalletSettings;
-import org.mhisoft.wallet.view.Confirmation;
-import org.mhisoft.wallet.view.DialogUtils;
-
 /**
  * Description: Action for closing the wallet
  *
@@ -40,31 +35,9 @@ public class CloseWalletAction implements Action {
 	@Override
 	public ActionResult execute(Object... params) {
 
-		if (ServiceRegistry.instance.getWalletForm().hasUnsavedData()) {
-			if (DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
-					, "There are unsaved data and will be lost if you choose to continue to close. Confirm to close?") != Confirmation.YES) {
-				return new ActionResult(false);
-			}
-		}
-
-		String fileName;
-		if (params == null || params.length == 0)
-			fileName = WalletSettings.defaultWalletFile;
-		else
-			fileName = (String) params[0];
-
-
-		//save the wallet
-		if (ServiceRegistry.instance.getWalletModel().isModified()) {
-			WalletModel model = ServiceRegistry.instance.getWalletModel();
-			model.buildFlatListFromTree();
-			ServiceRegistry.instance.getWalletService().saveToFile(fileName, model);
-		}
-
-		//save the settings
-		ServiceRegistry.instance.getWalletSettingsService().saveSettingsToFile(ServiceRegistry.instance.getWalletSettings());
-
-		return new ActionResult(true);
+		//save file
+		SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, SaveWalletAction.class);
+		return saveWalletAction.execute();
 
 
 	}

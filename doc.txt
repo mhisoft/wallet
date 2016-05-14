@@ -1,5 +1,6 @@
-* random access the file to allow save the item when the item SAVE button is clicked.
-*  when add a new item, make it edit mode by default (done)
-*  add close button /menu; prevent the X close window button (done)
+* import and merge file.
+* random access the file to allow save the item when the item SAVE button is clicked. (deferred)
+* when add a new item, make it edit mode by default (done)
+* add close button /menu; prevent the X close window button (done)
 
 

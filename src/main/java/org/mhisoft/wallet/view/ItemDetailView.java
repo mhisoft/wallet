@@ -47,7 +47,13 @@ public class ItemDetailView {
 
 	Map<String, JTextComponent> fields = new HashMap<>();
 
+	public DisplayMode getDisplayMode() {
+		return currentMode;
+	}
 
+	public void setDisplayMode(DisplayMode currentMode) {
+		this.currentMode = currentMode;
+	}
 
 	public ItemDetailView(WalletModel model, WalletForm form) {
 		this.form = form;
@@ -75,18 +81,19 @@ public class ItemDetailView {
 		if (displayMode==DisplayMode.edit) {
 			form.btnEditForm.setVisible(false);
 			form.btnCancelEdit.setVisible(true);
-			form.btnSaveForm.setVisible(true);
+			//form.btnSaveForm.setVisible(true);
 			form.btnClose.setVisible(false);
 			form.menuClose.setVisible(false);
 		}
 		else if (displayMode==DisplayMode.view) {
 			form.btnEditForm.setVisible(true);
 			form.btnCancelEdit.setVisible(false);
-			form.btnSaveForm.setVisible(false);
+			//form.btnSaveForm.setVisible(false);
 			form.btnClose.setVisible(true);
 			form.menuClose.setVisible(true);
 		}
 
+		form.btnSaveForm.setVisible(model.isModified() || displayMode!=DisplayMode.view );
 
 		form.fldName.setText(item.getName());
 		form.fldName.setEditable(displayMode != DisplayMode.view);

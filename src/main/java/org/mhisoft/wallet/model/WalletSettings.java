@@ -52,6 +52,9 @@ public class WalletSettings implements Serializable	 {
 
 	private transient String passPlain;
 	private int fontSize;
+	private int dimensionX;
+	private int dimensionY;
+	private double dividerLocation;
 
 
 	public int getFontSize() {
@@ -70,11 +73,37 @@ public class WalletSettings implements Serializable	 {
 		this.passPlain = passPlain;
 	}
 
+	public int getDimensionX() {
+		return dimensionX==0?1200:dimensionX;
+	}
+
+	public void setDimensionX(int dimensionX) {
+		this.dimensionX = dimensionX;
+	}
+
+	public int getDimensionY() {
+		return dimensionY==0?800:dimensionY;
+	}
+
+	public void setDimensionY(int dimensionY) {
+		this.dimensionY = dimensionY;
+	}
+
+	public double getDividerLocation() {
+		return dividerLocation<=0 || dividerLocation>1.0?0.2:dividerLocation;
+	}
+
+	public void setDividerLocation(double dividerLocation) {
+		this.dividerLocation = dividerLocation;
+	}
+
 	@Override
 	public String toString() {
 		return "WalletSettings{" +
 				"passPlain='" + passPlain + '\'' +
 				", fontSize=" + fontSize +
+				", dimensionX=" + dimensionX +
+				", dimensionY=" + dimensionY +
 				'}';
 	}
 }
