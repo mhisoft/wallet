@@ -26,6 +26,8 @@ package org.mhisoft.wallet.view;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 
 import org.mhisoft.common.util.ReflectionUtil;
@@ -45,7 +47,11 @@ public class ItemDetailView {
 	DisplayMode currentMode;
 
 
-	Map<String, JTextComponent> fields = new HashMap<>();
+	//for setting with reflection
+	Map<String, FiledObject> fields = new HashMap<>();
+
+	//for show/hide display
+	//List<JComponent> itemList = new ArrayList<>();
 
 	public DisplayMode getDisplayMode() {
 		return currentMode;
@@ -55,17 +61,38 @@ public class ItemDetailView {
 		this.currentMode = currentMode;
 	}
 
+	class FiledObject {
+		ItemType type;
+		//JTextComponent  ,JComponent
+		JComponent fld;
+		JLabel labelFld;
+
+		public FiledObject(ItemType type, JLabel label, JComponent fld) {
+			this.type = type;
+			this.fld = fld;
+			this.labelFld = label;
+		}
+	}
+
+
 	public ItemDetailView(WalletModel model, WalletForm form) {
 		this.form = form;
 		this.model = model;
-		fields.put("name", form.fldName);
-		fields.put("URL",  form.fldURL);
-		fields.put("userName",  form.fldUserName);
-		fields.put("accountNumber",  form.fldAccountNumber);
-//		fields.put("expirationYear", fldName);
-//		fields.put("expirationMonth", fldName);
-		fields.put("password",  form.fldPassword);
-		fields.put("notes",  form.fldNotes);
+		fields.put("name", new FiledObject(ItemType.category, form.labelName, form.fldName));
+		fields.put("URL", new FiledObject(ItemType.item, form.labelURL, form.fldURL));
+		fields.put("userName", new FiledObject(ItemType.item, form.labelUsername, form.fldUserName));
+		fields.put("accountNumber", new FiledObject(ItemType.item, form.labelAccount, form.fldAccountNumber));
+		fields.put("password", new FiledObject(ItemType.item, form.labelPassword, form.fldPassword));
+		fields.put("notes", new FiledObject(ItemType.category, form.labelNotes, form.fldNotes));
+		fields.put("pin", new FiledObject(ItemType.item, form.labelPin, form.fldPin));
+		fields.put("expMonth", new FiledObject(ItemType.item, form.labelExpMonth, form.fldExpMonth));
+		fields.put("expYear", new FiledObject(ItemType.item, form.labelExpYear, form.fldExpYear));
+		fields.put("accountType", new FiledObject(ItemType.item, form.labelAccountType, form.fldAccountType));
+		fields.put("phone", new FiledObject(ItemType.item, form.labelPhone, form.fldPhone));
+		fields.put("detail1", new FiledObject(ItemType.item, form.labelDetail1, form.fldDetail1));
+		fields.put("detail2", new FiledObject(ItemType.item, form.labelDetail2, form.fldDetail2));
+		fields.put("detail3", new FiledObject(ItemType.item, form.labelDetail3, form.fldDetail3));
+
 
 	}
 
@@ -78,14 +105,13 @@ public class ItemDetailView {
 //		} else {
 
 		currentMode = displayMode;
-		if (displayMode==DisplayMode.edit) {
+		if (displayMode == DisplayMode.edit) {
 			form.btnEditForm.setVisible(false);
 			form.btnCancelEdit.setVisible(true);
 			//form.btnSaveForm.setVisible(true);
 			form.btnClose.setVisible(false);
 			form.menuClose.setVisible(false);
-		}
-		else if (displayMode==DisplayMode.view) {
+		} else if (displayMode == DisplayMode.view) {
 			form.btnEditForm.setVisible(true);
 			form.btnCancelEdit.setVisible(false);
 			//form.btnSaveForm.setVisible(false);
@@ -93,37 +119,30 @@ public class ItemDetailView {
 			form.menuClose.setVisible(true);
 		}
 
-		form.btnSaveForm.setVisible(model.isModified() || displayMode!=DisplayMode.view );
+		form.btnSaveForm.setVisible(model.isModified() || displayMode != DisplayMode.view);
 
-		form.fldName.setText(item.getName());
-		form.fldName.setEditable(displayMode != DisplayMode.view);
+		try {
+			for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
+				if (entry.getValue().fld instanceof JTextComponent) {
+					JTextComponent fld =  (JTextComponent)   entry.getValue().fld;
+					fld.setText( (String) ReflectionUtil.getFieldValue(item, entry.getKey() ) );
+					fld.setEditable( displayMode != DisplayMode.view );
+				}
 
-		form.fldURL.setText(item.getURL());
-		form.fldURL.setEditable(displayMode != DisplayMode.view);
-		form.fldURL.setVisible(item.getType() == ItemType.item);
+				JComponent fld = entry.getValue().fld;
+				if (entry.getValue().type == ItemType.item) {
+					fld.setVisible(item.getType() == ItemType.item);
+					entry.getValue().labelFld.setVisible(item.getType() == ItemType.item);
+				}
+				else
+					fld.setVisible(true);
 
-		form.fldUserName.setText(item.getUserName());
-		form.fldUserName.setEditable(displayMode != DisplayMode.view);
-		form.fldUserName.setVisible(item.getType() == ItemType.item);
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
 
-		form.fldPassword.setText(item.getPassword());
-		form.fldPassword.setEditable(displayMode != DisplayMode.view);
-		form.fldPassword.setVisible(item.getType() == ItemType.item);
-
-		form.fldAccountNumber.setText(item.getAccountNumber());
-		form.fldAccountNumber.setEditable(displayMode != DisplayMode.view);
-		form.fldAccountNumber.setVisible(item.getType() == ItemType.item);
-
-		form.fldNotes.setText(item.getNotes());
-		form.fldNotes.setEditable(displayMode != DisplayMode.view);
-
-		form.labelURL.setVisible(item.getType() == ItemType.item);
-		form.labelUsername.setVisible(item.getType() == ItemType.item);
-		form.labelPassword.setVisible(item.getType() == ItemType.item);
-		form.labelAccount.setVisible(item.getType() == ItemType.item);
 		form.btnTogglePasswordView.setVisible(item.getType() == ItemType.item);
-
-		//}
 
 	}
 
@@ -145,8 +164,11 @@ public class ItemDetailView {
 		if (model.getCurrentItem() != null) {
 
 			try {
-				for (Map.Entry<String, JTextComponent> entry : fields.entrySet()) {
-					ReflectionUtil.setFieldValue( model.getCurrentItem(), entry.getKey(), entry.getValue().getText()  );
+				for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
+					if (entry.getValue().fld instanceof JTextComponent) {
+						ReflectionUtil.setFieldValue(model.getCurrentItem(), entry.getKey()
+								, ((JTextComponent) entry.getValue().fld).getText());
+					}
 				}
 				model.setModified(true);
 			} catch (NoSuchFieldException e) {
@@ -157,7 +179,6 @@ public class ItemDetailView {
 			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
 		}
 	}
-
 
 
 }

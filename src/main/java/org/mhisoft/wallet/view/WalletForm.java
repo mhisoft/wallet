@@ -36,6 +36,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -108,7 +109,24 @@ public class WalletForm {
 	JLabel labelPassword;
 	JLabel labelAccount;
 	JLabel labelFontSize;
-
+	JTextField fldPin;
+	JTextField fldExpMonth;
+	JTextField fldExpYear;
+	JTextField textField1;
+	JList itemList;
+	JTextField fldAccountType;
+	JTextField fldPhone;
+	JTextField fldDetail1;
+	JTextField fldDetail2;
+	JTextField fldDetail3;
+	JLabel labelPin;
+	JLabel labelExpMonth;
+	JLabel labelExpYear;
+	JLabel labelAccountType;
+	JLabel labelPhone;
+	JLabel labelDetail1;
+	JLabel labelDetail2;
+	JLabel labelDetail3;
 
 
 	JMenuBar menuBar;

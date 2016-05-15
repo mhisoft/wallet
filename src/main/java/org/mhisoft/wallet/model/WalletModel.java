@@ -107,9 +107,6 @@ public class WalletModel {
 		itemsFlatList.add(new WalletItem(ItemType.category, "Category 1"));
 		itemsFlatList.add(new WalletItem(ItemType.item, "Item 1"));
 		setModified(true);
-
-
-		buildTreeFromFlatList();
 	}
 
 	public String dumpFlatList() {
@@ -130,6 +127,16 @@ public class WalletModel {
 			return;
 
 		WalletItem rootNode =itemsFlatList.get(0) ;
+
+
+		//reset first
+		for (int i = 0; i < itemsFlatList.size(); i++) {
+			WalletItem item = itemsFlatList.get(i);
+			item.setChildren(null);
+			item.setParent(null);
+		}
+
+
 		WalletItem lastParent = rootNode;
 		for (int i = 1; i < itemsFlatList.size(); i++) {
 			WalletItem item = itemsFlatList.get(i);

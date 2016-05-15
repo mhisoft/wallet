@@ -38,6 +38,7 @@ import org.mhisoft.common.util.StringUtils;
  * @since Mar, 2016
  */
 public class WalletItem implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private String sysGUID;
     private ItemType type;
 	private String name;
@@ -52,6 +53,18 @@ public class WalletItem implements Serializable {
 	private Timestamp createdDate;
 	private Timestamp lastViewdDate;
 	private Timestamp lastModifiedDate;
+
+
+	private String pin;
+	private String expMonth;
+	private String expYear;
+	private String accountType;
+	private String phone;
+	private String detail1;
+	private String detail2;
+	private String detail3;
+	
+
 	private  transient WalletItem parent;
 	private  transient List<WalletItem> children;
 
