@@ -112,7 +112,7 @@ public class WalletForm {
 	JTextField fldPin;
 	JTextField fldExpMonth;
 	JTextField fldExpYear;
-	JTextField textField1;
+	JTextField fldFilter;
 	JList itemList;
 	JTextField fldAccountType;
 	JTextField fldPhone;
@@ -138,6 +138,7 @@ public class WalletForm {
 	List<Component> componetsList;
 	WalletModel model;
 	TreeExploreView treeExploreView;
+	ListExplorerView listExploreView;
 	ItemDetailView itemDetailView;
 
 
@@ -155,6 +156,7 @@ public class WalletForm {
 	public WalletForm() {
 		model = new WalletModel();
 		treeExploreView = new TreeExploreView(frame, model, tree, this);
+		listExploreView= new ListExplorerView(frame, model, itemList, this);
 		itemDetailView = new ItemDetailView(model, this);
 
 		ServiceRegistry.instance.registerSingletonService(this);
@@ -433,6 +435,7 @@ public class WalletForm {
 
 	public void loadTree() {
 		treeExploreView.setupTreeView();
+		listExploreView.setupListView();
 	}
 
 
