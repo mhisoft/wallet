@@ -62,8 +62,8 @@ public class DialogUtils {
 	}
 
 	public static Confirmation getConfirmation(final JFrame frame, final String question, final Confirmation... options) {
-		int dialogResult = JOptionPane.showConfirmDialog(frame, question, "Please confirm", JOptionPane.YES_NO_CANCEL_OPTION);
 		setFontSize();
+		int dialogResult = JOptionPane.showConfirmDialog(frame, question, "Please confirm", JOptionPane.YES_NO_CANCEL_OPTION);
 		if (JOptionPane.YES_OPTION == dialogResult) {
 			return Confirmation.YES;
 		} else if (JOptionPane.CANCEL_OPTION == dialogResult) {

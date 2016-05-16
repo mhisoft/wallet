@@ -23,8 +23,10 @@
 
 package org.mhisoft.wallet.action;
 
-import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.Confirmation;
+import org.mhisoft.wallet.view.DialogUtils;
 
 /**
  * Description: Action for closing the wallet
@@ -32,15 +34,32 @@ import org.mhisoft.wallet.service.ServiceRegistry;
  * @author Tony Xue
  * @since Apr, 2016
  */
-public class CloseWalletAction implements Action {
+public class CloseWalletAction extends SaveWalletAction {
+
+
+	@Override
+	protected void save(String filename) {
+		//save the wallet
+		if (ServiceRegistry.instance.getWalletModel().isModified()) {
+			if (DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+					, "Save the changes before close?") == Confirmation.YES) {
+				WalletModel model = ServiceRegistry.instance.getWalletModel();
+				model.buildFlatListFromTree();
+				ServiceRegistry.instance.getWalletService().saveToFile(filename, model);
+				ServiceRegistry.instance.getWalletModel().setModified(false);
+				DialogUtils.getInstance().info("Saved to file successfully.");
+			}
+
+
+		}
+	}
 
 
 	@Override
 	public ActionResult execute(Object... params) {
 
-		//save file
-		SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, SaveWalletAction.class);
-		return saveWalletAction.execute();
+		return super.execute(params);
+
 
 
 	}

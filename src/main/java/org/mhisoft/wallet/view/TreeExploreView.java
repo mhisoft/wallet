@@ -132,6 +132,8 @@ public class TreeExploreView {
 
 	public void changeNode(DefaultMutableTreeNode node) {
 
+		form.saveCurrentEdit(true);
+
 		model.setCurrentItem ((WalletItem) node.getUserObject());
 		form.displayWalletItemDetails(model.getCurrentItem());
 		toggleButton(model.getCurrentItem());

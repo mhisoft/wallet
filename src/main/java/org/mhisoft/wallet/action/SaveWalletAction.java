@@ -30,7 +30,6 @@ import javax.swing.JSplitPane;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.view.Confirmation;
 import org.mhisoft.wallet.view.DialogUtils;
 
 /**
@@ -42,6 +41,17 @@ import org.mhisoft.wallet.view.DialogUtils;
 public class SaveWalletAction implements Action {
 
 
+	protected void save(String fileName) {
+		//save the wallet
+//		if (ServiceRegistry.instance.getWalletModel().isModified()) {
+		WalletModel model = ServiceRegistry.instance.getWalletModel();
+		model.buildFlatListFromTree();
+		ServiceRegistry.instance.getWalletService().saveToFile(fileName, model);
+		ServiceRegistry.instance.getWalletModel().setModified(false);
+		DialogUtils.getInstance().info("Saved successfully.");
+//		}
+	}
+
 	@Override
 	public ActionResult execute(Object... params) {
 
@@ -52,20 +62,8 @@ public class SaveWalletAction implements Action {
 			fileName = (String) params[0];
 
 
-		//save the wallet
-		if (ServiceRegistry.instance.getWalletModel().isModified()) {
-			if (DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
-					, "Save the changes before close?") == Confirmation.YES) {
-				WalletModel model = ServiceRegistry.instance.getWalletModel();
-				model.buildFlatListFromTree();
-				ServiceRegistry.instance.getWalletService().saveToFile(fileName, model);
-				ServiceRegistry.instance.getWalletModel().setModified(false);
-				DialogUtils.getInstance().info("Saved successfully.");
-			}
+		save(fileName);
 
-
-
-		}
 
 		//save the settings
 		Dimension d = ServiceRegistry.instance.getWalletForm().getFrame().getSize();
@@ -75,8 +73,8 @@ public class SaveWalletAction implements Action {
 
 		//calculate proportion
 		JSplitPane split = ServiceRegistry.instance.getWalletForm().getSplitPanel();
-		double p = Double.valueOf(split.getDividerLocation()).doubleValue()/Double.valueOf(split.getWidth() - split.getDividerSize());
-		settings.setDividerLocation( Double.valueOf(p*100+0.5).intValue()/ Double.valueOf(100) );
+		double p = Double.valueOf(split.getDividerLocation()).doubleValue() / Double.valueOf(split.getWidth() - split.getDividerSize());
+		settings.setDividerLocation(Double.valueOf(p * 100 + 0.5).intValue() / Double.valueOf(100));
 
 		ServiceRegistry.instance.getWalletSettingsService().saveSettingsToFile(settings);
 

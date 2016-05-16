@@ -26,7 +26,6 @@ package org.mhisoft.wallet.model;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.io.Serializable;
 
 import org.mhisoft.common.util.StringUtils;
@@ -48,7 +47,6 @@ public class WalletItem implements Serializable {
 	private String expirationYear;
 	private String expirationMonth;
 	private String password;
-	private Map<String, String> detailFieldsMap;
 	private String notes;
 	private Timestamp createdDate;
 	private Timestamp lastViewdDate;
@@ -156,13 +154,6 @@ public class WalletItem implements Serializable {
 		this.password = password;
 	}
 
-	public Map<String, String> getDetailFieldsMap() {
-		return detailFieldsMap;
-	}
-
-	public void setDetailFieldsMap(Map<String, String> detailFieldsMap) {
-		this.detailFieldsMap = detailFieldsMap;
-	}
 
 	public String getNotes() {
 		return notes;
@@ -224,14 +215,40 @@ public class WalletItem implements Serializable {
 		return name;
 	}
 
+	public boolean isSame(final WalletItem item) {
+		if (item==null)
+			return false;
+		return this.toStringJson().equals(item.toStringJson());
+	}
+
 
 	public String toStringJson() {
 		return "WalletItem{" +
 				"sysGUID='" + sysGUID + '\'' +
 				", type=" + type +
 				", name='" + name + '\'' +
+				", URL='" + URL + '\'' +
+				", userName='" + userName + '\'' +
+				", accountNumber='" + accountNumber + '\'' +
+				", expirationYear='" + expirationYear + '\'' +
+				", expirationMonth='" + expirationMonth + '\'' +
+				", password='" + password + '\'' +
+				", notes='" + notes + '\'' +
+				", createdDate=" + createdDate +
+				", lastViewdDate=" + lastViewdDate +
+				", lastModifiedDate=" + lastModifiedDate +
+				", pin='" + pin + '\'' +
+				", expMonth='" + expMonth + '\'' +
+				", expYear='" + expYear + '\'' +
+				", accountType='" + accountType + '\'' +
+				", phone='" + phone + '\'' +
+				", detail1='" + detail1 + '\'' +
+				", detail2='" + detail2 + '\'' +
+				", detail3='" + detail3 + '\'' +
 				'}';
 	}
+
+
 
 	public boolean hasChildren() {
 		return getChildren()!=null && getChildren().size()>0;

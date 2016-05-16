@@ -180,17 +180,7 @@ public class WalletForm {
 		btnSaveForm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				if (itemDetailView.getDisplayMode()==DisplayMode.view) {
-					//save file
-					SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, SaveWalletAction.class);
-					saveWalletAction.execute();
-				}
-
-				else {
-					//save item
-					itemDetailView.saveAction();
-				}
+					saveCurrentEdit(false);
 
 			}
 		});
@@ -277,6 +267,7 @@ public class WalletForm {
 		componetsList.add(menuFile);
 		componetsList.add(menuOpen);
 		componetsList.add(menuClose);
+		componetsList.add(itemList);
 
 		/*position it*/
 		frame.setLocationRelativeTo(null);  // *** this will center your app ***
@@ -428,6 +419,10 @@ public class WalletForm {
 	}
 
 
+	public DisplayMode getDisplayMode() {
+		return itemDetailView.getDisplayMode();
+	}
+
 	public void displayWalletItemDetails(final WalletItem item, final DisplayMode mode) {
 		itemDetailView.displayWalletItemDetails(item, mode);
 	}
@@ -439,7 +434,42 @@ public class WalletForm {
 	}
 
 
+	public boolean isModified() {
+		 return (getDisplayMode()==DisplayMode.add || getDisplayMode()==DisplayMode.edit )
+				 //compare the current item in the model with the data on the item detail form.
+				 && itemDetailView.isModified();
+	}
+
+	public void saveCurrentEdit(boolean askToSave) {
+		if (isModified()) {
+			if (!askToSave ||  DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+					, "Save the changes to the current item?") == Confirmation.YES) {
+				itemDetailView.updateToModel();
+				//save file
+				SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
+				saveWalletAction.execute();
+			}
+		}
+
+		model.setModified(false);
+		btnSaveForm.setVisible(false);
+
+
+	}
+
+
+	/**
+	 * Update the view based on the model changes.
+	 */
+	public void updateView() {
+		//todo use event dispatch to tieggers view updates
+
+
+	}
+
+
 }
+
 
 
 class MyDocumentListener implements DocumentListener {

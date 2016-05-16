@@ -34,6 +34,7 @@ import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
  * Description:
@@ -97,12 +98,11 @@ public class ItemDetailView {
 	}
 
 	public void displayWalletItemDetails(final WalletItem item, DisplayMode displayMode) {
-//		if (item.getType() == ItemType.category) {
-//			form.fldName.setText(item.getName());
-//			//todo hide all other fields
-//
-//
-//		} else {
+
+		if (displayMode!=DisplayMode.view) {
+			//coming to edit and add mode, set model dirty
+			model.setModified(true);
+		}
 
 		currentMode = displayMode;
 		if (displayMode == DisplayMode.edit) {
@@ -159,8 +159,34 @@ public class ItemDetailView {
 		}
 	}
 
-	public void saveAction() {
-		//todo save it
+	public boolean isModified() {
+		//need a clone of the current Item.
+		WalletItem newItem = ServiceRegistry.instance.getWalletService().cloneItem(model.getCurrentItem());
+
+
+		// reflect the current item detail into the newItem
+		try {
+			for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
+				if (entry.getValue().fld instanceof JTextComponent) {
+					ReflectionUtil.setFieldValue(newItem, entry.getKey()
+							, ((JTextComponent) entry.getValue().fld).getText());
+				}
+			}
+
+			boolean b =   model.getCurrentItem().isSame(newItem);
+			return !b;
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+			DialogUtils.getInstance().error("Error occurred", e.getMessage());
+		}
+		return false;
+	}
+
+
+	/**
+	 * Update the data from form to model.
+	 */
+	public void updateToModel() {
 		if (model.getCurrentItem() != null) {
 
 			try {
@@ -170,10 +196,15 @@ public class ItemDetailView {
 								, ((JTextComponent) entry.getValue().fld).getText());
 					}
 				}
+
+				//save to the file ?
+
 				model.setModified(true);
+
+
 			} catch (NoSuchFieldException e) {
 				e.printStackTrace();
-				DialogUtils.getInstance().error("Error occured", e.getMessage());
+				DialogUtils.getInstance().error("Error occurred", e.getMessage());
 			}
 
 			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);

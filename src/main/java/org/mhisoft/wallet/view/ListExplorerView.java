@@ -4,6 +4,8 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -14,13 +16,15 @@ import org.mhisoft.wallet.model.WalletModel;
  * @author Tony Xue
  * @since May, 2016
  */
-public class ListExplorerView {
+public class ListExplorerView  implements ListSelectionListener {
 	DefaultListModel<WalletItem> listModel;
 
 	JList itemList;
 	JFrame frame;
 	WalletModel model;
 	WalletForm form;
+
+	WalletItem currentItem;
 
 	public ListExplorerView(JFrame frame, WalletModel model, JList itemList, WalletForm walletForm) {
 		this.frame = frame;
@@ -37,7 +41,7 @@ public class ListExplorerView {
 
 		itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		itemList.setSelectedIndex(0);
-		//itemList.addListSelectionListener(this);
+		itemList.addListSelectionListener(this);
 
 
 		model.getItemsFlatList().forEach(item -> {
@@ -45,6 +49,31 @@ public class ListExplorerView {
 		});
 
 
+	}
+
+	public WalletItem getCurrentItem() {
+		return currentItem;
+	}
+
+	//This method is required by ListSelectionListener.
+	public void valueChanged(ListSelectionEvent e) {
+		if (e.getValueIsAdjusting() == false) {
+
+			if (itemList.getSelectedIndex() == -1) {
+				//No selection, disable fire button.
+				//fireButton.setEnabled(false);
+
+			} else {
+				//Selection, enable the fire button.
+				currentItem = (WalletItem)itemList.getSelectedValue();
+				model.setCurrentItem(currentItem);
+
+				form.displayWalletItemDetails(model.getCurrentItem());
+				form.resetHidePassword();
+
+
+			}
+		}
 	}
 
 }

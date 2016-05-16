@@ -497,7 +497,9 @@
                         <children>
                           <component id="5acca" class="javax.swing.JList" binding="itemList">
                             <constraints/>
-                            <properties/>
+                            <properties>
+                              <font name="Arial" size="20" style="0"/>
+                            </properties>
                           </component>
                         </children>
                       </scrollpane>

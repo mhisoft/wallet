@@ -2,6 +2,8 @@ package org.mhisoft.wallet.service;
 
 import java.io.IOException;
 
+import org.mhisoft.common.util.Serializer;
+import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 
 /**
@@ -47,6 +49,17 @@ public class WalletService {
 		return header;
 
 
+	}
+
+
+	public WalletItem cloneItem(final WalletItem src) {
+		try {
+			Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
+			WalletItem ret = serializer.deserialize(serializer.serialize(src));
+			return ret;
+		} catch (IOException | ClassNotFoundException e) {
+		   throw new RuntimeException("cloneItem() failed", e);
+		}
 	}
 
 
