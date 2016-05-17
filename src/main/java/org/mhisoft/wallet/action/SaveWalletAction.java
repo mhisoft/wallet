@@ -30,7 +30,6 @@ import javax.swing.JSplitPane;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.view.DialogUtils;
 
 /**
  * Description: save the wallet changes to file
@@ -48,7 +47,9 @@ public class SaveWalletAction implements Action {
 		model.buildFlatListFromTree();
 		ServiceRegistry.instance.getWalletService().saveToFile(fileName, model);
 		ServiceRegistry.instance.getWalletModel().setModified(false);
-		DialogUtils.getInstance().info("Saved successfully.");
+		//DialogUtils.getInstance().info("Saved successfully.");
+		ServiceRegistry.instance.getWalletForm().setMessage("Saved successfully.");
+
 //		}
 	}
 

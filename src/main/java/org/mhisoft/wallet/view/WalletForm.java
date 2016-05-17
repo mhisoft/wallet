@@ -127,6 +127,8 @@ public class WalletForm {
 	JLabel labelDetail1;
 	JLabel labelDetail2;
 	JLabel labelDetail3;
+	JLabel labelLastMessage;
+	 JButton btnFilter;
 
 
 	JMenuBar menuBar;
@@ -211,6 +213,12 @@ public class WalletForm {
 			}
 		});
 
+		btnFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
 	}
 
 	public void resetHidePassword() {
@@ -457,16 +465,10 @@ public class WalletForm {
 
 	}
 
-
-	/**
-	 * Update the view based on the model changes.
-	 */
-	public void updateView() {
-		//todo use event dispatch to tieggers view updates
-
-
+	public void setMessage(String s) {
+		if (labelLastMessage!=null)
+		labelLastMessage.setText(s);
 	}
-
 
 }
 

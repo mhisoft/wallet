@@ -233,10 +233,8 @@ public class TreeExploreView {
 		form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.edit);
 
 		if (WalletModel.debug) {
-			form.fldNotes.setText(model.dumpFlatList());
+			System.out.println(model.dumpFlatList());
 		}
-
-
 
 
 	}
@@ -267,9 +265,6 @@ public class TreeExploreView {
 			//Make sure the user can see the lovely new node.
 			tree.scrollPathToVisible(new TreePath(parentNode.getPath()));
 
-			if (WalletModel.debug) {
-				form.fldNotes.setText(model.dumpFlatList());
-			}
 		}
 
 	}

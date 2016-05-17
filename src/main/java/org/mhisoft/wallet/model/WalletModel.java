@@ -204,7 +204,7 @@ public class WalletModel {
 		else {
 
 			int index;
-			if (parentItem.getChildren()==null)  {
+			if (parentItem.getChildren()==null || parentItem.getChildren().size()==0)  {
 				//this parent category is empty, add after it
 				 index = getItemIndex(parentItem);
 			}

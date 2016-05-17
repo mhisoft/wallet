@@ -58,6 +58,7 @@ public class ServiceRegistry {
 
 	private <T> T createNewInstance(final Class<T> clazz) {
 //		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
 //		if (loader==null)
 //			loader = callerClass.getClassLoader();
 

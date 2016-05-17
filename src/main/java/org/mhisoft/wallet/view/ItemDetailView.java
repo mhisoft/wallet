@@ -23,6 +23,7 @@
 
 package org.mhisoft.wallet.view;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,9 +100,12 @@ public class ItemDetailView {
 
 	public void displayWalletItemDetails(final WalletItem item, DisplayMode displayMode) {
 
+		ServiceRegistry.instance.getWalletForm().setMessage("");
+
 		if (displayMode!=DisplayMode.view) {
 			//coming to edit and add mode, set model dirty
 			model.setModified(true);
+			item.setLastViewdDate(new Timestamp(System.currentTimeMillis()));
 		}
 
 		currentMode = displayMode;
@@ -197,9 +201,8 @@ public class ItemDetailView {
 					}
 				}
 
-				//save to the file ?
-
 				model.setModified(true);
+				model.getCurrentItem().setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
 
 
 			} catch (NoSuchFieldException e) {
