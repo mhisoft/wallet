@@ -51,6 +51,23 @@ public class ListExplorerView  implements ListSelectionListener {
 
 	}
 
+
+	public void filterItems(String filter) {
+		listModel.clear();
+
+		model.getItemsFlatList().forEach(item -> {
+			if (filter==null || item.isMatch(filter)) {
+				listModel.addElement(item);
+			}
+		});
+
+		itemList.setSelectedIndex(0);
+
+
+
+
+	}
+
 	public WalletItem getCurrentItem() {
 		return currentItem;
 	}

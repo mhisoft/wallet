@@ -26,6 +26,8 @@ package org.mhisoft.wallet.model;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.Serializable;
 
 import org.mhisoft.common.util.StringUtils;
@@ -39,7 +41,7 @@ import org.mhisoft.common.util.StringUtils;
 public class WalletItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String sysGUID;
-    private ItemType type;
+	private ItemType type;
 	private String name;
 	private String URL;
 	private String userName;
@@ -61,10 +63,10 @@ public class WalletItem implements Serializable {
 	private String detail1;
 	private String detail2;
 	private String detail3;
-	
 
-	private  transient WalletItem parent;
-	private  transient List<WalletItem> children;
+
+	private transient WalletItem parent;
+	private transient List<WalletItem> children;
 
 	@Override
 	public boolean equals(Object o) {
@@ -216,7 +218,7 @@ public class WalletItem implements Serializable {
 	}
 
 	public boolean isSame(final WalletItem item) {
-		if (item==null)
+		if (item == null)
 			return false;
 		return this.toStringJson().equals(item.toStringJson());
 	}
@@ -249,16 +251,15 @@ public class WalletItem implements Serializable {
 	}
 
 
-
 	public boolean hasChildren() {
-		return getChildren()!=null && getChildren().size()>0;
+		return getChildren() != null && getChildren().size() > 0;
 	}
 
 	public void addChild(final WalletItem childItem) {
-		if (this.getType()!=ItemType.category)
+		if (this.getType() != ItemType.category)
 			throw new RuntimeException("Can't add a child to a none category node. parent: " + this.toString()
-					+", child:" + childItem.toString() );
-		if (this.children==null)
+					+ ", child:" + childItem.toString());
+		if (this.children == null)
 			this.children = new ArrayList<>();
 		this.children.add(childItem);
 		childItem.parent = this;
@@ -266,11 +267,42 @@ public class WalletItem implements Serializable {
 
 
 	public void removeChild(final WalletItem childItem) {
-		if (this.getType()!=ItemType.category)
-			throw new RuntimeException("Not a  category node: " + this.toString() );
-		if (children!=null) {
+		if (this.getType() != ItemType.category)
+			throw new RuntimeException("Not a  category node: " + this.toString());
+		if (children != null) {
 			this.children.remove(childItem);
 			childItem.setParent(null);
 		}
 	}
+
+
+	private boolean isJavaPatternMatch(Pattern p, String input) {
+		if (input != null) {
+			Matcher m = p.matcher(input);
+			return m.find();
+		}
+		return false;
+	}
+
+
+	public boolean isMatch(String filter) {
+		//SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		String regex = ".*" + filter + ".*";
+		Pattern p = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS | Pattern.CASE_INSENSITIVE);
+
+		return
+				isJavaPatternMatch(p, name)
+						|| isJavaPatternMatch(p, URL)
+						|| isJavaPatternMatch(p, accountNumber)
+						|| isJavaPatternMatch(p, expirationMonth)
+						|| isJavaPatternMatch(p, expirationYear)
+						|| isJavaPatternMatch(p, notes)
+						|| isJavaPatternMatch(p, detail1)
+						|| isJavaPatternMatch(p, detail2)
+						|| isJavaPatternMatch(p, detail3)
+						|| isJavaPatternMatch(p, phone)
+
+				;
+	}
+
 }

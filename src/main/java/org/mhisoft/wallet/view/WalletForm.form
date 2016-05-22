@@ -32,7 +32,7 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <dividerLocation value="240"/>
+                  <dividerLocation value="340"/>
                 </properties>
                 <border type="none"/>
                 <children>
@@ -509,7 +509,7 @@
                       </grid>
                     </children>
                   </scrollpane>
-                  <grid id="65c9f" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                  <grid id="65c9f" binding="treeListPanel" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <splitpane position="left"/>
@@ -547,9 +547,9 @@
                           </component>
                         </children>
                       </grid>
-                      <scrollpane id="301cd">
+                      <scrollpane id="301cd" binding="treePanel">
                         <constraints>
-                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="1" use-parent-layout="false"/>
                         </constraints>
                         <properties/>
                         <border type="none"/>
@@ -562,7 +562,7 @@
                           </component>
                         </children>
                       </scrollpane>
-                      <scrollpane id="f4eab">
+                      <scrollpane id="f4eab" binding="itemListPanel">
                         <constraints>
                           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -577,7 +577,7 @@
                           </component>
                         </children>
                       </scrollpane>
-                      <grid id="8e6c7" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="8e6c7" binding="filterPanel" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
                           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -597,12 +597,22 @@
                           </component>
                           <component id="a5042" class="javax.swing.JButton" binding="btnFilter">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <icon value="1463467646_61.png"/>
                               <text value=""/>
                               <toolTipText value="Apply and remove the filter"/>
+                            </properties>
+                          </component>
+                          <component id="fac2e" class="javax.swing.JButton" binding="btnClearFilter">
+                            <constraints>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <icon value="Cancel1463468069_33.png"/>
+                              <text value=""/>
+                              <toolTipText value="Clear the filter"/>
                             </properties>
                           </component>
                         </children>

@@ -42,6 +42,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -128,7 +129,12 @@ public class WalletForm {
 	JLabel labelDetail2;
 	JLabel labelDetail3;
 	JLabel labelLastMessage;
-	 JButton btnFilter;
+	JButton btnFilter;
+	private JButton btnClearFilter;
+	private JScrollPane itemListPanel;
+	private JScrollPane treePanel;
+	private JPanel filterPanel;
+	private JPanel treeListPanel;
 
 
 	JMenuBar menuBar;
@@ -144,7 +150,6 @@ public class WalletForm {
 	ItemDetailView itemDetailView;
 
 
-
 	boolean hidePassword = true;
 
 	public WalletModel getModel() {
@@ -158,7 +163,7 @@ public class WalletForm {
 	public WalletForm() {
 		model = new WalletModel();
 		treeExploreView = new TreeExploreView(frame, model, tree, this);
-		listExploreView= new ListExplorerView(frame, model, itemList, this);
+		listExploreView = new ListExplorerView(frame, model, itemList, this);
 		itemDetailView = new ItemDetailView(model, this);
 
 		ServiceRegistry.instance.registerSingletonService(this);
@@ -182,7 +187,7 @@ public class WalletForm {
 		btnSaveForm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-					saveCurrentEdit(false);
+				saveCurrentEdit(false);
 
 			}
 		});
@@ -195,7 +200,6 @@ public class WalletForm {
 				updatePasswordChar();
 			}
 		});
-
 
 
 		//constructor
@@ -217,6 +221,25 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+
+				if (fldFilter.getText() != null && fldFilter.getText().trim().length() > 0) {
+					itemListPanel.setVisible(true);
+					treePanel.setVisible(false);
+					treeListPanel.validate();
+					listExploreView.filterItems(fldFilter.getText());
+				}
+
+
+			}
+		});
+		btnClearFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fldFilter.setText("");
+				itemListPanel.setVisible(false);
+				treePanel.setVisible(true);
+				treeListPanel.validate();
+
 			}
 		});
 	}
@@ -235,7 +258,7 @@ public class WalletForm {
 
 
 	public boolean hasUnsavedData() {
-		return itemDetailView.currentMode!=DisplayMode.view;
+		return itemDetailView.currentMode != DisplayMode.view;
 	}
 
 	public JFrame getFrame() {
@@ -252,7 +275,6 @@ public class WalletForm {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
-
 		frame.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX(), WalletSettings.getInstance().getDimensionY()));
 
 
@@ -267,7 +289,6 @@ public class WalletForm {
 		DialogUtils.create(frame);
 
 		setupMenu();
-
 
 
 		componetsList = getAllComponents(frame);
@@ -291,8 +312,9 @@ public class WalletForm {
 
 		setupFontSpinner();
 
-
+		itemListPanel.setVisible(false);
 		frame.setVisible(true);
+
 
 		PasswordForm passwordForm = new PasswordForm();
 		passwordForm.showPasswordForm(this);
@@ -300,9 +322,6 @@ public class WalletForm {
 
 		//remove the X buttons
 		//frame.setUndecorated(true);
-
-
-
 
 
 //		Runtime.getRuntime().addShutdownHook(new Thread()
@@ -316,9 +335,6 @@ public class WalletForm {
 
 
 	}
-
-
-
 
 
 	protected void setupMenu() {
@@ -396,7 +412,7 @@ public class WalletForm {
 										  @Override
 										  public void stateChanged(ChangeEvent e) {
 											  SpinnerModel spinnerModel = fldFontSize.getModel();
-											  int newFontSize = (Integer)spinnerModel.getValue();
+											  int newFontSize = (Integer) spinnerModel.getValue();
 											  setFontSize(newFontSize);
 
 										  }
@@ -443,14 +459,14 @@ public class WalletForm {
 
 
 	public boolean isModified() {
-		 return (getDisplayMode()==DisplayMode.add || getDisplayMode()==DisplayMode.edit )
-				 //compare the current item in the model with the data on the item detail form.
-				 && itemDetailView.isModified();
+		return (getDisplayMode() == DisplayMode.add || getDisplayMode() == DisplayMode.edit)
+				//compare the current item in the model with the data on the item detail form.
+				&& itemDetailView.isModified();
 	}
 
 	public void saveCurrentEdit(boolean askToSave) {
 		if (isModified()) {
-			if (!askToSave ||  DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+			if (!askToSave || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
 					, "Save the changes to the current item?") == Confirmation.YES) {
 				itemDetailView.updateToModel();
 				//save file
@@ -466,12 +482,11 @@ public class WalletForm {
 	}
 
 	public void setMessage(String s) {
-		if (labelLastMessage!=null)
-		labelLastMessage.setText(s);
+		if (labelLastMessage != null)
+			labelLastMessage.setText(s);
 	}
 
 }
-
 
 
 class MyDocumentListener implements DocumentListener {
