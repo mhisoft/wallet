@@ -148,6 +148,10 @@ public class ItemDetailView {
 
 		form.btnTogglePasswordView.setVisible(item.getType() == ItemType.item);
 
+
+//
+//		}
+
 	}
 
 	public void editDetailAction() {
@@ -213,6 +217,7 @@ public class ItemDetailView {
 			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
 		}
 	}
+
 
 
 }

@@ -13,24 +13,27 @@
   <stayAlive>false</stayAlive>
   <manifest></manifest>
   <icon></icon>
+  <classPath>
+    <mainClass>org.mhisoft.wallet.WalletMain</mainClass>
+  </classPath>
   <jre>
-    <path></path>
-    <bundledJre64Bit>false</bundledJre64Bit>
+    <path>./jre</path>
+    <bundledJre64Bit>true</bundledJre64Bit>
     <minVersion>1.6.0</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64/32</runtimeBits>
   </jre>
   <versionInfo>
-    <fileVersion>1.2.0.0</fileVersion>
-    <txtFileVersion>1.2</txtFileVersion>
-    <fileDescription>Recursive Delete Pro</fileDescription>
-    <copyright>Copyright(c) 2014 Tony Xue</copyright>
-    <productVersion>1.2.0.0</productVersion>
-    <txtProductVersion>1.2</txtProductVersion>
-    <productName>Recursive Delete Pro</productName>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0</txtFileVersion>
+    <fileDescription>MHISoft eWallet</fileDescription>
+    <copyright>Copyright(c) 2016 Tony Xue</copyright>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0</txtProductVersion>
+    <productName>MHISoft eWallet</productName>
     <companyName>MHISoft</companyName>
-    <internalName>RdPro</internalName>
-    <originalFilename>rdproui.exe</originalFilename>
+    <internalName>MHISoft eWallet</internalName>
+    <originalFilename>ewallet.exe</originalFilename>
   </versionInfo>
 </launch4jConfig>

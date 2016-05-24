@@ -315,9 +315,13 @@ public class WalletForm {
 		itemListPanel.setVisible(false);
 		frame.setVisible(true);
 
+		jreDebug();
+
 
 		PasswordForm passwordForm = new PasswordForm();
 		passwordForm.showPasswordForm(this);
+
+
 
 
 		//remove the X buttons
@@ -337,14 +341,26 @@ public class WalletForm {
 	}
 
 
-	protected void setupMenu() {
+	public void jreDebug() {
+		//if (WalletModel.debug) {
+				fldNotes.append("\n");
+				fldNotes.append("\n");
+				fldNotes.append("java.specification.version=" + System.getProperty("java.specification.version")+"\n");
+				fldNotes.append("java.vendor="+ System.getProperty("java.vendor")+"\n");
+				fldNotes.append("java.vendor.url="+ System.getProperty("java.vendor.url")+"\n");
+				fldNotes.append("java.version=" + System.getProperty("java.version")+"\n");
+				fldNotes.append("java.home=" + System.getProperty("java.home")+"\n");
+			}
 
-		ActionListener closeAction = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
-				ActionResult r = closeWalletAction.execute();
-				if (r.isSuccess())
+
+			protected void setupMenu() {
+
+				ActionListener closeAction = new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
+						ActionResult r = closeWalletAction.execute();
+						if (r.isSuccess())
 					exit();
 
 			}

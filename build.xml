@@ -29,6 +29,8 @@
     <property name="AppVersion" value="MHISoft eWallet ${version}"/>
     <property name="src.dir" value="src"/>
 
+    <property name="jre_bundle_dir" value="/Users/i831964/bin/jdk1.8.0_91.jdk/Contents/Home"/>
+
 
     <!--<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>-->
 
@@ -77,7 +79,7 @@
         <delete file="dist/ewallet-${version}.jar"/>
 
 
-        <maven dir=".." argline="clean package -DskipTests=true"/>
+        <maven dir=".." argline="package -DskipTests=true"/>
 
         <!--copy the jar to the dist folder -->
         <copy file="target/ewallet-${version}.jar" todir="dist" overwrite="true" failonerror="true"/>
@@ -113,7 +115,7 @@
 
 
 
-    <target name="bundle-mac-app">
+    <target name="bundle-mac-app"   if="${isMac}">
 
         <delete file="dist/${AppVersion}.app"/>
 
@@ -126,7 +128,8 @@
                    displayname="${AppVersion}"
                    identifier="org.mhisoft.wallet.WalletMain"
                    mainclassname="org.mhisoft.wallet.WalletMain">
-            <classpath file="${launch4j.dir}/ewallet-combined.jar" />
+            <runtime dir="${jre_bundle_dir}" />
+            <classpath dir="dist" includes="ewallet-${version}.jar,lib/*.jar"/>
         </bundleapp>
     </target>
 

@@ -1,0 +1,1 @@
+./jre/bin/java -jar ./ewallet-1.0.jar "$1" "$2" "$3" "$4" "$5"
