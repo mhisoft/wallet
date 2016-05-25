@@ -31,6 +31,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
@@ -221,27 +222,50 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-
-				if (fldFilter.getText() != null && fldFilter.getText().trim().length() > 0) {
-					itemListPanel.setVisible(true);
-					treePanel.setVisible(false);
-					treeListPanel.validate();
-					listExploreView.filterItems(fldFilter.getText());
-				}
-
+				doFilter();
 
 			}
 		});
 		btnClearFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				fldFilter.setText("");
-				itemListPanel.setVisible(false);
-				treePanel.setVisible(true);
-				treeListPanel.validate();
+				clearFilter();
 
 			}
 		});
+		btnFilter.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode()==KeyEvent.VK_ENTER){
+					doFilter();
+				}
+			}
+		});
+		btnClearFilter.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode()==KeyEvent.VK_ENTER){
+					clearFilter();
+				}
+			}
+		});
+	}
+
+
+	public void doFilter() {
+		if (fldFilter.getText() != null && fldFilter.getText().trim().length() > 0) {
+			itemListPanel.setVisible(true);
+			treePanel.setVisible(false);
+			treeListPanel.validate();
+			listExploreView.filterItems(fldFilter.getText());
+		}
+	}
+
+	public void clearFilter() {
+		fldFilter.setText("");
+		itemListPanel.setVisible(false);
+		treePanel.setVisible(true);
+		treeListPanel.validate();
 	}
 
 	public void resetHidePassword() {

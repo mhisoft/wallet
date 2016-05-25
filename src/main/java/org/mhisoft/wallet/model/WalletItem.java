@@ -38,7 +38,7 @@ import org.mhisoft.common.util.StringUtils;
  * @author Tony Xue
  * @since Mar, 2016
  */
-public class WalletItem implements Serializable {
+public class WalletItem implements Serializable, Comparable<WalletItem> {
 	private static final long serialVersionUID = 1L;
 	private String sysGUID;
 	private ItemType type;
@@ -223,6 +223,11 @@ public class WalletItem implements Serializable {
 		return this.toStringJson().equals(item.toStringJson());
 	}
 
+	@Override
+	public int compareTo(WalletItem o) {
+		//make it sort by name
+		return this.name.compareTo( o.getName() );
+	}
 
 	public String toStringJson() {
 		return "WalletItem{" +

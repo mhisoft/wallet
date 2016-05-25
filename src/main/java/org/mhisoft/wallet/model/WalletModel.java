@@ -24,6 +24,7 @@
 package org.mhisoft.wallet.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -138,17 +139,46 @@ public class WalletModel {
 
 
 		WalletItem lastParent = rootNode;
+		List<WalletItem>  rootCats = new ArrayList<>();
+		List<WalletItem>  tempChildList = new ArrayList<>();
 		for (int i = 1; i < itemsFlatList.size(); i++) {
 			WalletItem item = itemsFlatList.get(i);
+
 			if (ItemType.category==item.getType()) {
-				rootNode.addChild(item);
-				lastParent = item;
-			}
-			else  {
-				lastParent.addChild(item);
+				//rootNode.addChild(item);
+				rootCats.add(item);
+
+				if (lastParent!=item) {
+					//parent changed.
+					Collections.sort(tempChildList);
+
+					for (WalletItem c : tempChildList) {
+						lastParent.addChild(c);
+					}
+					tempChildList.clear();
+					lastParent = item;
+				}
+
 
 			}
+			else  {
+				tempChildList.add(item);
+				//lastParent.addChild(item);
+			}
 		}
+
+		Collections.sort(rootCats);
+		for (WalletItem c : rootCats) {
+			rootNode.addChild(c);
+		}
+
+		Collections.sort(tempChildList);
+		for (WalletItem c : tempChildList) {
+			lastParent.addChild(c);
+		}
+
+
+
 	}
 
 
