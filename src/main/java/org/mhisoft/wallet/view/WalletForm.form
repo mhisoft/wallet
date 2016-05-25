@@ -43,7 +43,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <grid id="15107" layout-manager="GridLayoutManager" row-count="14" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="15107" layout-manager="GridLayoutManager" row-count="14" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints/>
                         <properties>
@@ -53,7 +53,7 @@
                         <children>
                           <component id="81be5" class="javax.swing.JTextField" binding="fldName">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="0" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="7" anchor="8" fill="3" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -106,7 +106,7 @@
                           </component>
                           <component id="266e3" class="javax.swing.JTextField" binding="fldUserName">
                             <constraints>
-                              <grid row="2" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="2" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="7" anchor="8" fill="3" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -145,7 +145,7 @@
                           </component>
                           <component id="96b22" class="javax.swing.JTextField" binding="fldAccountNumber">
                             <constraints>
-                              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="8" fill="3" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -156,7 +156,7 @@
                           </component>
                           <component id="16c6c" class="javax.swing.JTextField" binding="fldURL">
                             <constraints>
-                              <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                              <grid row="1" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="7" anchor="8" fill="3" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -167,7 +167,7 @@
                           </component>
                           <component id="cf7c1" class="javax.swing.JTextField" binding="fldPin">
                             <constraints>
-                              <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                              <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false">
                                 <preferred-size width="150" height="-1"/>
                               </grid>
                             </constraints>
@@ -186,7 +186,7 @@
                           <grid id="fc46a" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="0" left="0" bottom="0" right="0"/>
                             <constraints>
-                              <grid row="3" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                              <grid row="3" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties/>
                             <border type="none"/>
@@ -226,17 +226,17 @@
                               <text value="Password"/>
                             </properties>
                           </component>
-                          <grid id="7b6a9" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                          <grid id="7b6a9" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="0" left="0" bottom="0" right="0"/>
                             <constraints>
-                              <grid row="5" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                              <grid row="5" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties/>
                             <border type="none"/>
                             <children>
                               <component id="5b54c" class="javax.swing.JTextField" binding="fldExpMonth">
                                 <constraints>
-                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <columns value="10"/>
@@ -254,13 +254,18 @@
                               </component>
                               <component id="44379" class="javax.swing.JTextField" binding="fldExpYear">
                                 <constraints>
-                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <columns value="10"/>
                                   <foreground color="-16776961"/>
                                 </properties>
                               </component>
+                              <hspacer id="5bc5c">
+                                <constraints>
+                                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                              </hspacer>
                             </children>
                           </grid>
                           <component id="dee10" class="javax.swing.JLabel" binding="labelExpMonth">
@@ -291,7 +296,7 @@
                           </component>
                           <component id="ab104" class="javax.swing.JTextField" binding="fldAccountType">
                             <constraints>
-                              <grid row="6" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="6" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <columns value="10"/>
@@ -314,7 +319,7 @@
                           </component>
                           <component id="edf25" class="javax.swing.JTextField" binding="fldPhone">
                             <constraints>
-                              <grid row="7" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="7" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <columns value="10"/>
@@ -337,7 +342,7 @@
                           </component>
                           <component id="acc80" class="javax.swing.JTextField" binding="fldDetail1">
                             <constraints>
-                              <grid row="8" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="8" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <columns value="10"/>
@@ -360,7 +365,7 @@
                           </component>
                           <component id="e7e6d" class="javax.swing.JTextField" binding="fldDetail2">
                             <constraints>
-                              <grid row="9" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="9" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <columns value="10"/>
@@ -383,7 +388,7 @@
                           </component>
                           <component id="58ac0" class="javax.swing.JTextField" binding="fldDetail3">
                             <constraints>
-                              <grid row="10" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="10" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
                               <columns value="10"/>
@@ -394,7 +399,7 @@
                           <grid id="5473d" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="2" left="0" bottom="2" right="0"/>
                             <constraints>
-                              <grid row="13" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                              <grid row="13" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties/>
                             <border type="none"/>
@@ -443,7 +448,7 @@
                           <grid id="b1518" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                             <margin top="0" left="0" bottom="0" right="0"/>
                             <constraints>
-                              <grid row="12" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                              <grid row="12" column="1" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties/>
                             <border type="none"/>
@@ -460,7 +465,7 @@
                               </vspacer>
                               <component id="a90de" class="javax.swing.JSpinner" binding="fldFontSize">
                                 <constraints>
-                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false">
                                     <minimum-size width="100" height="-1"/>
                                     <preferred-size width="100" height="-1"/>
                                   </grid>
@@ -495,7 +500,7 @@
                           </component>
                           <scrollpane id="27f93">
                             <constraints>
-                              <grid row="11" column="1" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                              <grid row="11" column="1" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties/>
                             <border type="none"/>
@@ -510,6 +515,11 @@
                               </component>
                             </children>
                           </scrollpane>
+                          <hspacer id="889e3">
+                            <constraints>
+                              <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                          </hspacer>
                         </children>
                       </grid>
                     </children>
