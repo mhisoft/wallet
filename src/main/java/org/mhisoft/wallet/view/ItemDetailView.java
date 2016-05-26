@@ -94,6 +94,7 @@ public class ItemDetailView {
 		fields.put("detail1", new FiledObject(ItemType.item, form.labelDetail1, form.fldDetail1));
 		fields.put("detail2", new FiledObject(ItemType.item, form.labelDetail2, form.fldDetail2));
 		fields.put("detail3", new FiledObject(ItemType.item, form.labelDetail3, form.fldDetail3));
+		fields.put("cvc", new FiledObject(ItemType.item, form.labelCVC, form.fldCVC));
 
 
 	}

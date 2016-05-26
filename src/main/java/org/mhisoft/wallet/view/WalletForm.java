@@ -59,13 +59,13 @@ import javax.swing.event.DocumentListener;
 
 import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.WalletMain;
+import org.mhisoft.wallet.action.ActionResult;
+import org.mhisoft.wallet.action.CloseWalletAction;
+import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
-import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.action.CloseWalletAction;
-import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
@@ -136,6 +136,13 @@ public class WalletForm {
 	private JScrollPane treePanel;
 	private JPanel filterPanel;
 	private JPanel treeListPanel;
+
+	private JPanel rightMainPanel;
+	private JScrollPane detailFormScrollPane;
+	private JPanel buttonPanel;
+	JLabel labelCVC;
+	JTextField fldCVC;
+	private JScrollPane rightScrollPane;
 
 
 	JMenuBar menuBar;

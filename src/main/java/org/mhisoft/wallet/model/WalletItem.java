@@ -56,6 +56,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 
 	private String pin;
+	private String cvc;
 	private String expMonth;
 	private String expYear;
 	private String accountType;
@@ -245,6 +246,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 				", lastViewdDate=" + lastViewdDate +
 				", lastModifiedDate=" + lastModifiedDate +
 				", pin='" + pin + '\'' +
+				", cvc='" + cvc + '\'' +
 				", expMonth='" + expMonth + '\'' +
 				", expYear='" + expYear + '\'' +
 				", accountType='" + accountType + '\'' +
