@@ -56,12 +56,7 @@ public class SaveWalletAction implements Action {
 	@Override
 	public ActionResult execute(Object... params) {
 
-		String fileName;
-		if (params == null || params.length == 0)
-			fileName = WalletSettings.defaultWalletFile;
-		else
-			fileName = (String) params[0];
-
+		String fileName = WalletSettings.getInstance().getLastFile();
 
 		save(fileName);
 

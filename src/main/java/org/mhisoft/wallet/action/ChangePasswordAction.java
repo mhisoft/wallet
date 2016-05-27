@@ -23,46 +23,53 @@
 
 package org.mhisoft.wallet.action;
 
-import java.io.File;
-
 import org.mhisoft.common.util.Encryptor;
-import org.mhisoft.wallet.model.WalletSettings;
+import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.FileContent;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
- * Description: Action for loading the wallet.
+ * Description: Change the password
  *
  * @author Tony Xue
- * @since Apr, 2016
+ * @since May, 2016
  */
-public class LoadWalletAction implements Action {
+public class ChangePasswordAction implements Action {
 
-	@Override
-	public ActionResult execute(Object... params) {
-		String pass = (String)params[0] ;
+	public static void main(String[] args) {
+		ChangePasswordAction action = new ChangePasswordAction();
+		//action.changeDataFilePass();
+	}
 
-		String  fileName = WalletSettings.getInstance().getLastFile();
+	private void changeDataFilePass(String oldPass, String newPass, String dataFile) {
+
+		try {
+			WalletModel model = ServiceRegistry.instance.getWalletModel();
+
+			Encryptor.createInstance(oldPass);
+			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile);
+			model.setItemsFlatList(fileContent.getWalletItems());
 
 
-		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
-		Encryptor.createInstance(pass);
+			Encryptor.createInstance(newPass);
+			model.setPassHash(HashingUtils.createHash(newPass));
+			ServiceRegistry.instance.getWalletService().saveToFile(dataFile, model);
 
 
-		if (new File(fileName).isFile()) {
-			//read tree from the existing file
-			WalletSettings.getInstance().setLastFile(fileName);
-			FileContent fileContent= ServiceRegistry.instance.getWalletService().readFromFile(fileName);
-			ServiceRegistry.instance.getWalletModel().setItemsFlatList(fileContent.getWalletItems());
-			ServiceRegistry.instance.getWalletModel().setPassHash(fileContent.getHeader().getPassHash());
+
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
 		}
-		else {
-			//new file, needs to be saved on close.
-			ServiceRegistry.instance.getWalletModel().setModified(true);
-		}
-		ServiceRegistry.instance.getWalletForm().loadTree();
-		return new ActionResult(true);
+
 
 	}
 
+
+	@Override
+	public ActionResult execute(Object... params) {
+
+
+		return null;
+	}
 }

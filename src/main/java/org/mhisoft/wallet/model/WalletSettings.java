@@ -55,6 +55,7 @@ public class WalletSettings implements Serializable	 {
 	private int dimensionX;
 	private int dimensionY;
 	private double dividerLocation;
+	private String lastFile;
 
 
 	public int getFontSize() {
@@ -97,6 +98,14 @@ public class WalletSettings implements Serializable	 {
 		this.dividerLocation = dividerLocation;
 	}
 
+	public String getLastFile() {
+		return lastFile==null?WalletSettings.defaultWalletFile:lastFile;
+	}
+
+	public void setLastFile(String lastFile) {
+		this.lastFile = lastFile;
+	}
+
 	@Override
 	public String toString() {
 		return "WalletSettings{" +
@@ -104,6 +113,7 @@ public class WalletSettings implements Serializable	 {
 				", fontSize=" + fontSize +
 				", dimensionX=" + dimensionX +
 				", dimensionY=" + dimensionY +
+				", lastFile=" + lastFile +
 				'}';
 	}
 }

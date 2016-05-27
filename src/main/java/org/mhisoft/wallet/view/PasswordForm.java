@@ -23,6 +23,9 @@
 
 package org.mhisoft.wallet.view;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,14 +39,14 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
-import org.mhisoft.wallet.model.PasswordValidator;
-import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.action.ActionResult;
-import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.action.CreatePasswordAction;
 import org.mhisoft.wallet.action.LoadWalletAction;
-import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.action.VerifyPasswordAction;
+import org.mhisoft.wallet.model.PasswordValidator;
+import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
  * Description:
@@ -61,9 +64,14 @@ public class PasswordForm {
 	private JSpinner spinner3;
 	private JLabel labelPassword;
 	private JLabel labelSafeCombination;
+	private JLabel labelInst1;
+	private JLabel labelInst2;
+	private JLabel labelInst3;
 	JDialog dialog;
 
 	WalletForm walletForm;
+
+	List<Component> componentsList = new ArrayList<>();
 
 
 	PasswordValidator passwordValidator = ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class);
@@ -81,16 +89,21 @@ public class PasswordForm {
 		dialog = new JDialog(walletForm.frame, "Please enter password", true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getContentPane().add(mainPanel);
-		dialog.setPreferredSize(new Dimension(800, 300));
+		dialog.setPreferredSize(new Dimension(800, 400));
 		dialog.pack();
 		dialog.setLocationRelativeTo(walletForm.frame);
 
-		SpinnerModel spinnerModel = new SpinnerNumberModel(10, 10, 99, 1);
-		SpinnerModel spinnerMode2 = new SpinnerNumberModel(10, 10, 99, 1);
-		SpinnerModel spinnerMode3 = new SpinnerNumberModel(10, 10, 99, 1);
+		SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 99, 1);
+		SpinnerModel spinnerMode2 = new SpinnerNumberModel(1, 1, 99, 1);
+		SpinnerModel spinnerMode3 = new SpinnerNumberModel(1, 1, 99, 1);
 		spinner1.setModel(spinnerModel);
 		spinner2.setModel(spinnerMode2);
 		spinner3.setModel(spinnerMode3);
+
+
+		componentsList = ViewHelper.getAllComponents(dialog);
+		//ViewHelper.setFontSize(componentsList, WalletSettings.getInstance().getFontSize());
+
 
 
 		dialog.setVisible(true);
@@ -118,7 +131,7 @@ public class PasswordForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dialog.dispose();
-				walletForm.exit();
+//				walletForm.exit();
 			}
 		});
 

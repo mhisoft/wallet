@@ -23,12 +23,9 @@
 
 package org.mhisoft.wallet.view;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -61,6 +58,7 @@ import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.CloseWalletAction;
+import org.mhisoft.wallet.action.OpenWalletFileAction;
 import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -147,11 +145,11 @@ public class WalletForm {
 
 	JMenuBar menuBar;
 	JMenu menuFile;
-	JMenuItem menuOpen, menuClose;
+	JMenuItem menuOpen, menuClose, menuImport, menuBackup, menuChangePassword;
 	//JRadioButtonMenuItem rbMenuItem;
 	//JCheckBoxMenuItem cbMenuItem;
 
-	List<Component> componetsList;
+	List<Component> componentsList;
 	WalletModel model;
 	TreeExploreView treeExploreView;
 	ListExplorerView listExploreView;
@@ -243,7 +241,7 @@ public class WalletForm {
 		btnFilter.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode()==KeyEvent.VK_ENTER){
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					doFilter();
 				}
 			}
@@ -251,7 +249,7 @@ public class WalletForm {
 		btnClearFilter.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode()==KeyEvent.VK_ENTER){
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					clearFilter();
 				}
 			}
@@ -319,15 +317,11 @@ public class WalletForm {
 
 		DialogUtils.create(frame);
 
+		componentsList = ViewHelper.getAllComponents(frame);
+		componentsList.add(itemList);
+
 		setupMenu();
 
-
-		componetsList = getAllComponents(frame);
-		componetsList.add(menuBar);
-		componetsList.add(menuFile);
-		componetsList.add(menuOpen);
-		componetsList.add(menuClose);
-		componetsList.add(itemList);
 
 		/*position it*/
 		frame.setLocationRelativeTo(null);  // *** this will center your app ***
@@ -400,6 +394,8 @@ public class WalletForm {
 		//menu
 		//Create the menu bar.
 		menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+
 		menuFile = new JMenu("File");
 		menuFile.setMnemonic(KeyEvent.VK_F);
 		menuBar.add(menuFile);
@@ -407,10 +403,36 @@ public class WalletForm {
 		menuFile.add(menuOpen);
 		menuClose = new JMenuItem("Close", KeyEvent.VK_C);
 		menuFile.add(menuClose);
-		frame.setJMenuBar(menuBar);
-		menuClose.addActionListener(closeAction);
+		menuChangePassword = new JMenuItem("Change Password", KeyEvent.VK_P);
+		menuFile.add(menuChangePassword);
 
+		componentsList.add(menuBar);
+		componentsList.add(menuFile);
+		componentsList.add(menuOpen);
+		componentsList.add(menuClose);
+		componentsList.add(menuChangePassword);
+
+
+		menuClose.addActionListener(closeAction);
 		btnClose.addActionListener(closeAction);
+		menuOpen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, CloseWalletAction.class);
+				ActionResult r = closeWalletAction.execute();
+				if (r.isSuccess()) {
+					OpenWalletFileAction openWalletFileAction = ServiceRegistry.instance.getService(BeanType.singleton, OpenWalletFileAction.class);
+					r = openWalletFileAction.execute();
+				}
+			}
+		});
+		menuChangePassword.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+
+			}
+		});
 
 
 	}
@@ -418,28 +440,11 @@ public class WalletForm {
 	void loadInPreferences() {
 		//divider location
 		splitPanel.setDividerLocation(WalletSettings.getInstance().getDividerLocation());
-		setFontSize(WalletSettings.getInstance().getFontSize());
+		ViewHelper.setFontSize(this.componentsList, WalletSettings.getInstance().getFontSize());
 	}
 
 	public void exit() {
 		frame.dispose();
-	}
-
-	/**
-	 * Resgier allthe components in the jFrame.
-	 *
-	 * @param c
-	 * @return
-	 */
-	public static List<Component> getAllComponents(final Container c) {
-		Component[] comps = c.getComponents();
-		List<Component> compList = new ArrayList<Component>();
-		for (Component comp : comps) {
-			compList.add(comp);
-			if (comp instanceof Container)
-				compList.addAll(getAllComponents((Container) comp));
-		}
-		return compList;
 	}
 
 
@@ -460,23 +465,13 @@ public class WalletForm {
 										  public void stateChanged(ChangeEvent e) {
 											  SpinnerModel spinnerModel = fldFontSize.getModel();
 											  int newFontSize = (Integer) spinnerModel.getValue();
-											  setFontSize(newFontSize);
+											  ViewHelper.setFontSize(componentsList, newFontSize);
 
 										  }
 									  }
 		);
 
 
-	}
-
-	void setFontSize(int newFontSize) {
-		WalletSettings.getInstance().setFontSize(newFontSize);
-		for (Component component : componetsList) {
-			Font original = component.getFont();
-			Font newFont = original.deriveFont(Float.valueOf(newFontSize));
-			component.setFont(newFont);
-
-		}
 	}
 
 

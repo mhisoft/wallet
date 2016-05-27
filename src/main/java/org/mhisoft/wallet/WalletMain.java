@@ -30,20 +30,21 @@ public class WalletMain {
 		walletSettingsService.readSettingsFromFile();
 
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
-		app.openWalletFile(null);
+		app.openWalletFile();
 		form.init();
 	}
 
 
 
-	protected void openWalletFile(String  fileName) {
+	protected void openWalletFile() {
 
-		if (fileName==null)
-			fileName = WalletSettings.defaultWalletFile;
+
+		String  fileName = WalletSettings.getInstance().getLastFile();
 
 		WalletModel model = ServiceRegistry.instance.getWalletForm().getModel();
 
 		if (new File(fileName).isFile()) {
+			WalletSettings.getInstance().setLastFile(fileName);
 			FileContentHeader header=ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 			model.setPassHash(header.getPassHash());
 		}

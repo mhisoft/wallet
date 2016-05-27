@@ -1,4 +1,6 @@
 * import and merge file.
+* back up current file
+* open a new file and save the last opened to the settings.
 * random access the file to allow save the item when the item SAVE button is clicked. (deferred)
 * when add a new item, make it edit mode by default (done)
 * add close button /menu; prevent the X close window button (done)
