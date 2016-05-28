@@ -29,7 +29,7 @@
     <property name="AppVersion" value="MHISoft eWallet ${version}"/>
     <property name="src.dir" value="src"/>
 
-    <property name="jre_bundle_dir" value="/Users/i831964/bin/jdk1.8.0_91.jdk/Contents/Home"/>
+    <property name="MAC_JRE_BUNDLE_DIR" value="dist/MAC/jdk1.8.0_51.jdk/Contents/Home"/>
 
 
     <!--<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>-->
@@ -122,13 +122,12 @@
         <property name="sourceJar" value="ewallet-${version}.jar"/>
         <property name="launch4jFinalJar" value="ewallet-combined.jar"/>
         <property name="AppMainClass" value="org.mhisoft.rdpro.ui.ReproMainForm"/>
-        <antcall target="_make-one-jar"/>
         <bundleapp outputdirectory="./dist"
                    name="${AppVersion}"
                    displayname="${AppVersion}"
                    identifier="org.mhisoft.wallet.WalletMain"
                    mainclassname="org.mhisoft.wallet.WalletMain">
-            <runtime dir="${jre_bundle_dir}" />
+            <runtime dir="${MAC_JRE_BUNDLE_DIR}" />
             <classpath dir="dist" includes="ewallet-${version}.jar,lib/*.jar"/>
         </bundleapp>
     </target>

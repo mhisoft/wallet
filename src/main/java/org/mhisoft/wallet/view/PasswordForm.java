@@ -98,6 +98,8 @@ public class PasswordForm implements  ActionListener {
 		dialog.setPreferredSize(new Dimension(800, 400));
 		dialog.pack();
 		dialog.setLocationRelativeTo(walletForm.frame);
+		// Put client property
+		fldPassword.putClientProperty("JPasswordField.cutCopyAllowed",true);
 
 		SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 99, 1);
 		SpinnerModel spinnerMode2 = new SpinnerNumberModel(1, 1, 99, 1);

@@ -16,12 +16,11 @@ I just don't trust any online or third party vault for storing my personal infor
  I have always been worried about the data could be secretly transmitted across the network without my knowledge while using other applications that connects to the network.  Usually such app allows the data to be shared in the cloud so that it can be access in  multiple devices.  If there are malware or virus, it may steal the personal data. SO YOU SHOULD NOT TRUST ANY VAULT APPLICATION WITH NETWORK ACTIVITIES INVOLVED. DEFINITLY DON'T STORE YOUR DATA ON THE INTERNET. EVEN IN THE ENCRYPTED FORM.  In contrast, the MHISoft eWallet does not use any network activity of any sort. It does not open network port (TCP ports) or use http.  It can be verified by examine the source code or  by using a network sniffer or monitor utility for example. 
  
 
-#Features and screenshots
-* Organize your password in categories. 
-* Search  the wallet and lcoate the item you need instantly. 
+#Features
+* Organize your passwords with different categories. 
+* Search the entire wallet and locate the item you need instantly. 
 * Support multiple wallet files. 
 * Import and merge in changes from another wallet data file. 
-
 
 
 
