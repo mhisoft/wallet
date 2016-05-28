@@ -17,8 +17,8 @@ I just don't trust any online or third party vault for storing my personal infor
  
 
 #Features
-* Organize your password in categories. 
-* Search  the wallet and lcoate the item you need instantly. 
+* Organize your passwords with different categories. 
+* Search the entire wallet and locate the item you need instantly. 
 * Support multiple wallet files. 
 * Import and merge in changes from another wallet data file. 
 
