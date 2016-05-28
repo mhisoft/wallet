@@ -59,6 +59,7 @@ public class WalletModel {
 
 	public void setItemsFlatList(List<WalletItem> itemsFlatList) {
 		this.itemsFlatList = itemsFlatList;
+		setModified(false);
 	}
 
 	public String getPassHash() {

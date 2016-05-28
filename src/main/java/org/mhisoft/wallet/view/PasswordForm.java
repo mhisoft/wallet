@@ -54,7 +54,7 @@ import org.mhisoft.wallet.service.ServiceRegistry;
  * @author Tony Xue
  * @since Mar, 2016
  */
-public class PasswordForm {
+public class PasswordForm implements  ActionListener {
 	private JPanel mainPanel;
 	private JPasswordField fldPassword;
 	private JSpinner spinner1;
@@ -84,7 +84,13 @@ public class PasswordForm {
 
 
 	//entry point
-	public void showPasswordForm(WalletForm walletForm) {
+
+	/**
+	 *
+	 * @param walletForm
+	 * @param actionListener  optional action listener. if not provided, the one in this class will be used.
+	 */
+	public void showPasswordForm(WalletForm walletForm, ActionListener actionListener) {
 		this.walletForm = walletForm;
 		dialog = new JDialog(walletForm.frame, "Please enter password", true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -104,9 +110,10 @@ public class PasswordForm {
 		componentsList = ViewHelper.getAllComponents(dialog);
 		//ViewHelper.setFontSize(componentsList, WalletSettings.getInstance().getFontSize());
 
-
-
 		dialog.setVisible(true);
+
+		if (actionListener!=null)
+			btnOk.addActionListener(actionListener);
 	}
 
 
@@ -136,38 +143,11 @@ public class PasswordForm {
 		});
 
 
-		btnOk.addActionListener(e -> {
-
-			boolean createHash = ServiceRegistry.instance.getWalletModel().getPassHash() == null;
-			String pass = getUserEnterPassword();
-
-			if (pass == null) {
-				//user input is not good. try again.
-			} else {
-				if (createHash) {
-					//user password is no good, did not pass validation.
-					CreatePasswordAction createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class);
-					createPasswordAction.execute(pass, this);
-				} else {
-					VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
-					ActionResult result = verifyPasswordAction.execute(pass);
-					if (result.isSuccess()) {
-						//clsoe the password form
-						exitPasswordForm();
-
-						//load the wallet
-						LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
-						loadWalletAction.execute(pass);
-					}
-				}
-			}
-
-
-		});
+		btnOk.addActionListener(this);
 	}
 
 
-	private String getUserEnterPassword() {
+	public String getUserEnterPassword() {
 
 		if(WalletModel.debug) {
 			return  "12Abc12334&5AB1310";
@@ -189,5 +169,30 @@ public class PasswordForm {
 
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		boolean createHash = ServiceRegistry.instance.getWalletModel().getPassHash() == null;
+		String pass = getUserEnterPassword();
 
+		if (pass == null) {
+			//user input is not good. try again.
+		} else {
+			if (createHash) {
+				//user password is no good, did not pass validation.
+				CreatePasswordAction createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class);
+				createPasswordAction.execute(pass, this);
+			} else {
+				VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
+				ActionResult result = verifyPasswordAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash());
+				if (result.isSuccess()) {
+					//clsoe the password form
+					exitPasswordForm();
+
+					//load the wallet
+					LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
+					loadWalletAction.execute(pass);
+				}
+			}
+		}
+	}
 }

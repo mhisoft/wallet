@@ -131,7 +131,7 @@ public class WalletFileTest {
 
 
 			walletService.saveToFile("test_v12.dat", model);
-			FileContent fileContent = walletService.readFromFile("test_v12.dat");
+			FileContent fileContent = walletService.readFromFile("test_v12.dat", Encryptor.getInstance());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
 			Assert.assertEquals(7, model.getItemsFlatList().size());
@@ -161,7 +161,7 @@ public class WalletFileTest {
 			//save
 			dataServicev10.saveToFile("test_v10.dat", model);
 			//read
-			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat");
+			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat", Encryptor.getInstance());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
 			Assert.assertEquals(7, model.getItemsFlatList().size());
@@ -179,7 +179,7 @@ public class WalletFileTest {
 			Encryptor.createInstance("12Abc12334&5AB1310");
 
 			DataService dataServicev11 = DataServiceFactory.createDataService(11);
-			FileContent fileContent = dataServicev11.readFromFile("test_DefaultWallet_v11.dat");
+			FileContent fileContent = dataServicev11.readFromFile("test_DefaultWallet_v11.dat",Encryptor.getInstance());
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 
@@ -221,14 +221,14 @@ public class WalletFileTest {
 
 
 			dataServicev10.saveToFile("test_v10.dat", model);
-			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat");
+			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",Encryptor.getInstance());
 
 			//now save to v11 format
 			model.setItemsFlatList(fileContent.getWalletItems());
 			dsLatest.saveToFile("test_v12.dat", model);
 
 			//verify by reding it
-			fileContent = dsLatest.readFromFile("test_v12.dat");
+			fileContent = dsLatest.readFromFile("test_v12.dat", Encryptor.getInstance());
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 			model.setItemsFlatList(fileContent.getWalletItems());

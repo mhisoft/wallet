@@ -52,7 +52,7 @@ public class LoadWalletAction implements Action {
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
 			WalletSettings.getInstance().setLastFile(fileName);
-			FileContent fileContent= ServiceRegistry.instance.getWalletService().readFromFile(fileName);
+			FileContent fileContent= ServiceRegistry.instance.getWalletService().readFromFile(fileName, Encryptor.getInstance());
 			ServiceRegistry.instance.getWalletModel().setItemsFlatList(fileContent.getWalletItems());
 			ServiceRegistry.instance.getWalletModel().setPassHash(fileContent.getHeader().getPassHash());
 		}

@@ -24,7 +24,6 @@
 package org.mhisoft.wallet.action;
 
 import org.mhisoft.common.util.HashingUtils;
-import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.DialogUtils;
 
 /**
@@ -38,8 +37,9 @@ public class VerifyPasswordAction implements Action {
 	@Override
 	public ActionResult execute(Object... params)    {
 		String pass = (String)params[0];
+		String hash = (String)params[1];
 		try {
-			boolean verify = HashingUtils.verifyPassword(pass, ServiceRegistry.instance.getWalletModel().getPassHash() );
+			boolean verify = HashingUtils.verifyPassword(pass, hash );
 			if (!verify) {
 				DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
 				return new ActionResult(false);

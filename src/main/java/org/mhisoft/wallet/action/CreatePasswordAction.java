@@ -51,7 +51,7 @@ public class CreatePasswordAction implements Action {
 
 			//proceed to load wallet
 			LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
-			loadWalletAction.execute(pass);
+			loadWalletAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash());
 		}
 
 

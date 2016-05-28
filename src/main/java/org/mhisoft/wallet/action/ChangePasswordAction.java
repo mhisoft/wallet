@@ -48,7 +48,7 @@ public class ChangePasswordAction implements Action {
 			WalletModel model = ServiceRegistry.instance.getWalletModel();
 
 			Encryptor.createInstance(oldPass);
-			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile);
+			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile, Encryptor.getInstance());
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 

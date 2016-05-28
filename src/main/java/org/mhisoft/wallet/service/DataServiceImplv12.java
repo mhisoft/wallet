@@ -92,7 +92,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 	//   need Encryptor to be intialized first.
 	@Override
-	public FileContent readFromFile(final String filename) {
+	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
 		//ByteArrayInputStream input = null;
 		//byte[] readBuf = new byte[DELIMITER_bytes.length];
 		FileContent ret  = new FileContent();
@@ -135,7 +135,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 				readBytes = fileIn.read(_byteItem);
 				if(readBytes==objectSize) {
 					_byteItem = FileUtils.trimByteArray(_byteItem);
-					byte[] byteItem = Encryptor.getInstance().decrypt(_byteItem, algorithmParameters);
+					byte[] byteItem = encryptor.decrypt(_byteItem, algorithmParameters);
 					WalletItem item = serializer.deserialize(byteItem);
 					walletItems.add(item);
 					k++;
@@ -150,13 +150,13 @@ public class DataServiceImplv12 extends AbstractDataService {
 			e.printStackTrace();
 			DialogUtils.getInstance().error("Error occurred in readFromFile()", e.getMessage());
 		}
-		ServiceRegistry.instance.getWalletModel().setModified(false);
+
 		return ret;
 
 
 	}
 
-
+	       //hash, flat list in the model and Encryptor
 	@Override
 	public void saveToFile(final String filename, final WalletModel model) {
 		FileOutputStream stream = null;

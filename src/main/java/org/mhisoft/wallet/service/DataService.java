@@ -25,6 +25,7 @@ package org.mhisoft.wallet.service;
 
 import java.io.IOException;
 
+import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.wallet.model.WalletModel;
 
 /**
@@ -37,7 +38,7 @@ public interface DataService {
 
 	public  FileContentHeader readHeader(final String filename, boolean closeAfterRead)  throws IOException;
 
-	public FileContent readFromFile(final String filename) ;
+	public FileContent readFromFile(final String filename, final Encryptor encryptor) ;
 
 	public void saveToFile(final String filename, final WalletModel model);
 }

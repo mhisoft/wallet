@@ -2,6 +2,7 @@ package org.mhisoft.wallet.service;
 
 import java.io.IOException;
 
+import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -15,10 +16,10 @@ import org.mhisoft.wallet.model.WalletModel;
 public class WalletService {
 
 
-	public FileContent readFromFile(final String filename) {
+	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
 		FileContentHeader header = readHeader(filename, true);
 		DataService ds = DataServiceFactory.createDataService(header.getVersion());
-		return ds.readFromFile(filename);
+		return ds.readFromFile(filename, encryptor);
 	}
 
 

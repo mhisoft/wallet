@@ -341,10 +341,11 @@ public class WalletForm {
 		frame.setVisible(true);
 
 		jreDebug();
+		tree.setModel(null);
 
 
 		PasswordForm passwordForm = new PasswordForm();
-		passwordForm.showPasswordForm(this);
+		passwordForm.showPasswordForm(this, null);
 
 
 		//remove the X buttons
