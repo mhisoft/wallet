@@ -22,7 +22,5 @@ I just don't trust any online or third party vault for storing my personal infor
 * Support multiple wallet files. 
 * Import and merge in changes from another wallet data file. 
 
-#Instructions to Enable Copy/Paste
-http://www.shodor.org/interactivate/resources/InstructionsCopyPaste
 
 
