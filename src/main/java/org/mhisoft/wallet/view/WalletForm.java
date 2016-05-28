@@ -174,6 +174,9 @@ public class WalletForm {
 
 		ServiceRegistry.instance.registerSingletonService(this);
 
+		// Put client property
+		fldPassword.putClientProperty("JPasswordField.cutCopyAllowed",true);
+
 
 //		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "name", model));
 //		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "URL", model));
