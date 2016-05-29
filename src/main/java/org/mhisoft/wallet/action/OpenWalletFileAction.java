@@ -46,16 +46,16 @@ public class OpenWalletFileAction implements Action {
 	public ActionResult execute(Object... params) {
 
 		String fileName = ViewHelper.chooseFile(null);
-		if (fileName!=null) {
+		if (fileName != null) {
 
 			WalletModel model = ServiceRegistry.instance.getWalletForm().getModel();
 
 			if (new File(fileName).isFile()) {
 				WalletSettings.getInstance().setLastFile(fileName);
-				FileContentHeader header=ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
+				FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 				model.setPassHash(header.getPassHash());
 				//now show password form to enter the password.
-				PasswordForm passwordForm = new PasswordForm();
+				PasswordForm passwordForm = new PasswordForm(fileName);
 				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), null);
 
 				//hand off to the OK listener and
@@ -66,13 +66,11 @@ public class OpenWalletFileAction implements Action {
 
 				return new ActionResult(true);
 
-			}
-			else {
+			} else {
 				DialogUtils.getInstance().error("Error", "Can not open file " + fileName);
 			}
 
 		}
-
 
 
 		return new ActionResult(false);

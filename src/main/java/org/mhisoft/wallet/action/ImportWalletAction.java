@@ -30,6 +30,7 @@ import java.io.File;
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
+import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.FileContent;
 import org.mhisoft.wallet.service.FileContentHeader;
@@ -59,7 +60,7 @@ public class ImportWalletAction implements Action {
 				String importFileHash = header.getPassHash();
 
 				//now show password form to enter the password.
-				PasswordForm passwordForm = new PasswordForm();
+				PasswordForm passwordForm = new PasswordForm(importFile);
 				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -70,7 +71,10 @@ public class ImportWalletAction implements Action {
 							//close the password form
 							passwordForm.exitPasswordForm();
 
-							doTheImport(pass, importFileHash);
+							doTheImport(importFile, pass, importFileHash);
+
+							//reload the view.
+							ServiceRegistry.instance.getWalletForm().loadTree();
 
 						}
 					}
@@ -104,25 +108,53 @@ public class ImportWalletAction implements Action {
 
 
 
-	protected void doTheImport(String importFilePass, String importFileHash) {
+	protected void doTheImport(String filename, String importFilePass, String importFileHash) {
 		Encryptor encryptor = new Encryptor(importFilePass);
-		FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(importFileHash, encryptor);
+		FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(filename, encryptor);
+
+
+		WalletModel impModel = new WalletModel();
+		impModel.setPassHash(importFileHash);
+		impModel.setItemsFlatList(fileContent.getWalletItems());
+		impModel.buildTreeFromFlatList();
+
+		WalletModel model = ServiceRegistry.instance.getWalletModel();
+		WalletItem root  = model.getRootItem();
+
+	    //will change the tree structure
 		for (int i = 1; i < fileContent.getWalletItems().size(); i++) {
 			WalletItem impItem = fileContent.getWalletItems().get(i);
 			WalletItem modelItem = findItemInModel(impItem);
 			if (modelItem!=null) {
-				//merge these two items.
+
+				if (!modelItem.isSame(impItem)) {
+
+					modelItem.mergeFrom(impItem);
+
+
+				}
 			}
 			else {
-				//new category
 				if (impItem.getType().equals(ItemType.category)) {
+					//found a new category which does not have a match
+					root.addChild(impItem);
+
 				}
+				else {
+					//it is an item, locate its parent and find a match in the current model
+					WalletItem modelCat = findItemInModel(impItem.getParent());
+					if (modelCat==null) {
+						//not matches cat can't happen here
+						throw new IllegalStateException("not matches cat can't happen here, impItem: " + impItem);
+					}
+					modelCat.addChild(impItem);
 
-
+				}
 			}
-
-
 		}
+
+		//rebuild back the list
+		model.buildFlatListFromTree();
 
 
 

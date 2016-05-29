@@ -32,6 +32,7 @@ import java.awt.Font;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.mhisoft.wallet.model.WalletSettings;
 
@@ -101,6 +102,7 @@ public class ViewHelper {
 		if (defaultDir == null)
 			defaultDir = System.getProperty("user.dir");
 		chooser.setCurrentDirectory(new File(defaultDir));
+		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Wallet data files", "dat", "wlt"));
 
 		//set font
 		setFileChooserFont(chooser.getComponents(), WalletSettings.getInstance().getFontSize());

@@ -67,7 +67,10 @@ public class PasswordForm implements  ActionListener {
 	private JLabel labelInst1;
 	private JLabel labelInst2;
 	private JLabel labelInst3;
+	private JLabel labelMsg;
 	JDialog dialog;
+
+	String fileName;
 
 	WalletForm walletForm;
 
@@ -77,8 +80,9 @@ public class PasswordForm implements  ActionListener {
 	PasswordValidator passwordValidator = ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class);
 
 
-	public PasswordForm() {
+	public PasswordForm(String fileName) {
 		passwordValidator = new PasswordValidator();
+		this.fileName = fileName;
 		init();
 	}
 
@@ -100,6 +104,18 @@ public class PasswordForm implements  ActionListener {
 		dialog.setLocationRelativeTo(walletForm.frame);
 		// Put client property
 		fldPassword.putClientProperty("JPasswordField.cutCopyAllowed",true);
+		if (fileName==null)
+			labelMsg.setText("Creating New Wallet");
+		else {
+			labelMsg.setText("Opening " + fileName );
+		}
+
+
+
+		if (actionListener!=null)
+			btnOk.addActionListener(actionListener);
+		else
+			btnOk.addActionListener(this);
 
 		SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, 99, 1);
 		SpinnerModel spinnerMode2 = new SpinnerNumberModel(1, 1, 99, 1);
@@ -114,8 +130,6 @@ public class PasswordForm implements  ActionListener {
 
 		dialog.setVisible(true);
 
-		if (actionListener!=null)
-			btnOk.addActionListener(actionListener);
 	}
 
 
@@ -145,7 +159,7 @@ public class PasswordForm implements  ActionListener {
 		});
 
 
-		btnOk.addActionListener(this);
+
 	}
 
 

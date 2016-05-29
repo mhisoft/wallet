@@ -58,6 +58,7 @@ import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.CloseWalletAction;
+import org.mhisoft.wallet.action.ImportWalletAction;
 import org.mhisoft.wallet.action.OpenWalletFileAction;
 import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.WalletItem;
@@ -347,7 +348,7 @@ public class WalletForm {
 		tree.setModel(null);
 
 
-		PasswordForm passwordForm = new PasswordForm();
+		PasswordForm passwordForm = new PasswordForm(WalletSettings.getInstance().getLastFile());
 		passwordForm.showPasswordForm(this, null);
 
 
@@ -407,6 +408,8 @@ public class WalletForm {
 		menuFile.add(menuOpen);
 		menuClose = new JMenuItem("Close", KeyEvent.VK_C);
 		menuFile.add(menuClose);
+		menuImport = new JMenuItem("Import", KeyEvent.VK_I);
+		menuFile.add(menuImport);
 		menuChangePassword = new JMenuItem("Change Password", KeyEvent.VK_P);
 		menuFile.add(menuChangePassword);
 
@@ -415,6 +418,7 @@ public class WalletForm {
 		componentsList.add(menuOpen);
 		componentsList.add(menuClose);
 		componentsList.add(menuChangePassword);
+		componentsList.add(menuImport);
 
 
 		menuClose.addActionListener(closeAction);
@@ -435,6 +439,13 @@ public class WalletForm {
 			public void actionPerformed(ActionEvent e) {
 
 
+			}
+		});
+		menuImport.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ImportWalletAction importWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, ImportWalletAction.class);
+				importWalletAction.execute();
 			}
 		});
 

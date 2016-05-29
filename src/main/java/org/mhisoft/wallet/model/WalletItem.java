@@ -46,24 +46,24 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	private String URL;
 	private String userName;
 	private String accountNumber;
-	private String expirationYear;
-	private String expirationMonth;
 	private String password;
+	private String expMonth;
+	private String expYear;
+	private String pin;
+	private String cvc;
+	private String accountType;
+	private String phone;
+	private String detail1;
+	private String detail2;
+	private String detail3;
+
+
 	private String notes;
 	private Timestamp createdDate;
 	private Timestamp lastViewdDate;
 	private Timestamp lastModifiedDate;
 
 
-	private String pin;
-	private String cvc;
-	private String expMonth;
-	private String expYear;
-	private String accountType;
-	private String phone;
-	private String detail1;
-	private String detail2;
-	private String detail3;
 
 
 	private transient WalletItem parent;
@@ -133,21 +133,6 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		this.accountNumber = accountNumber;
 	}
 
-	public String getExpirationYear() {
-		return expirationYear;
-	}
-
-	public void setExpirationYear(String expirationYear) {
-		this.expirationYear = expirationYear;
-	}
-
-	public String getExpirationMonth() {
-		return expirationMonth;
-	}
-
-	public void setExpirationMonth(String expirationMonth) {
-		this.expirationMonth = expirationMonth;
-	}
 
 	public String getPassword() {
 		return password;
@@ -190,6 +175,78 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
+	public String getPin() {
+		return pin;
+	}
+
+	public void setPin(String pin) {
+		this.pin = pin;
+	}
+
+	public String getCvc() {
+		return cvc;
+	}
+
+	public void setCvc(String cvc) {
+		this.cvc = cvc;
+	}
+
+	public String getExpMonth() {
+		return expMonth;
+	}
+
+	public void setExpMonth(String expMonth) {
+		this.expMonth = expMonth;
+	}
+
+	public String getExpYear() {
+		return expYear;
+	}
+
+	public void setExpYear(String expYear) {
+		this.expYear = expYear;
+	}
+
+	public String getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getDetail1() {
+		return detail1;
+	}
+
+	public void setDetail1(String detail1) {
+		this.detail1 = detail1;
+	}
+
+	public String getDetail2() {
+		return detail2;
+	}
+
+	public void setDetail2(String detail2) {
+		this.detail2 = detail2;
+	}
+
+	public String getDetail3() {
+		return detail3;
+	}
+
+	public void setDetail3(String detail3) {
+		this.detail3 = detail3;
+	}
+
 	public WalletItem(ItemType type, String name) {
 		this.sysGUID = StringUtils.getGUID();
 		this.type = type;
@@ -218,6 +275,12 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		return name;
 	}
 
+
+	/**
+	 * Compare the content
+	 * @param item
+	 * @return
+	 */
 	public boolean isSame(final WalletItem item) {
 		if (item == null)
 			return false;
@@ -230,21 +293,20 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		return this.name.compareTo( o.getName() );
 	}
 
+
 	public String toStringJson() {
 		return "WalletItem{" +
-				"sysGUID='" + sysGUID + '\'' +
-				", type=" + type +
+				//"sysGUID='" + sysGUID + '\'' +
+				" type=" + type +
 				", name='" + name + '\'' +
 				", URL='" + URL + '\'' +
 				", userName='" + userName + '\'' +
 				", accountNumber='" + accountNumber + '\'' +
-				", expirationYear='" + expirationYear + '\'' +
-				", expirationMonth='" + expirationMonth + '\'' +
 				", password='" + password + '\'' +
 				", notes='" + notes + '\'' +
-				", createdDate=" + createdDate +
-				", lastViewdDate=" + lastViewdDate +
-				", lastModifiedDate=" + lastModifiedDate +
+//				", createdDate=" + createdDate +
+//				", lastViewdDate=" + lastViewdDate +
+//				", lastModifiedDate=" + lastModifiedDate +
 				", pin='" + pin + '\'' +
 				", cvc='" + cvc + '\'' +
 				", expMonth='" + expMonth + '\'' +
@@ -257,6 +319,40 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 				'}';
 	}
 
+
+	/**
+	 * merge the fields from the target item during import.
+	 * @param item
+	 */
+	public void mergeFrom(final WalletItem item) {
+		if (!this.name.equals(item.getName())) {
+			if (this.lastModifiedDate.before(item.getLastModifiedDate()))
+				this.name = item.getName();
+		}
+		if (!this.URL.equals(item.getURL())) {
+			this.URL = this.getURL() + "/" + item.getURL();
+		}
+
+
+		this.name= item.getName();
+		this.URL= item.getURL();
+		this.userName= item.getUserName();
+		this.accountNumber= item.getAccountNumber();
+		this.accountType= item.getAccountType();
+		this.expYear= item.getExpYear();
+		this.expMonth= item.getExpMonth();
+		this.password= item.getPassword();
+		this.pin= item.getPin();
+		this.cvc= item.getCvc();
+		this.phone= item.getPhone();
+		this.notes= item.getNotes();
+		this.detail1= item.getDetail1();
+		this.detail2= item.getDetail2();
+		this.detail3= item.getDetail3();
+
+		this.lastModifiedDate= new Timestamp(System.currentTimeMillis());
+
+	}
 
 	public boolean hasChildren() {
 		return getChildren() != null && getChildren().size() > 0;
@@ -291,6 +387,11 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		return false;
 	}
 
+	/**
+	 * Used in search. include only the searchable fields. password, pin, cvc are not searchable.
+	 * @param filter
+	 * @return
+	 */
 
 	public boolean isMatch(String filter) {
 		//SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
@@ -301,8 +402,8 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 				isJavaPatternMatch(p, name)
 						|| isJavaPatternMatch(p, URL)
 						|| isJavaPatternMatch(p, accountNumber)
-						|| isJavaPatternMatch(p, expirationMonth)
-						|| isJavaPatternMatch(p, expirationYear)
+						|| isJavaPatternMatch(p, expMonth)
+						|| isJavaPatternMatch(p, expYear)
 						|| isJavaPatternMatch(p, notes)
 						|| isJavaPatternMatch(p, detail1)
 						|| isJavaPatternMatch(p, detail2)

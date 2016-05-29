@@ -2,6 +2,7 @@ package org.mhisoft.wallet;
 
 import java.io.File;
 
+import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
@@ -32,23 +33,23 @@ public class WalletMain {
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
 		app.openWalletFile();
 		form.init();
-	}
 
+		HashingUtils.init();
+	}
 
 
 	protected void openWalletFile() {
 
 
-		String  fileName = WalletSettings.getInstance().getLastFile();
+		String fileName = WalletSettings.getInstance().getLastFile();
 
 		WalletModel model = ServiceRegistry.instance.getWalletForm().getModel();
 
 		if (new File(fileName).isFile()) {
 			WalletSettings.getInstance().setLastFile(fileName);
-			FileContentHeader header=ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
+			FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 			model.setPassHash(header.getPassHash());
-		}
-		else {
+		} else {
 			//create an empty tree with one root.
 			model.setupEmptyWalletData();
 		}

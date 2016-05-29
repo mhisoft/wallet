@@ -6,6 +6,7 @@ import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.view.DialogUtils;
 
 /**
  * Description:
@@ -16,7 +17,7 @@ import org.mhisoft.wallet.model.WalletModel;
 public class WalletService {
 
 
-	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
+	public FileContent readFromFile(final String filename, final Encryptor encryptor)  {
 		FileContentHeader header = readHeader(filename, true);
 		DataService ds = DataServiceFactory.createDataService(header.getVersion());
 		return ds.readFromFile(filename, encryptor);
@@ -33,7 +34,7 @@ public class WalletService {
 		DataService dataServicev12 = DataServiceFactory.createDataService(DataServiceImplv12.DATA_VERSION);
 
 		int v;
-		FileContentHeader header;
+		FileContentHeader header=null;
 
 		try {
 			 header = dataServicev12.readHeader(filename, true);
@@ -43,8 +44,13 @@ public class WalletService {
 				header = dataServicev10.readHeader(filename, true);
 				v= header.getVersion();
 			} catch (IOException e1) {
-				throw new RuntimeException("failed to read the data file");
+				e.printStackTrace();
+				DialogUtils.getInstance().error("Error occurred", "Can't read file " + filename);
 			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			DialogUtils.getInstance().error("Error occurred", "Can't read file " + filename);
 		}
 
 		return header;

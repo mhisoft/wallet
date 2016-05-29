@@ -120,6 +120,12 @@ public class WalletModel {
 		return sb.toString();
 	}
 
+	public WalletItem getRootItem() {
+		if (itemsFlatList.size()==0)
+			return null;
+		return itemsFlatList.get(0) ;
+	}
+
 	/**
 	 * build the hierarchical relationships from the flat list.
 	 * The parent and children of each item will be set.

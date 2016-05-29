@@ -40,9 +40,9 @@ public class LoadWalletAction implements Action {
 
 	@Override
 	public ActionResult execute(Object... params) {
-		String pass = (String)params[0] ;
+		String pass = (String) params[0];
 
-		String  fileName = WalletSettings.getInstance().getLastFile();
+		String fileName = WalletSettings.getInstance().getLastFile();
 
 
 		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
@@ -52,11 +52,10 @@ public class LoadWalletAction implements Action {
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
 			WalletSettings.getInstance().setLastFile(fileName);
-			FileContent fileContent= ServiceRegistry.instance.getWalletService().readFromFile(fileName, Encryptor.getInstance());
+			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName, Encryptor.getInstance());
 			ServiceRegistry.instance.getWalletModel().setItemsFlatList(fileContent.getWalletItems());
 			ServiceRegistry.instance.getWalletModel().setPassHash(fileContent.getHeader().getPassHash());
-		}
-		else {
+		} else {
 			//new file, needs to be saved on close.
 			ServiceRegistry.instance.getWalletModel().setModified(true);
 		}

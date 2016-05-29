@@ -173,7 +173,7 @@ public class WalletFileTest {
 
 	}
 
-	@Test
+
 	public void testReadFilev11() {
 		try {
 			Encryptor.createInstance("12Abc12334&5AB1310");
