@@ -45,7 +45,7 @@ public class CloseWalletAction extends SaveWalletAction {
 					, "Save the changes before close?") == Confirmation.YES) {
 				WalletModel model = ServiceRegistry.instance.getWalletModel();
 				model.buildFlatListFromTree();
-				ServiceRegistry.instance.getWalletService().saveToFile(filename, model);
+				ServiceRegistry.instance.getWalletService().saveToFile(filename, model, model.getEncryptor());
 				ServiceRegistry.instance.getWalletModel().setModified(false);
 				DialogUtils.getInstance().info("Saved to file successfully.");
 			}

@@ -24,9 +24,9 @@ public class WalletService {
 	}
 
 
-	public void saveToFile(final String filename, final WalletModel model) {
+	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
 
-		DataServiceFactory.createDataService().saveToFile(filename, model);
+		DataServiceFactory.createDataService().saveToFile(filename, model, encryptor);
 	}
 
 	public  FileContentHeader readHeader(final String filename, boolean closeAfterRead) {

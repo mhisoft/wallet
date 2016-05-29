@@ -23,7 +23,6 @@
 
 package org.mhisoft.wallet.action;
 
-import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -78,10 +77,7 @@ public class CreatePasswordAction implements Action {
 	public boolean createPassword(String pass) {
 		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
 		createHash(pass);
-		Encryptor.createInstance(pass);
 		return true;
-
-
 	}
 
 

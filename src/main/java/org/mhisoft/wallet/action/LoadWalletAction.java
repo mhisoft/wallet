@@ -25,7 +25,7 @@ package org.mhisoft.wallet.action;
 
 import java.io.File;
 
-import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.FileContent;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -46,15 +46,22 @@ public class LoadWalletAction implements Action {
 
 
 		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
-		Encryptor.createInstance(pass);
+
 
 
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
 			WalletSettings.getInstance().setLastFile(fileName);
-			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName, Encryptor.getInstance());
-			ServiceRegistry.instance.getWalletModel().setItemsFlatList(fileContent.getWalletItems());
-			ServiceRegistry.instance.getWalletModel().setPassHash(fileContent.getHeader().getPassHash());
+			WalletModel model  = ServiceRegistry.instance.getWalletModel();
+			model.initEncryptor(pass);
+			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
+					model.getEncryptor());
+			model.setItemsFlatList(fileContent.getWalletItems());
+			model.setPassHash(fileContent.getHeader().getPassHash());
+
+
+
+
 		} else {
 			//new file, needs to be saved on close.
 			ServiceRegistry.instance.getWalletModel().setModified(true);

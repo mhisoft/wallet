@@ -27,7 +27,6 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
@@ -92,7 +91,6 @@ public class WalletFileTest {
 		model.getItemsFlatList().add(gNode);
 		model.buildTreeFromFlatList();
 
-		 Encryptor.createInstance("testit&(9938447");
 	}
 
 
@@ -106,9 +104,10 @@ public class WalletFileTest {
 			model.setupTestData();
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setPassHash(hash);
+			model.initEncryptor("testPa!ss213%");
 			//protype model is used in test
 			ServiceRegistry.instance.getWalletForm().setModel(model);
-			DataServiceFactory.createDataService(11).saveToFile("testv11.dat", model);
+			DataServiceFactory.createDataService(11).saveToFile("testv11.dat", model, model.getEncryptor());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -127,11 +126,11 @@ public class WalletFileTest {
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setPassHash(hash);
-			Encryptor.createInstance("testPa!ss213%");
+			model.initEncryptor("testPa!ss213%");
 
 
-			walletService.saveToFile("test_v12.dat", model);
-			FileContent fileContent = walletService.readFromFile("test_v12.dat", Encryptor.getInstance());
+			walletService.saveToFile("test_v12.dat", model, model.getEncryptor());
+			FileContent fileContent = walletService.readFromFile("test_v12.dat" , model.getEncryptor());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
 			Assert.assertEquals(7, model.getItemsFlatList().size());
@@ -155,13 +154,13 @@ public class WalletFileTest {
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setPassHash(hash);
-			Encryptor.createInstance("testPa!ss213%");
+			model.initEncryptor("testPa!ss213%");
 
 			DataService dataServicev10 = DataServiceFactory.createDataService(10);
 			//save
-			dataServicev10.saveToFile("test_v10.dat", model);
+			dataServicev10.saveToFile("test_v10.dat", model, model.getEncryptor());
 			//read
-			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat", Encryptor.getInstance());
+			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",model.getEncryptor());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
 			Assert.assertEquals(7, model.getItemsFlatList().size());
@@ -176,10 +175,10 @@ public class WalletFileTest {
 
 	public void testReadFilev11() {
 		try {
-			Encryptor.createInstance("12Abc12334&5AB1310");
+			model.initEncryptor("12Abc12334&5AB1310");
 
 			DataService dataServicev11 = DataServiceFactory.createDataService(11);
-			FileContent fileContent = dataServicev11.readFromFile("test_DefaultWallet_v11.dat",Encryptor.getInstance());
+			FileContent fileContent = dataServicev11.readFromFile("test_DefaultWallet_v11.dat",model.getEncryptor());
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 
@@ -187,7 +186,7 @@ public class WalletFileTest {
 			//save
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setPassHash(hash);
-			dataServicev12.saveToFile("test_DefaultWallet_v12.dat", model);
+			dataServicev12.saveToFile("test_DefaultWallet_v12.dat", model, model.getEncryptor());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -212,7 +211,7 @@ public class WalletFileTest {
 			ServiceRegistry.instance.getWalletForm().setModel(model);
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
-			Encryptor.createInstance("testPa!ss213%");
+			model.initEncryptor("testPa!ss213%");
 			model.setPassHash(hash);
 			DataService dataServicev10 = DataServiceFactory.createDataService(10);
 
@@ -220,15 +219,15 @@ public class WalletFileTest {
 			DataService dsLatest = DataServiceFactory.createDataService();
 
 
-			dataServicev10.saveToFile("test_v10.dat", model);
-			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",Encryptor.getInstance());
+			dataServicev10.saveToFile("test_v10.dat", model, model.getEncryptor());
+			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",model.getEncryptor());
 
 			//now save to v11 format
 			model.setItemsFlatList(fileContent.getWalletItems());
-			dsLatest.saveToFile("test_v12.dat", model);
+			dsLatest.saveToFile("test_v12.dat", model, model.getEncryptor());
 
 			//verify by reding it
-			fileContent = dsLatest.readFromFile("test_v12.dat", Encryptor.getInstance());
+			fileContent = dsLatest.readFromFile("test_v12.dat", model.getEncryptor());
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 			model.setItemsFlatList(fileContent.getWalletItems());

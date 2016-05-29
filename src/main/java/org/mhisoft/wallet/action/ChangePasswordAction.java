@@ -47,14 +47,14 @@ public class ChangePasswordAction implements Action {
 		try {
 			WalletModel model = ServiceRegistry.instance.getWalletModel();
 
-			Encryptor.createInstance(oldPass);
-			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile, Encryptor.getInstance());
+			Encryptor oldEnc = new  Encryptor(newPass);
+			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile,  oldEnc  );
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 
-			Encryptor.createInstance(newPass);
+			Encryptor enc = new  Encryptor(newPass);
 			model.setPassHash(HashingUtils.createHash(newPass));
-			ServiceRegistry.instance.getWalletService().saveToFile(dataFile, model);
+			ServiceRegistry.instance.getWalletService().saveToFile(dataFile, model, enc);
 
 
 

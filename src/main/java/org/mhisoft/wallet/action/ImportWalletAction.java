@@ -120,6 +120,7 @@ public class ImportWalletAction implements Action {
 
 		WalletModel impModel = new WalletModel();
 		impModel.setPassHash(importFileHash);
+		impModel.setEncryptor(encryptor);
 		impModel.setItemsFlatList(fileContent.getWalletItems());
 		impModel.buildTreeFromFlatList();
 

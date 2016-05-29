@@ -158,7 +158,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 	       //hash, flat list in the model and Encryptor
 	@Override
-	public void saveToFile(final String filename, final WalletModel model) {
+	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
 		FileOutputStream stream = null;
 		try {
 
@@ -182,10 +182,10 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 			for (WalletItem item : model.getItemsFlatList()) {
 				byte[] _byteItem = serializer.serialize(item);
-				byte[] encrypted = Encryptor.getInstance().encrypt(_byteItem);
+				byte[] encrypted = encryptor.encrypt(_byteItem);
 
 				//have to write for each encryption because a random salt is used.
-				cipherParameters = Encryptor.getInstance().getCipherParameters();
+				cipherParameters = encryptor.getCipherParameters();
 								/*#3: cipherParameters size 4 bytes*/
 				dataOut.write(FileUtils.intToByteArray(cipherParameters.length));
 				/*#4: cipherParameters body*/

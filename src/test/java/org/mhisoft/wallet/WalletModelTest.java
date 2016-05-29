@@ -85,7 +85,7 @@ public class WalletModelTest {
 
 		model.buildTreeFromFlatList();
 
-		 Encryptor.createInstance("testit&(9938447");
+
 	}
 
 

@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.mhisoft.common.util.Encryptor;
+
 /**
  * Description: The model for the wallet view.
  *
@@ -40,9 +42,24 @@ public class WalletModel {
 	WalletItem currentItem;
 	String passHash;
 	boolean modified =false;
+	Encryptor encryptor;
+
 
 	public WalletModel() {
-		//Encryptor.createInstance("testit&(9938447");
+
+	}
+
+	public void initEncryptor(final String pass)   {
+		encryptor = new Encryptor(pass);
+	}
+
+
+	public Encryptor getEncryptor() {
+		return encryptor;
+	}
+
+	public void setEncryptor(Encryptor encryptor) {
+		this.encryptor = encryptor;
 	}
 
 	public WalletItem getCurrentItem() {

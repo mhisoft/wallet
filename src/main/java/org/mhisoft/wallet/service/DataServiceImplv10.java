@@ -156,7 +156,7 @@ public class DataServiceImplv10 extends AbstractDataService {
 
 
 	@Override
-	public void saveToFile(final String filename, final WalletModel model) {
+	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
 		FileOutputStream stream = null;
 		try {
 
@@ -175,8 +175,8 @@ public class DataServiceImplv10 extends AbstractDataService {
 			byte[] cipherParameters;
 			for (WalletItem item : model.getItemsFlatList()) {
 				byte[] _byteItem = serializer.serialize(item);
-				byte[] enc = Encryptor.getInstance().encrypt(_byteItem);
-				cipherParameters = Encryptor.getInstance().getCipherParameters();
+				byte[] enc = encryptor.encrypt(_byteItem);
+				cipherParameters = encryptor.getCipherParameters();
 				/*#3: cipherParameters size 4 bytes*/
 				dataOut.write(FileUtils.intToByteArray(cipherParameters.length));
 

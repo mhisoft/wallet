@@ -45,7 +45,7 @@ public class SaveWalletAction implements Action {
 //		if (ServiceRegistry.instance.getWalletModel().isModified()) {
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		model.buildFlatListFromTree();
-		ServiceRegistry.instance.getWalletService().saveToFile(fileName, model);
+		ServiceRegistry.instance.getWalletService().saveToFile(fileName, model, model.getEncryptor());
 		ServiceRegistry.instance.getWalletModel().setModified(false);
 		//DialogUtils.getInstance().info("Saved successfully.");
 		ServiceRegistry.instance.getWalletForm().setMessage("Saved successfully.");

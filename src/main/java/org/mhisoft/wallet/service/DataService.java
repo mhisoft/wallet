@@ -40,5 +40,5 @@ public interface DataService {
 
 	public FileContent readFromFile(final String filename, final Encryptor encryptor) ;
 
-	public void saveToFile(final String filename, final WalletModel model);
+	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor);
 }
