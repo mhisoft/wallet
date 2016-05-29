@@ -100,7 +100,7 @@ public class ViewHelper {
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
 		if (defaultDir == null)
-			defaultDir = System.getProperty("user.dir");
+			defaultDir = WalletSettings.userHome;
 		chooser.setCurrentDirectory(new File(defaultDir));
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Wallet data files", "dat", "wlt"));
 

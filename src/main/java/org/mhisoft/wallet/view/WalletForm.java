@@ -176,7 +176,7 @@ public class WalletForm {
 		ServiceRegistry.instance.registerSingletonService(this);
 
 		// Put client property
-		fldPassword.putClientProperty("JPasswordField.cutCopyAllowed",true);
+		fldPassword.putClientProperty("JPasswordField.cutCopyAllowed", true);
 
 
 //		fldName.getDocument().addDocumentListener(new MyDocumentListener(fldName, "name", model));
@@ -197,7 +197,17 @@ public class WalletForm {
 		btnSaveForm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveCurrentEdit(false);
+
+				//save button click , it is two fold. save the item detail edit
+				//Or save the whole model when model is modified from import for instance.
+				if (isDetailModified())
+					saveCurrentEdit(false);
+				else if (model.isModified()) {
+					//save file
+					SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
+					saveWalletAction.execute();
+
+				}
 
 			}
 		});
@@ -512,29 +522,33 @@ public class WalletForm {
 	public void loadTree() {
 		treeExploreView.setupTreeView();
 		listExploreView.setupListView();
+
+		btnSaveForm.setVisible(model.isModified() || isDetailModified());
 	}
 
 
-	public boolean isModified() {
-		return (getDisplayMode() == DisplayMode.add || getDisplayMode() == DisplayMode.edit)
-				//compare the current item in the model with the data on the item detail form.
-				&& itemDetailView.isModified();
+	public boolean isDetailModified() {
+		return
+				((getDisplayMode() == DisplayMode.add || getDisplayMode() == DisplayMode.edit)
+						//compare the current item in the model with the data on the item detail form.
+						&& (itemDetailView.isModified()));
+
 	}
 
+
+	//called when node changes
 	public void saveCurrentEdit(boolean askToSave) {
-		if (isModified()) {
+		if (isDetailModified()) {
 			if (!askToSave || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
-					, "Save the changes to the current item?") == Confirmation.YES) {
+					, "Save the changes?") == Confirmation.YES) {
 				itemDetailView.updateToModel();
 				//save file
 				SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
 				saveWalletAction.execute();
+				//model.setModified(false);   save action does it.
 			}
+
 		}
-
-		model.setModified(false);
-		btnSaveForm.setVisible(false);
-
 
 	}
 

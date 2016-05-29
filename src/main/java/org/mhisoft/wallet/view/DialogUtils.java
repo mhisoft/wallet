@@ -105,6 +105,19 @@ public class DialogUtils {
 	}
 
 	/**
+	 * System error message
+	 * @param error
+	 */
+	public void error(  final String error ) {
+		//custom title, warning icon
+		setFontSize();
+		JOptionPane.showMessageDialog(frame,
+				error,
+				"An system error occurred",
+				JOptionPane.ERROR_MESSAGE);
+	}
+
+	/**
 	 * Display message
 	 * @param message
 	 */

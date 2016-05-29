@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.Serializable;
 
+import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.common.util.StringUtils;
 
 /**
@@ -62,8 +63,6 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	private Timestamp createdDate;
 	private Timestamp lastViewdDate;
 	private Timestamp lastModifiedDate;
-
-
 
 
 	private transient WalletItem parent;
@@ -278,6 +277,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 	/**
 	 * Compare the content
+	 *
 	 * @param item
 	 * @return
 	 */
@@ -290,7 +290,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	@Override
 	public int compareTo(WalletItem o) {
 		//make it sort by name
-		return this.name.compareTo( o.getName() );
+		return this.name.compareTo(o.getName());
 	}
 
 
@@ -320,37 +320,78 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	}
 
 
+	protected void mergeField(WalletItem item1, WalletItem item2, String fldName) throws NoSuchFieldException {
+
+		String fld1 = (String) ReflectionUtil.getFieldValue(item1, fldName);
+		String fld2 = (String) ReflectionUtil.getFieldValue(item2, fldName);
+
+		String mergedFld ;
+		boolean modified = false;
+
+		if (!StringUtils.hasValue(fld1))   {
+			mergedFld = fld2;
+			modified = true;
+		}
+		else {
+			if (!StringUtils.hasValue(fld2))  {
+				mergedFld = fld1;
+			}
+			else {
+				if (!fld1.equals(fld2))    {
+				    int k = 	fld1.lastIndexOf("/");
+					if(k>0)  {
+						String s = fld1.substring(k+1, fld1.length()) ;
+						if (!s.equals(fld2))   {
+							mergedFld = fld1 + "/" + fld2 ;
+							modified = true;
+						}
+						else
+							mergedFld = fld1;
+					}
+					else {
+						mergedFld = fld1 + "/" + fld2;
+						modified = true;
+					}
+				}
+				else
+					mergedFld = fld1;
+			}
+
+		}
+
+
+		if (modified)
+		     ReflectionUtil.setFieldValue(item1, fldName, mergedFld);
+	}
+
+
 	/**
 	 * merge the fields from the target item during import.
+	 *
 	 * @param item
 	 */
-	public void mergeFrom(final WalletItem item) {
+	public void mergeFrom(final WalletItem item) throws NoSuchFieldException {
 		if (!this.name.equals(item.getName())) {
 			if (this.lastModifiedDate.before(item.getLastModifiedDate()))
 				this.name = item.getName();
 		}
-		if (!this.URL.equals(item.getURL())) {
-			this.URL = this.getURL() + "/" + item.getURL();
-		}
+
+		mergeField(this, item, "URL");
+		mergeField(this, item, "accountNumber");
+		mergeField(this, item, "accountType");
+		mergeField(this, item, "expYear");
+		mergeField(this, item, "expMonth");
+		mergeField(this, item, "password");
+		mergeField(this, item, "pin");
+		mergeField(this, item, "cvc");
+		mergeField(this, item, "phone");
+		mergeField(this, item, "notes");
+		mergeField(this, item, "detail1");
+		mergeField(this, item, "detail2");
+		mergeField(this, item, "detail3");
 
 
-		this.name= item.getName();
-		this.URL= item.getURL();
-		this.userName= item.getUserName();
-		this.accountNumber= item.getAccountNumber();
-		this.accountType= item.getAccountType();
-		this.expYear= item.getExpYear();
-		this.expMonth= item.getExpMonth();
-		this.password= item.getPassword();
-		this.pin= item.getPin();
-		this.cvc= item.getCvc();
-		this.phone= item.getPhone();
-		this.notes= item.getNotes();
-		this.detail1= item.getDetail1();
-		this.detail2= item.getDetail2();
-		this.detail3= item.getDetail3();
-
-		this.lastModifiedDate= new Timestamp(System.currentTimeMillis());
+		this.lastModifiedDate = new Timestamp(System.currentTimeMillis());
 
 	}
 
@@ -389,6 +430,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 	/**
 	 * Used in search. include only the searchable fields. password, pin, cvc are not searchable.
+	 *
 	 * @param filter
 	 * @return
 	 */

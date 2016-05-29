@@ -50,6 +50,8 @@ public class SaveWalletAction implements Action {
 		//DialogUtils.getInstance().info("Saved successfully.");
 		ServiceRegistry.instance.getWalletForm().setMessage("Saved successfully.");
 
+		ServiceRegistry.instance.getWalletForm().displayWalletItemDetails(model.getCurrentItem());
+
 //		}
 	}
 

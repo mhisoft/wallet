@@ -54,6 +54,27 @@ public class TreeExploreView {
 		this.model = model;
 		this.tree = tree;
 		this.form = walletForm;
+
+
+
+		//Listen for when the selection changes.
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+
+				if (node == null) {
+					form.btnAddNode.setVisible(false);
+					form.btnDeleteNode.setVisible(false);
+					//Nothing is selected.
+					return;
+				}
+
+				changeNode(node);
+
+			}
+		});
+
 	}
 
 	/**
@@ -109,24 +130,6 @@ public class TreeExploreView {
 
 		changeNode(rootNode);
 		expandRoot(rootNode);
-
-		//Listen for when the selection changes.
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
-			@Override
-			public void valueChanged(TreeSelectionEvent e) {
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-				if (node == null) {
-					form.btnAddNode.setVisible(false);
-					form.btnDeleteNode.setVisible(false);
-					//Nothing is selected.
-					return;
-				}
-
-				changeNode(node);
-
-			}
-		});
 
 	}
 

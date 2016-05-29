@@ -74,7 +74,12 @@ public class ImportWalletAction implements Action {
 							doTheImport(importFile, pass, importFileHash);
 
 							//reload the view.
+							ServiceRegistry.instance.getWalletModel().setModified(true);
 							ServiceRegistry.instance.getWalletForm().loadTree();
+
+
+
+							DialogUtils.getInstance().info("Import successfully.");
 
 						}
 					}
@@ -122,40 +127,55 @@ public class ImportWalletAction implements Action {
 		WalletItem root  = model.getRootItem();
 
 	    //will change the tree structure
-		for (int i = 1; i < fileContent.getWalletItems().size(); i++) {
-			WalletItem impItem = fileContent.getWalletItems().get(i);
-			WalletItem modelItem = findItemInModel(impItem);
-			if (modelItem!=null) {
+		try {
+			for (int i = 1; i < fileContent.getWalletItems().size(); i++) {
+				WalletItem impItem = fileContent.getWalletItems().get(i);
+				WalletItem modelItem = findItemInModel(impItem);
+				if (modelItem!=null) {
 
-				if (!modelItem.isSame(impItem)) {
+					if (!modelItem.isSame(impItem)) {
 
-					modelItem.mergeFrom(impItem);
+						modelItem.mergeFrom(impItem);
 
 
-				}
-			}
-			else {
-				if (impItem.getType().equals(ItemType.category)) {
-					//found a new category which does not have a match
-					root.addChild(impItem);
-
+					}
 				}
 				else {
-					//it is an item, locate its parent and find a match in the current model
-					WalletItem modelCat = findItemInModel(impItem.getParent());
-					if (modelCat==null) {
-						//not matches cat can't happen here
-						throw new IllegalStateException("not matches cat can't happen here, impItem: " + impItem);
-					}
-					modelCat.addChild(impItem);
+					if (impItem.getType().equals(ItemType.category)) {
+						//found a new category which does not have a match
+						//add it and all its children
+						root.addChild(impItem);
+						//jump to next cat
+						i++;
+						while (i<fileContent.getWalletItems().size()) {
+							if (fileContent.getWalletItems().get(i).getType()==ItemType.item ) {
+								i++;
+								continue;
+							}
 
+						}
+
+
+					}
+					else {
+						//it is an item, locate its parent and find a match in the current model
+						WalletItem modelCat = findItemInModel(impItem.getParent());
+						if (modelCat==null) {
+							//not matches cat can't happen here
+							throw new IllegalStateException("not matches cat can't happen here, impItem: " + impItem);
+						}
+						modelCat.addChild(impItem);
+
+					}
 				}
 			}
+
+			//rebuild back the list
+			model.buildFlatListFromTree();
+
+		} catch (NoSuchFieldException e) {
+			DialogUtils.getInstance().error(e.getMessage());
 		}
-
-		//rebuild back the list
-		model.buildFlatListFromTree();
-
 
 
 	}
