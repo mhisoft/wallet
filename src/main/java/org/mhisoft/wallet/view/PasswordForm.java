@@ -39,6 +39,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
+import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.CreatePasswordAction;
 import org.mhisoft.wallet.action.LoadWalletAction;
@@ -165,7 +166,7 @@ public class PasswordForm implements  ActionListener {
 
 	public String getUserEnterPassword() {
 
-		if(WalletModel.debug) {
+		if(WalletModel.debug && !StringUtils.hasValue(fldPassword.getText())) {
 			return  "12Abc12334&5AB1310";
 		}
 
