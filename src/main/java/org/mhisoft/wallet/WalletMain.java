@@ -30,11 +30,13 @@ public class WalletMain {
 				BeanType.singleton, WalletSettingsService.class);
 		walletSettingsService.readSettingsFromFile();
 
+		HashingUtils.init();
+
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
 		app.openWalletFile();
 		form.init();
 
-		HashingUtils.init();
+
 	}
 
 

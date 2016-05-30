@@ -71,15 +71,17 @@ public class ImportWalletAction implements Action {
 							//close the password form
 							passwordForm.exitPasswordForm();
 
-							doTheImport(importFile, pass, importFileHash);
+							try {
+								doTheImport(importFile, pass, importFileHash);
+								//reload the view.
+								ServiceRegistry.instance.getWalletModel().setModified(true);
+								ServiceRegistry.instance.getWalletForm().loadTree();
+								DialogUtils.getInstance().info("Import successfully.");
+							} catch (Exception e1) {
+								DialogUtils.getInstance().error(e1.getMessage());
+							}
 
-							//reload the view.
-							ServiceRegistry.instance.getWalletModel().setModified(true);
-							ServiceRegistry.instance.getWalletForm().loadTree();
 
-
-
-							DialogUtils.getInstance().info("Import successfully.");
 
 						}
 					}
@@ -129,16 +131,14 @@ public class ImportWalletAction implements Action {
 
 	    //will change the tree structure
 		try {
-			for (int i = 1; i < fileContent.getWalletItems().size(); i++) {
+			int i=1;
+			while ( i < impModel.getItemsFlatList().size() ) {
+
 				WalletItem impItem = fileContent.getWalletItems().get(i);
 				WalletItem modelItem = findItemInModel(impItem);
 				if (modelItem!=null) {
-
 					if (!modelItem.isSame(impItem)) {
-
 						modelItem.mergeFrom(impItem);
-
-
 					}
 				}
 				else {
@@ -148,12 +148,12 @@ public class ImportWalletAction implements Action {
 						root.addChild(impItem);
 						//jump to next cat
 						i++;
-						while (i<fileContent.getWalletItems().size()) {
-							if (fileContent.getWalletItems().get(i).getType()==ItemType.item ) {
-								i++;
-								continue;
+						while (i<impModel.getItemsFlatList().size()) {
+							if (impModel.getItemsFlatList().get(i).getType()==ItemType.category ) {
+								i--; ////need to stay on this item i, after break i++ will be called.
+								break;
 							}
-
+							i++;
 						}
 
 
@@ -169,6 +169,8 @@ public class ImportWalletAction implements Action {
 
 					}
 				}
+
+				i++;
 			}
 
 			//rebuild back the list
