@@ -134,7 +134,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 				byte[] _byteItem = new byte[objectSize];
 				readBytes = fileIn.read(_byteItem);
 				if(readBytes==objectSize) {
-					_byteItem = FileUtils.trimByteArray(_byteItem);
+					//_byteItem = FileUtils.trimByteArray(_byteItem);
 					byte[] byteItem = encryptor.decrypt(_byteItem, algorithmParameters);
 					WalletItem item = serializer.deserialize(byteItem);
 					walletItems.add(item);
