@@ -36,7 +36,6 @@ import org.mhisoft.common.util.Encryptor;
  * @since Mar, 2016
  */
 public class WalletModel {
-	public static boolean debug = Boolean.getBoolean("debug");
 
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;

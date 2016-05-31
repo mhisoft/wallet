@@ -40,6 +40,7 @@ public class WalletSettings implements Serializable	 {
 	public static final String userHome =System.getProperty("user.home") + File.separator;
 	public static final String settingsFile =userHome + "WalletSettings.dat"  ;
 	public static final String defaultWalletFile = userHome + "DefaultWallet.dat";
+	public static final long DEFAULT_IDLE_TIMEOUT = 900; //seconds, default 15 min.
 
 
 	//manage it in the Registry
@@ -56,6 +57,7 @@ public class WalletSettings implements Serializable	 {
 	private int dimensionY;
 	private double dividerLocation;
 	private String lastFile;
+	private long idleTimeout; //in milli seconds
 
 
 	public int getFontSize() {
@@ -106,6 +108,14 @@ public class WalletSettings implements Serializable	 {
 		this.lastFile = lastFile;
 	}
 
+	public long getIdleTimeout() {  //in seconds
+		return idleTimeout<=0 ?DEFAULT_IDLE_TIMEOUT : idleTimeout;
+	}
+
+	public void setIdleTimeout(long idleTimeout) {
+		this.idleTimeout = idleTimeout;
+	}
+
 	@Override
 	public String toString() {
 		return "WalletSettings{" +
@@ -114,6 +124,7 @@ public class WalletSettings implements Serializable	 {
 				", dimensionX=" + dimensionX +
 				", dimensionY=" + dimensionY +
 				", lastFile=" + lastFile +
+				", idleTimeout=" + idleTimeout +
 				'}';
 	}
 }

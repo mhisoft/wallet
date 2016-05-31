@@ -51,6 +51,10 @@ public class ListExplorerView  implements ListSelectionListener {
 
 	}
 
+	public void closeView() {
+		listModel.clear();
+	}
+
 
 	public void filterItems(String filter) {
 		listModel.clear();

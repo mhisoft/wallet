@@ -28,6 +28,7 @@ import java.io.File;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.FileContent;
+import org.mhisoft.wallet.service.IdleTimerService;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
@@ -67,6 +68,11 @@ public class LoadWalletAction implements Action {
 			ServiceRegistry.instance.getWalletModel().setModified(true);
 		}
 		ServiceRegistry.instance.getWalletForm().loadTree();
+
+		//start the idle count down timer
+		IdleTimerService.instance.start();
+
+
 		return new ActionResult(true);
 
 	}

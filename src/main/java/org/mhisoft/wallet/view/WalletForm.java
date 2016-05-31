@@ -54,6 +54,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.mhisoft.common.event.EventDispatcher;
+import org.mhisoft.common.event.EventType;
+import org.mhisoft.common.event.MHIEvent;
 import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.action.ActionResult;
@@ -130,7 +133,7 @@ public class WalletForm {
 	JLabel labelDetail3;
 	JLabel labelLastMessage;
 	JButton btnFilter;
-	private JButton btnClearFilter;
+	 JButton btnClearFilter;
 	private JScrollPane itemListPanel;
 	private JScrollPane treePanel;
 	private JPanel filterPanel;
@@ -168,6 +171,7 @@ public class WalletForm {
 	}
 
 	public WalletForm() {
+
 		model = new WalletModel();
 		treeExploreView = new TreeExploreView(frame, model, tree, this);
 		listExploreView = new ListExplorerView(frame, model, itemList, this);
@@ -185,18 +189,24 @@ public class WalletForm {
 		btnEditForm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnEditForm" , null ));
 				itemDetailView.editDetailAction();
 			}
 		});
 		btnCancelEdit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCancelEdit" , null ));
+
 				itemDetailView.cancelEditAction();
 			}
 		});
 		btnSaveForm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnSaveForm" , null ));
+
 
 				//save button click , it is two fold. save the item detail edit
 				//Or save the whole model when model is modified from import for instance.
@@ -216,6 +226,8 @@ public class WalletForm {
 		btnTogglePasswordView.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnTogglePasswordView" , null ));
+
 				hidePassword = !hidePassword;
 				updatePasswordChar();
 			}
@@ -226,6 +238,8 @@ public class WalletForm {
 		btnAddNode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAddNode" , null ));
+
 				treeExploreView.addItem();
 			}
 		});
@@ -233,6 +247,8 @@ public class WalletForm {
 		btnDeleteNode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnDeleteNode" , null ));
+
 				treeExploreView.removeItem();
 			}
 		});
@@ -240,6 +256,7 @@ public class WalletForm {
 		btnFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnFilter" , null ));
 
 				doFilter();
 
@@ -248,6 +265,8 @@ public class WalletForm {
 		btnClearFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnClearFilter" , null ));
+
 				clearFilter();
 
 			}
@@ -256,6 +275,7 @@ public class WalletForm {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnFilter" , null ));
 					doFilter();
 				}
 			}
@@ -264,6 +284,7 @@ public class WalletForm {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnClearFilter" , null ));
 					clearFilter();
 				}
 			}
@@ -436,7 +457,9 @@ public class WalletForm {
 		menuOpen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, CloseWalletAction.class);
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuOpen" , null ));
+
+				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
 				ActionResult r = closeWalletAction.execute();
 				if (r.isSuccess()) {
 					OpenWalletFileAction openWalletFileAction = ServiceRegistry.instance.getService(BeanType.singleton, OpenWalletFileAction.class);
@@ -447,6 +470,8 @@ public class WalletForm {
 		menuChangePassword.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuChangePassword" , null ));
+
 
 
 			}
@@ -454,6 +479,8 @@ public class WalletForm {
 		menuImport.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuImport" , null ));
+
 				ImportWalletAction importWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, ImportWalletAction.class);
 				importWalletAction.execute();
 			}
@@ -486,14 +513,16 @@ public class WalletForm {
 				2); //step
 		fldFontSize.setModel(spinnerModel);
 		fldFontSize.addChangeListener(new ChangeListener() {
-										  @Override
-										  public void stateChanged(ChangeEvent e) {
-											  SpinnerModel spinnerModel = fldFontSize.getModel();
-											  int newFontSize = (Integer) spinnerModel.getValue();
-											  ViewHelper.setFontSize(componentsList, newFontSize);
+			  @Override
+			  public void stateChanged(ChangeEvent e) {
+				  EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "fldFontSize" , null ));
 
-										  }
-									  }
+				  SpinnerModel spinnerModel = fldFontSize.getModel();
+				  int newFontSize = (Integer) spinnerModel.getValue();
+				  ViewHelper.setFontSize(componentsList, newFontSize);
+
+			  }
+		  }
 		);
 
 
@@ -524,6 +553,21 @@ public class WalletForm {
 		listExploreView.setupListView();
 
 		btnSaveForm.setVisible(model.isModified() || isDetailModified());
+	}
+
+	public void closeView() {
+		//reset model with empty data.
+		model.setCurrentItem(null);
+		model.setCurrentItem(null);
+		model.setModified(false);
+		clearFilter();
+		//todo disable all the buttons.
+
+		treeExploreView.closeTree();
+		itemDetailView.closeView();
+		listExploreView.closeView();
+
+
 	}
 
 

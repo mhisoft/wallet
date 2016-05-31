@@ -36,27 +36,31 @@ import org.mhisoft.wallet.view.DialogUtils;
  */
 public class CloseWalletAction extends SaveWalletAction {
 
+	boolean quiet = false;
 
 	@Override
 	protected void save(String filename) {
 		//save the wallet
 		if (ServiceRegistry.instance.getWalletModel().isModified()) {
-			if (DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+			if (quiet || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
 					, "Save the changes before close?") == Confirmation.YES) {
 				WalletModel model = ServiceRegistry.instance.getWalletModel();
 				model.buildFlatListFromTree();
 				ServiceRegistry.instance.getWalletService().saveToFile(filename, model, model.getEncryptor());
 				ServiceRegistry.instance.getWalletModel().setModified(false);
-				DialogUtils.getInstance().info("Saved to file successfully.");
+				if (!quiet)
+				   DialogUtils.getInstance().info("Saved to file successfully.");
+				else
+					ServiceRegistry.instance.getWalletForm().setMessage("The file change was saved.");
 			}
-
-
 		}
 	}
 
 
 	@Override
 	public ActionResult execute(Object... params) {
+		if (params.length>0)
+			quiet = (Boolean) params[0];
 
 		return super.execute(params);
 

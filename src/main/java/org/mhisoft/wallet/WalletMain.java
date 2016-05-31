@@ -2,12 +2,15 @@ package org.mhisoft.wallet;
 
 import java.io.File;
 
+import org.mhisoft.common.event.EventDispatcher;
+import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.FileContentHeader;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.service.UserActivityCheckinListener;
 import org.mhisoft.wallet.service.WalletSettingsService;
 import org.mhisoft.wallet.view.WalletForm;
 
@@ -30,7 +33,11 @@ public class WalletMain {
 				BeanType.singleton, WalletSettingsService.class);
 		walletSettingsService.readSettingsFromFile();
 
+		/*initialized*/
 		HashingUtils.init();
+
+		EventDispatcher.instance.registerListener(EventType.UserCheckInEvent,  new UserActivityCheckinListener());
+
 
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
 		app.openWalletFile();

@@ -99,9 +99,28 @@ public class ItemDetailView {
 
 	}
 
+	//clear all the fields as the model is closed
+	public void closeView() {
+			for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
+				if (entry.getValue().fld instanceof JTextComponent) {
+					JTextComponent fld =  (JTextComponent)   entry.getValue().fld;
+					fld.setText( null);
+					fld.setEditable( false);
+				}
+
+
+			}
+		form.btnSaveForm.setVisible(false);
+		form.btnClose.setVisible(true);
+		form.btnCancelEdit.setVisible(false);
+		form.btnEditForm.setVisible(false);
+
+	}
+
+
 	public void displayWalletItemDetails(final WalletItem item, DisplayMode displayMode) {
 
-		ServiceRegistry.instance.getWalletForm().setMessage("");
+	//	ServiceRegistry.instance.getWalletForm().setMessage("");
 
 		if (displayMode!=DisplayMode.view) {
 			//coming to edit and add mode, set model dirty
@@ -145,6 +164,7 @@ public class ItemDetailView {
 			}
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
+
 		}
 
 		form.btnTogglePasswordView.setVisible(item.getType() == ItemType.item);

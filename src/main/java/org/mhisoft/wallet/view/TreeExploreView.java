@@ -32,6 +32,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.mhisoft.common.event.EventDispatcher;
+import org.mhisoft.common.event.EventType;
+import org.mhisoft.common.event.MHIEvent;
+import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -64,11 +68,13 @@ public class TreeExploreView {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
 				if (node == null) {
-					form.btnAddNode.setVisible(false);
-					form.btnDeleteNode.setVisible(false);
+					form.btnAddNode.setEnabled(false);
+					form.btnDeleteNode.setEnabled(false);
 					//Nothing is selected.
 					return;
 				}
+
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "changeNode" , null ));
 
 				changeNode(node);
 
@@ -131,9 +137,24 @@ public class TreeExploreView {
 		changeNode(rootNode);
 		expandRoot(rootNode);
 
+
+		form.btnFilter.setVisible(true);
+		form.btnClearFilter.setVisible(true);
+
+
+	}
+
+
+	public void closeTree() {
+		tree.setModel(null);
+		toggleButton(null);
+
+		form.btnFilter.setEnabled(false);
+		form.btnClearFilter.setEnabled(false);
 	}
 
 	public void changeNode(DefaultMutableTreeNode node) {
+
 
 		form.saveCurrentEdit(true);
 
@@ -146,13 +167,20 @@ public class TreeExploreView {
 
 
 	void toggleButton(WalletItem currentItem) {
-		if (currentItem.getType() == ItemType.category) {
-			form.btnAddNode.setVisible(true);
-			form.btnDeleteNode.setVisible(!currentItem.hasChildren());
-		} else {
-			form.btnAddNode.setVisible(true);
-			form.btnDeleteNode.setVisible(true);
+		if (currentItem==null)  {
+			form.btnAddNode.setEnabled(false);
+			form.btnDeleteNode.setEnabled(false);
+		}
+		else {
 
+			if (currentItem.getType() == ItemType.category) {
+				form.btnAddNode.setEnabled(true);
+				form.btnDeleteNode.setEnabled(!currentItem.hasChildren());
+			} else {
+				form.btnAddNode.setEnabled(true);
+				form.btnDeleteNode.setEnabled(true);
+
+			}
 		}
 	}
 
@@ -235,7 +263,7 @@ public class TreeExploreView {
 
 		form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.edit);
 
-		if (WalletModel.debug) {
+		if (SystemSettings.debug) {
 			System.out.println(model.dumpFlatList());
 		}
 
