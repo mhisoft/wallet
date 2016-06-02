@@ -30,5 +30,5 @@ package org.mhisoft.wallet.model;
  * @since Mar, 2016
  */
 public enum ItemType {
-	category, item
+	category, ItemType, item
 }

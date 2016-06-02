@@ -68,6 +68,7 @@ public class LoadWalletAction implements Action {
 			ServiceRegistry.instance.getWalletModel().setModified(true);
 		}
 		ServiceRegistry.instance.getWalletForm().loadTree();
+		ServiceRegistry.instance.getWalletForm().labelCurrentOpenFile.setText(WalletSettings.getInstance().getLastFile());
 
 		//start the idle count down timer
 		IdleTimerService.instance.start();

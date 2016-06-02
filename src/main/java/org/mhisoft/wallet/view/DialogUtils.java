@@ -23,13 +23,8 @@
 
 package org.mhisoft.wallet.view;
 
-import java.awt.Font;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-
-import org.mhisoft.wallet.model.WalletSettings;
 
 /**
  * Description:
@@ -55,14 +50,10 @@ public class DialogUtils {
 		return instance;
 	}
 
-	protected static  void setFontSize() {
-		Font font = new Font(Font.SANS_SERIF, Font.PLAIN, WalletSettings.getInstance().getFontSize());
-		UIManager.put("OptionPane.messageFont", font);
-		UIManager.put("OptionPane.buttonFont", font);
-	}
+
 
 	public static Confirmation getConfirmation(final JFrame frame, final String question, final Confirmation... options) {
-		setFontSize();
+		ViewHelper.setUIManagerFontSize();
 		int dialogResult = JOptionPane.showConfirmDialog(frame, question, "Please confirm", JOptionPane.YES_NO_CANCEL_OPTION);
 		if (JOptionPane.YES_OPTION == dialogResult) {
 			return Confirmation.YES;
@@ -83,7 +74,7 @@ public class DialogUtils {
 	 */
 	public void warn(  final String title, final String message ) {
 		//custom title, warning icon
-		setFontSize();
+		ViewHelper.setUIManagerFontSize();
 		JOptionPane.showMessageDialog(frame,
 				message, //"Eggs are not supposed to be green.",
 				title, //"Inane warning",
@@ -97,7 +88,7 @@ public class DialogUtils {
 	 */
 	public void error(  final String title, final String error ) {
 		//custom title, warning icon
-		setFontSize();
+		ViewHelper.setUIManagerFontSize();
 		JOptionPane.showMessageDialog(frame,
 				error, //"Eggs are not supposed to be green.",
 				title, //"Inane warning",
@@ -110,7 +101,7 @@ public class DialogUtils {
 	 */
 	public void error(  final String error ) {
 		//custom title, warning icon
-		setFontSize();
+		ViewHelper.setUIManagerFontSize();
 		JOptionPane.showMessageDialog(frame,
 				error,
 				"An system error occurred",
@@ -123,7 +114,7 @@ public class DialogUtils {
 	 */
 	public void info(  final String message ) {
 		//custom title, warning icon
-		setFontSize();
+		ViewHelper.setUIManagerFontSize();
 		JOptionPane.showMessageDialog(frame,
 				message //"Eggs are not supposed to be green.",
 				);

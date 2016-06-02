@@ -100,6 +100,8 @@ public class WalletForm {
 	JSplitPane splitPanel;
 	JButton btnAddNode;
 	JButton btnDeleteNode;
+	JButton btnMoveNode;
+
 	JPanel treeButtonPanel;
 	JButton btnEditForm;
 	JButton btnSaveForm;
@@ -113,7 +115,7 @@ public class WalletForm {
 	JLabel labelPassword;
 	JLabel labelAccount;
 	JLabel labelFontSize;
-	JTextField fldPin;
+
 	JTextField fldExpMonth;
 	JTextField fldExpYear;
 	JTextField fldFilter;
@@ -143,7 +145,10 @@ public class WalletForm {
 	private JScrollPane detailFormScrollPane;
 	private JPanel buttonPanel;
 	JLabel labelCVC;
-	JTextField fldCVC;
+	JPasswordField fldCVC;
+	JPasswordField fldPin;
+	public JLabel labelCurrentOpenFile;
+
 	private JScrollPane rightScrollPane;
 
 
@@ -253,6 +258,16 @@ public class WalletForm {
 			}
 		});
 
+		btnMoveNode.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnMoveNode" , null ));
+
+				treeExploreView.moveItem();
+
+			}
+		} );
+
 		btnFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -314,10 +329,16 @@ public class WalletForm {
 	}
 
 	public void updatePasswordChar() {
-		if (hidePassword)
+		if (hidePassword) {
 			fldPassword.setEchoChar('*');
-		else
+			fldCVC.setEchoChar('*');
+			fldPin.setEchoChar('*');
+		}
+		else {
 			fldPassword.setEchoChar((char) 0);
+			fldCVC.setEchoChar((char) 0);
+			fldPin.setEchoChar((char) 0);
+		}
 	}
 
 

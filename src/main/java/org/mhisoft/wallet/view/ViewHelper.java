@@ -32,6 +32,7 @@ import java.awt.Font;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.mhisoft.wallet.model.WalletSettings;
@@ -57,6 +58,13 @@ public class ViewHelper {
 	public static void setFontSize(Component[] componetsList, int newFontSize) {
 		if (componetsList != null)
 			setFontSize(Arrays.asList(componetsList), newFontSize);
+	}
+
+	//set JDialog
+	public static void setUIManagerFontSize() {
+		Font font = new Font(Font.SANS_SERIF, Font.PLAIN, WalletSettings.getInstance().getFontSize());
+		UIManager.put("OptionPane.messageFont", font);
+		UIManager.put("OptionPane.buttonFont", font);
 	}
 
 
