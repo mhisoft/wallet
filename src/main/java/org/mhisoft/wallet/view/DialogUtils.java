@@ -25,6 +25,7 @@ package org.mhisoft.wallet.view;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  * Description:
@@ -73,12 +74,21 @@ public class DialogUtils {
 	 * @param message
 	 */
 	public void warn(  final String title, final String message ) {
-		//custom title, warning icon
-		ViewHelper.setUIManagerFontSize();
-		JOptionPane.showMessageDialog(frame,
-				message, //"Eggs are not supposed to be green.",
-				title, //"Inane warning",
-				JOptionPane.WARNING_MESSAGE);
+
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+
+				//custom title, warning icon
+				ViewHelper.setUIManagerFontSize();
+				JOptionPane.showMessageDialog(frame,
+						message, //"Eggs are not supposed to be green.",
+						title, //"Inane warning",
+						JOptionPane.WARNING_MESSAGE);
+			}
+		});
+
 	}
 
 	/**
@@ -87,12 +97,22 @@ public class DialogUtils {
 	 * @param error
 	 */
 	public void error(  final String title, final String error ) {
-		//custom title, warning icon
-		ViewHelper.setUIManagerFontSize();
-		JOptionPane.showMessageDialog(frame,
-				error, //"Eggs are not supposed to be green.",
-				title, //"Inane warning",
-				JOptionPane.ERROR_MESSAGE);
+
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+
+				//custom title, warning icon
+				ViewHelper.setUIManagerFontSize();
+				JOptionPane.showMessageDialog(frame,
+						error, //"Eggs are not supposed to be green.",
+						title, //"Inane warning",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		});
+
+
 	}
 
 	/**
@@ -100,12 +120,21 @@ public class DialogUtils {
 	 * @param error
 	 */
 	public void error(  final String error ) {
-		//custom title, warning icon
-		ViewHelper.setUIManagerFontSize();
-		JOptionPane.showMessageDialog(frame,
-				error,
-				"An system error occurred",
-				JOptionPane.ERROR_MESSAGE);
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				//custom title, warning icon
+				ViewHelper.setUIManagerFontSize();
+				JOptionPane.showMessageDialog(frame,
+						error,
+						"An system error occurred",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		});
+
+
+
 	}
 
 	/**
@@ -113,11 +142,21 @@ public class DialogUtils {
 	 * @param message
 	 */
 	public void info(  final String message ) {
-		//custom title, warning icon
-		ViewHelper.setUIManagerFontSize();
-		JOptionPane.showMessageDialog(frame,
-				message //"Eggs are not supposed to be green.",
+
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				//custom title, warning icon
+				ViewHelper.setUIManagerFontSize();
+				JOptionPane.showMessageDialog(frame,
+						message //"Eggs are not supposed to be green.",
 				);
+			}
+		});
+
+
+
 	}
 
 }

@@ -15,6 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
@@ -105,15 +106,24 @@ public class MoveNodeDialog extends JDialog {
 	 */
 	public void display(WalletItem currentItem, SelectCategoryCallback callback) {
 
-		//create a new dialog every time.
-		MoveNodeDialog dialog = new MoveNodeDialog();
-		dialog.callback = callback;
-		dialog.currentItem = currentItem;
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+
+				//create a new dialog every time.
+				MoveNodeDialog dialog = new MoveNodeDialog();
+				dialog.callback = callback;
+				dialog.currentItem = currentItem;
 
 
-		dialog.pack();
-		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
+				dialog.pack();
+				dialog.setLocationRelativeTo(null);
+				dialog.setVisible(true);
+			}
+		});
+
+
 
 	}
 
