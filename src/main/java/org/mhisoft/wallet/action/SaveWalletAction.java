@@ -40,7 +40,7 @@ import org.mhisoft.wallet.service.ServiceRegistry;
 public class SaveWalletAction implements Action {
 
 
-	protected void save(String fileName) {
+	public void save(String fileName) {
 		//save the wallet
 //		if (ServiceRegistry.instance.getWalletModel().isModified()) {
 		WalletModel model = ServiceRegistry.instance.getWalletModel();

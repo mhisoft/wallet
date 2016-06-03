@@ -60,6 +60,7 @@ import org.mhisoft.common.event.MHIEvent;
 import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.action.ActionResult;
+import org.mhisoft.wallet.action.BackupAction;
 import org.mhisoft.wallet.action.CloseWalletAction;
 import org.mhisoft.wallet.action.ImportWalletAction;
 import org.mhisoft.wallet.action.OpenWalletFileAction;
@@ -458,12 +459,15 @@ public class WalletForm {
 		menuBar.add(menuFile);
 		menuOpen = new JMenuItem("Open", KeyEvent.VK_O);
 		menuFile.add(menuOpen);
-		menuClose = new JMenuItem("Close", KeyEvent.VK_C);
-		menuFile.add(menuClose);
-		menuImport = new JMenuItem("Import", KeyEvent.VK_I);
+		menuImport = new JMenuItem("Import and Merge", KeyEvent.VK_I);
 		menuFile.add(menuImport);
+		menuBackup = new JMenuItem("&Backup", KeyEvent.VK_B);
+		menuFile.add(menuBackup);
 		menuChangePassword = new JMenuItem("Change Password", KeyEvent.VK_P);
 		menuFile.add(menuChangePassword);
+		menuClose = new JMenuItem("Quit", KeyEvent.VK_C);
+		menuFile.add(menuClose);
+
 
 		componentsList.add(menuBar);
 		componentsList.add(menuFile);
@@ -471,6 +475,7 @@ public class WalletForm {
 		componentsList.add(menuClose);
 		componentsList.add(menuChangePassword);
 		componentsList.add(menuImport);
+		componentsList.add(menuBackup);
 
 
 		menuClose.addActionListener(closeAction);
@@ -504,6 +509,17 @@ public class WalletForm {
 
 				ImportWalletAction importWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, ImportWalletAction.class);
 				importWalletAction.execute();
+			}
+		});
+
+		menuBackup.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuBackup" , null ));
+
+				BackupAction backupAction = ServiceRegistry.instance.getService(BeanType.singleton, BackupAction.class);
+				backupAction.execute();
+			//
 			}
 		});
 
