@@ -147,8 +147,8 @@ public class TreeExploreView {
 		expandRoot(rootNode);
 
 
-		form.btnFilter.setVisible(true);
-		form.btnClearFilter.setVisible(true);
+		form.btnFilter.setEnabled(true);
+		form.btnClearFilter.setEnabled(true);
 
 
 	}
