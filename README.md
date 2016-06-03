@@ -1,4 +1,4 @@
-#MHISoft eWallet - Password Manager and Secure Storage
+#MHISoft eWallet - Secure Password Storage and Manager
 
 A ultimate secure wallet for storing the your app, site login passwords and personal information …etc. 
 I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source.
