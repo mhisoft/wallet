@@ -208,16 +208,15 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCancelEdit" , null ));
-
 				itemDetailView.cancelEditAction();
 			}
 		});
-		btnSaveForm.addActionListener(new ActionListener() {
+
+
+		ActionListener saveFormListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnSaveForm" , null ));
-
 
 				//save button click , it is two fold. save the item detail edit
 				//Or save the whole model when model is modified from import for instance.
@@ -229,16 +228,20 @@ public class WalletForm {
 					saveWalletAction.execute();
 
 				}
-
 			}
-		});
+		};
+
+
+		btnSaveForm.addActionListener(saveFormListener);
+
+
+
 
 
 		btnTogglePasswordView.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnTogglePasswordView" , null ));
-
 				hidePassword = !hidePassword;
 				updatePasswordChar();
 			}
@@ -250,7 +253,6 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAddNode" , null ));
-
 				treeExploreView.addItem();
 			}
 		});
@@ -259,7 +261,6 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnDeleteNode" , null ));
-
 				treeExploreView.removeItem();
 			}
 		});
@@ -268,7 +269,6 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnMoveNode" , null ));
-
 				treeExploreView.moveItem();
 
 			}
@@ -278,7 +278,6 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnFilter" , null ));
-
 				doFilter();
 
 			}
@@ -335,7 +334,7 @@ public class WalletForm {
 			}
 		});
 
-		                 //todo
+
 		KeyListener keyListener = new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -345,9 +344,31 @@ public class WalletForm {
 			@Override
 			public void keyPressed(KeyEvent e) {
 
-				// e.getSource()==btnCancel evals to true
-				if (e.getKeyCode()==KeyEvent.VK_ENTER){
-					//dialog.dispose();
+
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+					if (e.getSource() == btnEditForm) {
+						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnEditForm", null));
+						itemDetailView.editDetailAction();
+					} else if (e.getSource() == btnCancelEdit) {
+						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCancelEdit", null));
+						itemDetailView.cancelEditAction();
+					} else if (e.getSource() == btnSaveForm) {
+						saveFormListener.actionPerformed(null);
+					} else if (e.getSource() == btnTogglePasswordView) {
+						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnTogglePasswordView", null));
+						hidePassword = !hidePassword;
+						updatePasswordChar();
+					} else if (e.getSource() == btnAddNode) {
+						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAddNode", null));
+						treeExploreView.addItem();
+					} else if (e.getSource() == btnDeleteNode) {
+						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnDeleteNode", null));
+						treeExploreView.removeItem();
+					} else if (e.getSource() == btnMoveNode) {
+						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnMoveNode", null));
+						treeExploreView.moveItem();
+					}
 				}
 			}
 
@@ -355,7 +376,36 @@ public class WalletForm {
 			public void keyReleased(KeyEvent e) {
 
 			}
-		}    ;
+		};
+
+
+		btnEditForm.addKeyListener(keyListener);
+		btnCancelEdit.addKeyListener(keyListener);
+		btnSaveForm.addKeyListener(keyListener);
+		btnTogglePasswordView.addKeyListener(keyListener);
+		btnAddNode.addKeyListener(keyListener);
+		btnDeleteNode.addKeyListener(keyListener);
+		btnMoveNode.addKeyListener(keyListener);
+
+		fldFilter.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "fldFilter" , null ));
+					doFilter();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+		});
 
 	}
 
