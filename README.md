@@ -17,6 +17,11 @@ The password once lost can't be recovered by design. The author of this code can
 * Support Import and merge in changes from another data file. 
 * Auto close the vault if idling for too long.
 
+![Screenshot](dist/evault-screenshot-passwordform.png "screenshot")
+
+![Screenshot](dist/evault-screenshot-main.png "screenshot")
+
+
 # Some technical details
 
 *  The JRE is bundled with the release so there is no extra step to install the JRE or  the  “Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy” .  
