@@ -74,7 +74,7 @@ public class PasswordForm implements  ActionListener {
 	private JButton button1;
 	JDialog dialog;
 
-	String fileName;
+	String title;
 
 	WalletForm walletForm;
 
@@ -84,9 +84,9 @@ public class PasswordForm implements  ActionListener {
 	PasswordValidator passwordValidator = ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class);
 
 
-	public PasswordForm(String fileName) {
+	public PasswordForm(String title) {
 		passwordValidator = new PasswordValidator();
-		this.fileName = fileName;
+		this.title = title;
 		init();
 	}
 
@@ -113,10 +113,10 @@ public class PasswordForm implements  ActionListener {
 
 		// Put client property
 		fldPassword.putClientProperty("JPasswordField.cutCopyAllowed",true);
-		if (fileName==null)
+		if (title ==null)
 			labelMsg.setText("Creating New Wallet");
 		else {
-			labelMsg.setText("Opening " + fileName );
+			labelMsg.setText(title);
 		}
 
 

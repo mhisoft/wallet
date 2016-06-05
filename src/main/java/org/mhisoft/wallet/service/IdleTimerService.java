@@ -50,7 +50,7 @@ public class IdleTimerService {
 					ActionResult r = closeWalletAction.execute(Boolean.TRUE); //close the wallet file quietly
 
 					//close the tree view.
-					ServiceRegistry.instance.getWalletForm().closeView();
+					ServiceRegistry.instance.getWalletForm().resetForm();
 
 					//close the wallet
 					DialogUtils.getInstance().info("<html>Closing the wallet as it has been idling too long.<br>You can use the Open menu to open it again.</html>");

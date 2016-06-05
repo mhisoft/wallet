@@ -153,6 +153,7 @@ public class WalletForm {
 	public JLabel labelCurrentOpenFile;
 	private JTextField fldIdleTimeout;
 	private JLabel labelIdleTimeOut;
+	private JTextArea textAreaDebug;
 
 	private JScrollPane rightScrollPane;
 
@@ -455,14 +456,9 @@ public class WalletForm {
 		tree.setModel(null);
 
 
-		String title ;
-		if (WalletSettings.getInstance().getLastFile()==null)
-			title="Creating a new wallet"  ;
-		else
-		   title ="Opening file:" + WalletSettings.getInstance().getLastFile();
+		resetForm();
 
-		PasswordForm passwordForm = new PasswordForm(title);
-		passwordForm.showPasswordForm(this, null);
+
 
 
 		//remove the X buttons
@@ -483,16 +479,16 @@ public class WalletForm {
 
 
 	public void jreDebug() {
+		textAreaDebug.setText("");
 		//if (WalletModel.debug) {
-		fldNotes.append("\n");
-		fldNotes.append("\n");
-		fldNotes.append("java.home=" + System.getProperty("java.home") + "\n");
-		fldNotes.append("java.specification.version=" + System.getProperty("java.specification.version") + "\n");
-		fldNotes.append("java.vendor=" + System.getProperty("java.vendor") + "\n");
-		fldNotes.append("java.vendor.url=" + System.getProperty("java.vendor.url") + "\n");
-		fldNotes.append("java.version=" + System.getProperty("java.version") + "\n");
-
-		fldNotes.append("user.home=" + System.getProperty("user.home") + "\n");
+		textAreaDebug.append("\n");
+		textAreaDebug.append("\n");
+		textAreaDebug.append("java.home=" + System.getProperty("java.home") + "\n");
+		textAreaDebug.append("java.specification.version=" + System.getProperty("java.specification.version") + "\n");
+		textAreaDebug.append("java.vendor=" + System.getProperty("java.vendor") + "\n");
+		textAreaDebug.append("java.vendor.url=" + System.getProperty("java.vendor.url") + "\n");
+		textAreaDebug.append("java.version=" + System.getProperty("java.version") + "\n");
+		textAreaDebug.append("user.home=" + System.getProperty("user.home") + "\n");
 	}
 
 
@@ -655,7 +651,10 @@ public class WalletForm {
 		btnSaveForm.setVisible(model.isModified() || isDetailModified());
 	}
 
-	public void closeView() {
+	/**
+	 * Reset the view to empty
+	 */
+	public void resetForm() {
 		//reset model with empty data.
 		model.setCurrentItem(null);
 		model.setCurrentItem(null);

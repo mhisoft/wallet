@@ -52,6 +52,7 @@ public class ListExplorerView  implements ListSelectionListener {
 	}
 
 	public void closeView() {
+		if (listModel!=null)
 		listModel.clear();
 	}
 

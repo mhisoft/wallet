@@ -12,6 +12,7 @@ import org.mhisoft.wallet.service.FileContentHeader;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.UserActivityCheckinListener;
 import org.mhisoft.wallet.service.WalletSettingsService;
+import org.mhisoft.wallet.view.PasswordForm;
 import org.mhisoft.wallet.view.WalletForm;
 
 /**
@@ -42,6 +43,17 @@ public class WalletMain {
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
 		app.openWalletFile();
 		form.init();
+
+
+		//Open old wallet file or create new password.
+		String title ;
+		if (WalletSettings.getInstance().getLastFile()==null)
+			title="Creating a new wallet"  ;
+		else
+			title ="Opening file:" + WalletSettings.getInstance().getLastFile();
+
+		PasswordForm passwordForm = new PasswordForm(title);
+		passwordForm.showPasswordForm(form, null);
 
 
 	}
