@@ -9,12 +9,12 @@ The password once lost can't be recovered by design. The author of this code can
 #Features
 * Free. 
 * Runs offline.
-* Super fast. 
+* Secure and fast. 
 * Platform: Windows and Mac OS X...etc where Java  is supported. 
 * Organize  passwords with categories.  
 * Search the entire wallet and locate the item you need instantly. 
-* Support multiple data files. 
-* Support Import and merge in changes from another data file. 
+* Support multiple data files. Backup.
+* Import and merge in changes from another data file. 
 * Auto close the vault if idling for too long.
 
 ![Screenshot](dist/evault-screenshot-passwordform.png "screenshot")
