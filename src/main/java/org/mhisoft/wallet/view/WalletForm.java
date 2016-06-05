@@ -62,6 +62,7 @@ import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.BackupAction;
+import org.mhisoft.wallet.action.ChangePasswordAction;
 import org.mhisoft.wallet.action.CloseWalletAction;
 import org.mhisoft.wallet.action.ImportWalletAction;
 import org.mhisoft.wallet.action.OpenWalletFileAction;
@@ -454,7 +455,13 @@ public class WalletForm {
 		tree.setModel(null);
 
 
-		PasswordForm passwordForm = new PasswordForm(WalletSettings.getInstance().getLastFile());
+		String title ;
+		if (WalletSettings.getInstance().getLastFile()==null)
+			title="Creating a new wallet"  ;
+		else
+		   title ="Opening file:" + WalletSettings.getInstance().getLastFile();
+
+		PasswordForm passwordForm = new PasswordForm(title);
 		passwordForm.showPasswordForm(this, null);
 
 
@@ -514,7 +521,7 @@ public class WalletForm {
 		menuFile.add(menuOpen);
 		menuImport = new JMenuItem("Import and Merge", KeyEvent.VK_I);
 		menuFile.add(menuImport);
-		menuBackup = new JMenuItem("&Backup", KeyEvent.VK_B);
+		menuBackup = new JMenuItem("Backup", KeyEvent.VK_B);
 		menuFile.add(menuBackup);
 		menuChangePassword = new JMenuItem("Change Password", KeyEvent.VK_P);
 		menuFile.add(menuChangePassword);
@@ -551,6 +558,9 @@ public class WalletForm {
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuChangePassword" , null ));
 
+
+				ChangePasswordAction action = ServiceRegistry.instance.getService(BeanType.prototype, ChangePasswordAction.class);
+				action.execute();
 
 
 			}

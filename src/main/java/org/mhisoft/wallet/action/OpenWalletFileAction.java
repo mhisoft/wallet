@@ -55,7 +55,7 @@ public class OpenWalletFileAction implements Action {
 				FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 				model.setPassHash(header.getPassHash());
 				//now show password form to enter the password.
-				PasswordForm passwordForm = new PasswordForm(fileName);
+				PasswordForm passwordForm = new PasswordForm("Opening file:"+ fileName);
 				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), null);
 
 				//hand off to the OK listener and
