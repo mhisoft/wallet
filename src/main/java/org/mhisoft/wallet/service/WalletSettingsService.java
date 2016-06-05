@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.model.WalletSettings;
 
 /**
@@ -49,6 +50,10 @@ public class WalletSettingsService {
 	public void saveSettingsToFile(WalletSettings settings) {
 		ObjectOutputStream outputStream = null;
 		try {
+
+			if (SystemSettings.debug)
+				settings.setIdleTimeout(-1);
+
 			outputStream = new ObjectOutputStream(new FileOutputStream(WalletSettings.settingsFile));
 			outputStream.writeObject(settings);
 		} catch (IOException e) {

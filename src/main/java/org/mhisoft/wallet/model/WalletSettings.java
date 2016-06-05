@@ -26,6 +26,7 @@ package org.mhisoft.wallet.model;
 import java.io.File;
 import java.io.Serializable;
 
+import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
@@ -40,7 +41,7 @@ public class WalletSettings implements Serializable	 {
 	public static final String userHome =System.getProperty("user.home") + File.separator;
 	public static final String settingsFile =userHome + "WalletSettings.dat"  ;
 	public static final String defaultWalletFile = userHome + "DefaultWallet.dat";
-	public static final long DEFAULT_IDLE_TIMEOUT = 900; //seconds, default 15 min.
+	public static final long DEFAULT_IDLE_TIMEOUT = 15; //min, default 15 min.
 
 
 	//manage it in the Registry
@@ -109,7 +110,10 @@ public class WalletSettings implements Serializable	 {
 	}
 
 	public long getIdleTimeout() {  //in seconds
-		return idleTimeout<=0 ?DEFAULT_IDLE_TIMEOUT : idleTimeout;
+		if (SystemSettings.debug)
+			return 3;
+		else
+			return idleTimeout<=0?DEFAULT_IDLE_TIMEOUT:idleTimeout;
 	}
 
 	public void setIdleTimeout(long idleTimeout) {

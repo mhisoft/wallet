@@ -29,6 +29,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -69,6 +71,7 @@ public class PasswordForm implements  ActionListener {
 	private JLabel labelInst2;
 	private JLabel labelInst3;
 	private JLabel labelMsg;
+	private JButton button1;
 	JDialog dialog;
 
 	String fileName;
@@ -103,6 +106,11 @@ public class PasswordForm implements  ActionListener {
 		dialog.setPreferredSize(new Dimension(800, 400));
 		dialog.pack();
 		dialog.setLocationRelativeTo(walletForm.frame);
+
+		dialog.getRootPane().setDefaultButton(btnOk);
+		spinner1.requestFocus();
+
+
 		// Put client property
 		fldPassword.putClientProperty("JPasswordField.cutCopyAllowed",true);
 		if (fileName==null)
@@ -151,6 +159,27 @@ public class PasswordForm implements  ActionListener {
 
 	private void init() {
 
+		KeyListener keyListener = new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				// e.getSource()==btnCancel evals to true
+				if (e.getKeyCode()==KeyEvent.VK_ENTER){
+					dialog.dispose();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+		}    ;
+
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -160,8 +189,13 @@ public class PasswordForm implements  ActionListener {
 		});
 
 
+		//btnCancel.addKeyListener(keyListener);
+
+
 
 	}
+
+
 
 
 	public String getUserEnterPassword() {

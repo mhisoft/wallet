@@ -28,8 +28,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -51,13 +54,11 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import org.mhisoft.common.event.EventDispatcher;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
-import org.mhisoft.common.util.ReflectionUtil;
+import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.BackupAction;
@@ -149,13 +150,15 @@ public class WalletForm {
 	JPasswordField fldCVC;
 	JPasswordField fldPin;
 	public JLabel labelCurrentOpenFile;
+	private JTextField fldIdleTimeout;
+	private JLabel labelIdleTimeOut;
 
 	private JScrollPane rightScrollPane;
 
 
 	JMenuBar menuBar;
 	JMenu menuFile;
-	JMenuItem menuOpen, menuClose, menuImport, menuBackup, menuChangePassword;
+	JMenuItem menuOpen, menuClose, menuImport,  menuBackup, menuChangePassword;
 	//JRadioButtonMenuItem rbMenuItem;
 	//JCheckBoxMenuItem cbMenuItem;
 
@@ -305,7 +308,57 @@ public class WalletForm {
 				}
 			}
 		});
+
+		fldIdleTimeout.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				//
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (StringUtils.hasValue(fldIdleTimeout.getText())) {
+					try {
+						long l = Long.parseLong(fldIdleTimeout.getText());
+						if (l<5) //min 5
+							l =5;
+						WalletSettings.getInstance().setIdleTimeout(l);
+
+					} catch (NumberFormatException e1) {
+						//
+					}
+				}
+
+				fldIdleTimeout.setText(Long.valueOf(WalletSettings.getInstance().getIdleTimeout()).toString());
+			}
+		});
+
+		                 //todo
+		KeyListener keyListener = new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				// e.getSource()==btnCancel evals to true
+				if (e.getKeyCode()==KeyEvent.VK_ENTER){
+					//dialog.dispose();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+		}    ;
+
 	}
+
+
+
 
 
 	public void doFilter() {
@@ -638,9 +691,16 @@ public class WalletForm {
 			labelLastMessage.setText(s);
 	}
 
+	public void loadOptionsIntoView() {
+		labelCurrentOpenFile.setText(WalletSettings.getInstance().getLastFile());
+		fldIdleTimeout.setText(Long.valueOf(WalletSettings.getInstance().getIdleTimeout()).toString());
+	}
+
+
 }
 
 
+/*
 class MyDocumentListener implements DocumentListener {
 	// implement the methods
 	JTextField field;
@@ -685,4 +745,5 @@ class MyDocumentListener implements DocumentListener {
 
 	}
 
-}
+
+}*/

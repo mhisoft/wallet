@@ -6,3 +6,17 @@
 * add close button /menu; prevent the X close window button (done)
 
 
+
+keylistener to all the buttons
+
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode()==KeyEvent.VK_ENTER){
+            System.out.println("Hello");
+        }
+        Component frame = new JFrame();
+        JOptionPane.showMessageDialog(frame , "You've Submitted the name " + nameInput.getText());
+
+    }
+

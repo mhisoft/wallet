@@ -30,20 +30,19 @@ public class IdleTimerService {
 
 	public void start() {
 
-		 if (SystemSettings.debug)
-			 WalletSettings.getInstance().setIdleTimeout(180);  //3 min.
 
 		if (t!=null)
 			t.cancel();
 
 		t = new Timer(true);
 		startTime = System.currentTimeMillis();
+		long idleTimeoutInMilliSec = WalletSettings.getInstance().getIdleTimeout() * 60* 1000;
 
 		t.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				long elapsed = System.currentTimeMillis() - startTime;
-				if (elapsed > WalletSettings.getInstance().getIdleTimeout() * 1000) {
+				if (elapsed > idleTimeoutInMilliSec ) {
 					//times out , close the wallet file
 					t.cancel();
 
