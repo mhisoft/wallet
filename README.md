@@ -27,7 +27,11 @@ It is a secure password vault which is best suitable for storing passwords and p
 * Runs offline. No network connection required, neither is it used by the app. 
  While using other similar product which connects to the network, I have always been worried about the data could be secretly transmitted to somewhere across the network without my knowledge.  The MHISoft eWallet does not use any network activity of any sort. It does not open network port (TCP ports) or use http.  Thus it definitely will not transmit any data over the network. 
  
+## Disclaimer
+The author is not responsible for loss of any kind incurred directly or indirectly by using this application.
 
+## License
+Apache License 2.0, January 2004 http://www.apache.org/licenses/
 
 
 
