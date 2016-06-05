@@ -23,11 +23,16 @@
 
 package org.mhisoft.wallet.action;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.FileContent;
+import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.DialogUtils;
+import org.mhisoft.wallet.view.PasswordForm;
 
 /**
  * Description: Change the password
@@ -42,33 +47,66 @@ public class ChangePasswordAction implements Action {
 		//action.changeDataFilePass();
 	}
 
-	private void changeDataFilePass(String oldPass, String newPass, String dataFile) {
-
-		try {
-			WalletModel model = ServiceRegistry.instance.getWalletModel();
-
-			Encryptor oldEnc = new  Encryptor(newPass);
-			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile,  oldEnc  );
-			model.setItemsFlatList(fileContent.getWalletItems());
-
-
-			Encryptor enc = new  Encryptor(newPass);
-			model.setPassHash(HashingUtils.createHash(newPass));
-			ServiceRegistry.instance.getWalletService().saveToFile(dataFile, model, enc);
 
 
 
-		} catch (HashingUtils.CannotPerformOperationException e) {
-			e.printStackTrace();
-		}
+	private void startByGettingNewPass() {
+		//now show password form to enter the password.
+		PasswordForm passwordForm = new PasswordForm("Enter a new password");
+		passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String newPass = passwordForm.getUserEnterPassword();
 
+				try {
+					String hash = HashingUtils.createHash(newPass);
+					ServiceRegistry.instance.getWalletModel().setPassHash(hash);
+					ServiceRegistry.instance.getWalletSettings().setPassPlain(newPass);
+
+					passwordForm.exitPasswordForm();
+
+
+					WalletModel model = ServiceRegistry.instance.getWalletModel();
+
+//			Encryptor oldEnc = new  Encryptor(newPass);
+//			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile,  oldEnc  );
+//			model.setItemsFlatList(fileContent.getWalletItems());
+
+
+					Encryptor enc = new  Encryptor(newPass);
+					model.setPassHash(HashingUtils.createHash(newPass));
+
+					//save the file with new password.
+					ServiceRegistry.instance.getWalletService().saveToFile(WalletSettings.getInstance().getLastFile() //
+							, model, enc);
+
+					DialogUtils.getInstance().info("<html>The password has successfully been changed.<br>"
+							+"Please keep this in a safe place, it can't be recovered when lost:\n"
+									+ passwordForm.getUserInputPass() + ", combination:"
+									+ passwordForm.getCombinationDisplay())   ;
+
+
+
+
+
+
+				} catch (HashingUtils.CannotPerformOperationException e1) {
+					e1.printStackTrace();
+					DialogUtils.getInstance().error("An error occurred", "Failed to hash the password:" + e1.getMessage());
+				}
+
+
+			}
+		});
 
 	}
+
 
 
 	@Override
 	public ActionResult execute(Object... params) {
 
+		startByGettingNewPass();
 
 		return null;
 	}
