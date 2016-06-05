@@ -411,7 +411,7 @@ public class WalletForm {
 	}
 
 	public void init() {
-		frame = new JFrame("MHISoft eWallet " + WalletMain.version);
+		frame = new JFrame("MHISoft eVault " + WalletMain.version);
 		frame.setContentPane(mainPanel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
