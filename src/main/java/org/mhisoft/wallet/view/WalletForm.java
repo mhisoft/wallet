@@ -521,7 +521,7 @@ public class WalletForm {
 		menuFile.add(menuBackup);
 		menuChangePassword = new JMenuItem("Change Password", KeyEvent.VK_P);
 		menuFile.add(menuChangePassword);
-		menuClose = new JMenuItem("Quit", KeyEvent.VK_C);
+		menuClose = new JMenuItem("Quit", KeyEvent.VK_Q);
 		menuFile.add(menuClose);
 
 

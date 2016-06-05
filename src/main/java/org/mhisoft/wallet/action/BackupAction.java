@@ -34,31 +34,18 @@ public class BackupAction implements Action {
 		}
 
 
-		 //backupAction
-		String sourceFile = WalletSettings.getInstance().getLastFile() ;
-		int k = sourceFile.lastIndexOf(File.separator) ;
-		String dir = WalletSettings.userHome;
-		String fileName;
-		String fileExt;
-		if (k>-1) {
-			dir = sourceFile.substring(0, k);                         // no slash at the end
-			fileName = sourceFile.substring(k + 1, sourceFile.length());
-		}
-		else
-			fileName =  sourceFile;
+
+		String[] parts = FileUtils.splitFileParts(WalletSettings.getInstance().getLastFile());
 
 
-		String[] tokens = fileName.split("\\.(?=[^\\.]+$)");
-		fileName =  tokens[0];
-
-		StringBuilder targetFile = new StringBuilder(dir);
-		targetFile.append(File.separator).append(fileName)  ;
+		StringBuilder targetFile = new StringBuilder(parts[0]);
+		targetFile.append(File.separator).append(parts[1])  ;
 		targetFile.append("-") .append(System.currentTimeMillis() ) ;
 		targetFile.append(".")  ;
-		targetFile.append(tokens[1])  ;
+		targetFile.append(parts[2])  ;  //ext
 
 		try {
-			FileUtils.copyFile( new File(sourceFile), new File(targetFile.toString()));
+			FileUtils.copyFile( new File(WalletSettings.getInstance().getLastFile()), new File(targetFile.toString()));
 			DialogUtils.getInstance().info("The data file is backed up at :" + targetFile.toString());
 		} catch (IOException e) {
 			logger.error(e.toString());
