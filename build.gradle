@@ -6,6 +6,8 @@ description = 'org.mhisoft - wallet'
 dependencies {
   compile project(':common-utils')
 
+  compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '2.5.8'
+
   jar {
     manifest {
       attributes("Class-Path": "lib/forms_rt.jar lib/images.jar lib/common-utils-1.0.jar",

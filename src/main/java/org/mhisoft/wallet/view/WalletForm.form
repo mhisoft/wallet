@@ -161,14 +161,12 @@
                                 <properties/>
                                 <border type="none"/>
                                 <children>
-                                  <component id="e46a8" class="javax.swing.JTextArea" binding="fldNotes">
+                                  <component id="2ac9e" class="org.fife.ui.rsyntaxtextarea.RSyntaxTextArea" binding="fldNotes" custom-create="true">
                                     <constraints/>
                                     <properties>
                                       <columns value="40"/>
-                                      <font size="18"/>
-                                      <foreground color="-16776961"/>
+                                      <currentLineHighlightColor color="-1"/>
                                       <rows value="8"/>
-                                      <text value=""/>
                                     </properties>
                                   </component>
                                 </children>

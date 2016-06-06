@@ -55,6 +55,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.mhisoft.common.event.EventDispatcher;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
@@ -89,7 +91,7 @@ public class WalletForm {
 
 	JTextField fldName;
 	JTextField fldURL;
-	JTextArea fldNotes;
+	RSyntaxTextArea fldNotes;
 	JPasswordField fldPassword;
 	JTextField fldUserName;
 	JTextField fldAccountNumber;
@@ -677,6 +679,9 @@ public class WalletForm {
 
 	void createUIComponents() {
 		// TODO: place custom component creation code here
+		fldNotes = new RSyntaxTextArea();
+		fldNotes.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+		fldNotes.setCodeFoldingEnabled(true);
 	}
 
 

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
-Class-Path: lib/forms_rt.jar lib/images.jar lib/common-utils-1.0.jar lib/jasypt-1.9.2.jar
+Class-Path: lib/forms_rt.jar lib/images.jar lib/common-utils-1.0.jar lib/jasypt-1.9.2.jar lib/rsyntaxtextarea-2.5.8.jar
 Build-Jdk: 1.7.0_55
-Built-By: zxue
+Built-By: mhisoft
 Created-By: IntelliJ IDEA
 Main-Class: org.mhisoft.wallet.WalletMain
 

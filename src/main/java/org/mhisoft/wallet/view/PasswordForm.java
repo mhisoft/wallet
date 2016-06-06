@@ -26,7 +26,9 @@ package org.mhisoft.wallet.view;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FocusTraversalPolicy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -88,6 +90,48 @@ public class PasswordForm implements  ActionListener {
 		init();
 	}
 
+	private class IndexedFocusTraversalPolicy extends
+			FocusTraversalPolicy {
+
+		private ArrayList<Component> components =
+				new ArrayList<Component>();
+
+		public void addIndexedComponent(Component component) {
+			components.add(component);
+		}
+
+		@Override
+		public Component getComponentAfter(Container aContainer,
+				Component aComponent) {
+			int atIndex = components.indexOf(aComponent);
+			int nextIndex = (atIndex + 1) % components.size();
+			return components.get(nextIndex);
+		}
+
+		@Override
+		public Component getComponentBefore(Container aContainer,
+				Component aComponent) {
+			int atIndex = components.indexOf(aComponent);
+			int nextIndex = (atIndex + components.size() - 1) %
+					components.size();
+			return components.get(nextIndex);
+		}
+
+		@Override
+		public Component getFirstComponent(Container aContainer) {
+			return components.get(0);
+		}
+
+		@Override
+		public Component getLastComponent(Container aContainer) {
+			return components.get(components.size());
+		}
+
+		@Override
+		public Component getDefaultComponent(Container aContainer) {
+			return spinner1;
+		}
+	}
 
 	//entry point
 
@@ -102,11 +146,18 @@ public class PasswordForm implements  ActionListener {
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getContentPane().add(mainPanel);
 		dialog.setPreferredSize(new Dimension(800, 400));
-		dialog.pack();
-		dialog.setLocationRelativeTo(walletForm.frame);
 
+
+
+
+//		final Container contentPane = dialog.getContentPane();
 		dialog.getRootPane().setDefaultButton(btnOk);
-		spinner1.requestFocus();
+
+		dialog.pack();
+
+
+
+
 
 
 		// Put client property
@@ -132,10 +183,24 @@ public class PasswordForm implements  ActionListener {
 		spinner3.setModel(spinnerMode3);
 
 
-		componentsList = ViewHelper.getAllComponents(dialog);
+
+//		IndexedFocusTraversalPolicy policy = new IndexedFocusTraversalPolicy();
+//		policy.addIndexedComponent(spinner1);
+//		policy.addIndexedComponent(spinner2);
+//		policy.addIndexedComponent(spinner3);
+//		policy.addIndexedComponent(fldPassword);
+//		policy.addIndexedComponent(btnCancel);
+//		policy.addIndexedComponent(btnOk);
+//		dialog.setFocusTraversalPolicy(policy);
+
+
+		//componentsList = ViewHelper.getAllComponents(dialog);
 		//ViewHelper.setFontSize(componentsList, WalletSettings.getInstance().getFontSize());
 
+		dialog.setLocationRelativeTo(walletForm.frame);
 		dialog.setVisible(true);
+		spinner1.requestFocusInWindow();
+
 
 	}
 
