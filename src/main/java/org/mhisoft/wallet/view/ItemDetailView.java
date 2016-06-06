@@ -97,6 +97,8 @@ public class ItemDetailView {
 		fields.put("cvc", new FiledObject(ItemType.item, form.labelCVC, form.fldCVC));
 
 
+
+
 	}
 
 	//clear all the fields as the model is closed
@@ -240,6 +242,9 @@ public class ItemDetailView {
 			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
 		}
 	}
+
+
+
 
 
 

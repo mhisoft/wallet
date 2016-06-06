@@ -23,8 +23,12 @@
 
 package org.mhisoft.wallet.view;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
 import javax.swing.JFrame;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -59,6 +63,7 @@ public class TreeExploreView {
 	JTree tree;
 	WalletForm form;
 	DefaultMutableTreeNode rootNode;
+	DefaultTreeModel treeModel;
 
 	public TreeExploreView(JFrame frame, WalletModel model, JTree tree, WalletForm walletForm) {
 		this.frame = frame;
@@ -87,6 +92,42 @@ public class TreeExploreView {
 
 			}
 		});
+
+
+
+
+		//update the tree node when fldName loses focus.
+		form.fldName.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				//
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				if (node!=null && treeModel!=null && (form.getDisplayMode()==DisplayMode.add || form.getDisplayMode()==DisplayMode.edit) ) {
+
+					SwingUtilities.invokeLater( new Runnable() {
+						public void run() {
+							WalletItem item = (WalletItem)node.getUserObject();
+							if (item!=null) {
+								item.setName(form.fldName.getText());
+								treeModel.nodeChanged(node);
+								//tree.revalidate();
+							}
+						}
+					});
+
+				}
+			}
+		});
+
+
+
+
+
+
 
 	}
 
@@ -123,7 +164,7 @@ public class TreeExploreView {
 //		tree.setModel(null);
 //		model.setupTestData();
 		//DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new WalletItem(ItemType.category, "My Default Wallet 1"));
-		DefaultTreeModel treeModel = null;
+		treeModel = null;
 
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
