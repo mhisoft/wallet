@@ -324,6 +324,7 @@
                                   <font/>
                                   <horizontalAlignment value="2"/>
                                   <horizontalTextPosition value="2"/>
+                                  <labelFor value="81be5"/>
                                   <text value="Name"/>
                                 </properties>
                               </component>

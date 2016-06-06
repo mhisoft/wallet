@@ -41,8 +41,6 @@ import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
  * Description: TreeExploreView
@@ -329,11 +327,13 @@ public class TreeExploreView {
 		WalletItem item = model.getCurrentItem();
 		if (item.getType()==ItemType.category && item.hasChildren())
 			return;
-		MoveNodeDialog  dialog = ServiceRegistry.instance.getService(BeanType.singleton, MoveNodeDialog.class)  ;
+
+		MoveNodeDialog  dialog =  new MoveNodeDialog(item);
+
 		dialog.display(item, new MoveNodeDialog.SelectCategoryCallback() {
 			@Override
 			public void onSelectWalletItem(WalletItem newParentItem) {
-				logger.debug("move current item  "+item+"to :" + newParentItem);
+				logger.debug("move current item  '" + item +"' to :" + newParentItem);
 
 
 				removeItemFromModel(item)  ;

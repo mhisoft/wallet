@@ -4,12 +4,10 @@
 * random access the file to allow save the item when the item SAVE button is clicked. (deferred)
 * when add a new item, make it edit mode by default (done)
 * add close button /menu; prevent the X close window button (done)
-* remember the last location
+* remember the last location  (done)
 
 
-
-
-keylistener to all the buttons
+keylistener to all the buttons       (done)
 
 
     @Override

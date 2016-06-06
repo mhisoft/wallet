@@ -102,6 +102,11 @@ public class ViewHelper {
 		return compList;
 	}
 
+	public static void setFontSize(Container c, int newFontSize) {
+		List<Component> components = getAllComponents(c);
+		setFileChooserFont (components.toArray( new Component[components.size()] ), newFontSize);
+	}
+
 
 	public static String chooseFile(String defaultDir) {
 		JFileChooser chooser = new JFileChooser();

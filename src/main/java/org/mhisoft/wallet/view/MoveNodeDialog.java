@@ -19,25 +19,33 @@ import javax.swing.SwingUtilities;
 
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
+import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 public class MoveNodeDialog extends JDialog {
 	private JPanel contentPane;
 	private JButton buttonOK;
 	private JButton buttonCancel;
-	private JLabel labelMoveNode;
+
 	private JComboBox<WalletItem> comboCategories;
+	private JLabel labelMoveItem;
 	//String[] petStrings = {"Bird", "Cat", "Dog", "Rabbit", "Pig"};
 
 	//reuse it
 	SelectCategoryCallback callback = null;
 	WalletItem currentItem ;
 
-	public MoveNodeDialog() {
+	public MoveNodeDialog(WalletItem currentItem) {
+		labelMoveItem.setText("Move the item '" + currentItem+ "'");
+
 		setContentPane(contentPane);
 		setModal(true);
+
+
 		getRootPane().setDefaultButton(buttonOK);
-		ViewHelper.setUIManagerFontSize();
+		//ViewHelper.setUIManagerFontSize();
+		ViewHelper.setFontSize(contentPane, WalletSettings.getInstance().getFontSize());
+
 
 		buttonOK.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -95,6 +103,7 @@ public class MoveNodeDialog extends JDialog {
 		}
 
 		comboCategories = new JComboBox<>(  items.toArray(new WalletItem[items.size()])  );
+
 	}
 
 
@@ -106,20 +115,28 @@ public class MoveNodeDialog extends JDialog {
 	 */
 	public void display(WalletItem currentItem, SelectCategoryCallback callback) {
 
+
+
+
+		//create a new dialog every time.
+		MoveNodeDialog dialog = new MoveNodeDialog( currentItem);
+		dialog.callback = callback;
+		dialog.currentItem = currentItem;
+
+
+
+		dialog.pack();
+		dialog.setLocationRelativeTo(null);
+
+
+
+		dialog.setVisible(true);
+
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
 			public void run() {
 
-				//create a new dialog every time.
-				MoveNodeDialog dialog = new MoveNodeDialog();
-				dialog.callback = callback;
-				dialog.currentItem = currentItem;
-
-
-				dialog.pack();
-				dialog.setLocationRelativeTo(null);
-				dialog.setVisible(true);
 			}
 		});
 

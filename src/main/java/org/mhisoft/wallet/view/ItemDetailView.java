@@ -169,6 +169,8 @@ public class ItemDetailView {
 
 		form.btnTogglePasswordView.setVisible(item.getType() == ItemType.item);
 
+		form.fldName.requestFocus();
+
 
 //
 //		}
