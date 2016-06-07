@@ -126,6 +126,7 @@
                    name="${AppVersion}"
                    displayname="${AppVersion}"
                    identifier="org.mhisoft.wallet.WalletMain"
+                   icon="dist/wallet-multi-size.icns"
                    mainclassname="org.mhisoft.wallet.WalletMain">
             <runtime dir="${MAC_JRE_BUNDLE_DIR}" />
             <classpath dir="dist" includes="ewallet-${version}.jar,lib/*.jar"/>
