@@ -102,7 +102,8 @@ public class WalletSettings implements Serializable	 {
 	}
 
 	public String getLastFile() {
-		return lastFile==null?WalletSettings.defaultWalletFile:lastFile;
+	//	return lastFile==null?WalletSettings.defaultWalletFile:lastFile;
+		return lastFile;
 	}
 
 	public void setLastFile(String lastFile) {

@@ -44,7 +44,7 @@ import javax.swing.SpinnerNumberModel;
 import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.action.ActionResult;
-import org.mhisoft.wallet.action.CreatePasswordAction;
+import org.mhisoft.wallet.action.CreateWalletAction;
 import org.mhisoft.wallet.action.LoadWalletAction;
 import org.mhisoft.wallet.action.VerifyPasswordAction;
 import org.mhisoft.wallet.model.PasswordValidator;
@@ -293,8 +293,8 @@ public class PasswordForm implements  ActionListener {
 		} else {
 			if (createHash) {
 				//user password is no good, did not pass validation.
-				CreatePasswordAction createPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, CreatePasswordAction.class);
-				createPasswordAction.execute(pass, this);
+				CreateWalletAction createWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CreateWalletAction.class);
+				createWalletAction.execute(pass, this);
 			} else {
 				VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
 				ActionResult result = verifyPasswordAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash());

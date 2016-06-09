@@ -47,13 +47,13 @@ public class LoadWalletAction implements Action {
 
 
 		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
-
+		WalletModel model  = ServiceRegistry.instance.getWalletModel();
 
 
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
 			WalletSettings.getInstance().setLastFile(fileName);
-			WalletModel model  = ServiceRegistry.instance.getWalletModel();
+
 			model.initEncryptor(pass);
 			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
 					model.getEncryptor());
@@ -61,11 +61,10 @@ public class LoadWalletAction implements Action {
 			model.setPassHash(fileContent.getHeader().getPassHash());
 
 
-
-
 		} else {
 			//new file, needs to be saved on close.
 			ServiceRegistry.instance.getWalletModel().setModified(true);
+			model.initEncryptor(pass);
 		}
 		ServiceRegistry.instance.getWalletForm().loadTree();
 		ServiceRegistry.instance.getWalletForm().loadOptionsIntoView();
