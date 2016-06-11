@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mhisoft.java.apps</groupId>
-    <artifactId>ewallet</artifactId>
+    <artifactId>evault</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
-    <name>ewallet</name>
+    <name>evault</name>
     <description>Wallet</description>
 
     <parent>
@@ -62,7 +62,7 @@
 
 
             <build>
-                <!--<finalName>ewallet</finalName>-->
+                <!--<finalName>evault</finalName>-->
 
                 <!--resource plug in will out put the below to the target/classes-->
                 <resources>

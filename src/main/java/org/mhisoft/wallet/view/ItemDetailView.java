@@ -188,7 +188,9 @@ public class ItemDetailView {
 
 	public void cancelEditAction() {
 		if (model.getCurrentItem() != null) {
+			model.setModified(false);
 			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
+
 		}
 	}
 

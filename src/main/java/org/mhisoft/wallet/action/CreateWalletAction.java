@@ -35,7 +35,7 @@ import org.mhisoft.wallet.view.PasswordForm;
  * @author Tony Xue
  * @since Apr, 2016
  */
-public class CreatePasswordAction implements Action {
+public class CreateWalletAction implements Action {
 
 	@Override
 	public ActionResult execute(Object... params) {
@@ -52,8 +52,6 @@ public class CreatePasswordAction implements Action {
 			LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
 			loadWalletAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash());
 		}
-
-
 
 		return new ActionResult(true);
 

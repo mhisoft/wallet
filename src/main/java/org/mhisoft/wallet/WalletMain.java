@@ -22,7 +22,7 @@ import org.mhisoft.wallet.view.WalletForm;
  * @since Apr, 2016
  */
 public class WalletMain {
-	public static final String version = "1.0";
+	public static final String version = "1.0.1";
 	public static final String build = "";
 
 
@@ -41,14 +41,18 @@ public class WalletMain {
 
 
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
-		app.openWalletFile();
+		//read the last wallet file header if can.
+		app.prepareModel();
+
 		form.init();
 
 
 		//Open old wallet file or create new password.
 		String title ;
-		if (WalletSettings.getInstance().getLastFile()==null)
-			title="Creating a new wallet"  ;
+		if (WalletSettings.getInstance().getLastFile()==null) {
+			title = "Creating a new wallet";
+			WalletSettings.getInstance().setLastFile(WalletSettings.defaultWalletFile);
+		}
 		else
 			title ="Opening file:" + WalletSettings.getInstance().getLastFile();
 
@@ -58,15 +62,16 @@ public class WalletMain {
 
 	}
 
-
-	protected void openWalletFile() {
+	//set hash into model
+	// or load empty data for a new wallet.
+	protected void prepareModel() {
 
 
 		String fileName = WalletSettings.getInstance().getLastFile();
 
 		WalletModel model = ServiceRegistry.instance.getWalletForm().getModel();
 
-		if (new File(fileName).isFile()) {
+		if (fileName!=null && new File(fileName).isFile()) {
 			WalletSettings.getInstance().setLastFile(fileName);
 			FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 			model.setPassHash(header.getPassHash());
