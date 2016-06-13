@@ -182,10 +182,11 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 			for (WalletItem item : model.getItemsFlatList()) {
 				byte[] _byteItem = serializer.serialize(item);
-				byte[] encrypted = encryptor.encrypt(_byteItem);
+				Encryptor.EncryptionResult ret = encryptor.encrypt(_byteItem);
+				byte[] encrypted = ret.getEncryptedData();
 
 				//have to write for each encryption because a random salt is used.
-				cipherParameters = encryptor.getCipherParameters();
+				cipherParameters = ret.getCipherParameters();
 								/*#3: cipherParameters size 4 bytes*/
 				dataOut.write(FileUtils.intToByteArray(cipherParameters.length));
 				/*#4: cipherParameters body*/
