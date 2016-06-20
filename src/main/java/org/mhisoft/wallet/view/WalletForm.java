@@ -704,6 +704,13 @@ public class WalletForm {
 		listExploreView.setupListView();
 
 		btnSaveForm.setVisible(model.isModified() || isDetailModified());
+
+		menuBackup.setEnabled(true);
+		menuChangePassword.setEnabled(true);
+		menuClose.setEnabled(true);
+		menuImport.setEnabled(true);
+		menuOpen.setEnabled(true);
+
 	}
 
 	/**
@@ -720,6 +727,12 @@ public class WalletForm {
 		treeExploreView.closeTree();
 		itemDetailView.closeView();
 		listExploreView.closeView();
+
+		menuBackup.setEnabled(false);
+		menuChangePassword.setEnabled(false);
+		menuClose.setEnabled(true);
+		menuImport.setEnabled(false);
+		menuOpen.setEnabled(true);
 
 
 	}
