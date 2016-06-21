@@ -30,8 +30,8 @@ The password once lost can't be recovered. This is by design. The author of this
  
 * Password is stored in the most secured Hash format. In theory the password can't be reverse engineered from this hash , not under the current human technology. Random salted hashing with the  PBKDF2WithHmacSHA512 algorithm is used.   More tech details please see  https://crackstation.net/hashing-security.htm for more information.
 
-* The app runs offline by design so rest ensure there is absolutly no network connection used by the app. 
- While using other similar product which connects to the network, I have always been worried about the data could be secretly transmitted to somewhere across the network without my knowledge, either intentionally or unintentionally due to malsware or virus.   The MHISoft eVault started with this design to not use any network activity. The encrypted database is local unless you copy it over the network.  
+* The app runs offline by design so rest ensure there is absolutely no network connection used by the app. 
+ While using other similar product which connects to the network, I have always been worried about the data could be secretly transmitted to somewhere across the network without my knowledge, either intentionally or unintentionally due to malware or virus.   The MHISoft eVault started with this design to not use any network activity. The encrypted database is local unless you copy it over the network.  
  
 ## Disclaimer
 The author is not responsible for loss of any kind incurred directly or indirectly by using this application.
