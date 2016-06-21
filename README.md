@@ -2,7 +2,7 @@
 
 I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source.
 
-It is a secure password vault which is best suitable for storing passwords and personal data.  All the data are stored in a encrypted dtabase with AES 256 bit key  encryption. You only need to remember one master password and a set of combination code to the vault. The password is stored in a hashed format and can't be reverse engineered.  The app runs offline so you don't need to worry about data being transmitted over the network.  
+It is a secure password vault which is best suitable for storing passwords and personal data.  All the data are stored in a encrypted database with AES 256 bit key  encryption. You only need to remember one master password and a set of combination code to the vault. The password is stored in a hashed format and can't be reverse engineered.  The app runs offline so you don't need to worry about data being transmitted over the network.  
 
 The password once lost can't be recovered. This is by design. The author of this code can't even recover the lost password. And without the password and combination, the vault can't be opened, thus the data in the vault will be lost. 
 
