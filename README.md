@@ -2,7 +2,7 @@
 
 I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source.
 
-It is a secure password vault which is best suitable for storing passwords and personal data.  All the data are stored in a encrypted dtabase with AES 256 bit key  encryption. You only need to remember one master password and a set of combination code to the vault. The password is stored in a hashed format and can't be reverse engineered.  The app runs offline so you don't need to worry about data being transmitted over the network.  
+It is a secure password vault which is best suitable for storing passwords and personal data.  All the data are stored in a encrypted database with AES 256 bit key  encryption. You only need to remember one master password and a set of combination code to the vault. The password is stored as one way Hash and can't be reverse engineered.  The app runs offline so you don't need to worry about data being transmitted over the network.  
 
 The password once lost can't be recovered. This is by design. The author of this code can't even recover the lost password. And without the password and combination, the vault can't be opened, thus the data in the vault will be lost. 
 
@@ -30,8 +30,8 @@ The password once lost can't be recovered. This is by design. The author of this
  
 * Password is stored in the most secured Hash format. In theory the password can't be reverse engineered from this hash , not under the current human technology. Random salted hashing with the  PBKDF2WithHmacSHA512 algorithm is used.   More tech details please see  https://crackstation.net/hashing-security.htm for more information.
 
-* The app runs offline by design so rest ensure there is absolutly no network connection used by the app. 
- While using other similar product which connects to the network, I have always been worried about the data could be secretly transmitted to somewhere across the network without my knowledge, either intentionally or unintentionally due to malsware or virus.   The MHISoft eVault started with this design to not use any network activity. The encrypted database is local unless you copy it over the network.  
+* The app runs offline by design so rest ensure there is absolutely no network connection used by the app. 
+ While using other similar product which connects to the network, I have always been worried about the data could be secretly transmitted to somewhere across the network without my knowledge, either intentionally or unintentionally due to malware or virus.   The MHISoft eVault started with this design to not use any network activity. The encrypted database is local unless you copy it over the network.  
  
 ## Disclaimer
 The author is not responsible for loss of any kind incurred directly or indirectly by using this application.
