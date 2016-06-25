@@ -534,6 +534,7 @@ public class WalletForm {
 		textAreaDebug.setText("");
 		//if (WalletModel.debug) {
 		textAreaDebug.append("\n");
+		textAreaDebug.append(WalletMain.BUILD_DETAIL + "\n");
 		textAreaDebug.append("\n");
 		textAreaDebug.append("java.home=" + System.getProperty("java.home") + "\n");
 		textAreaDebug.append("java.specification.version=" + System.getProperty("java.specification.version") + "\n");

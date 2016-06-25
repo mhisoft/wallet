@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>S:\projects\mhisoft\apps\wallet\dist\tmp_make_exe\ewallet-combined.jar</jar>
-  <outfile>S:\projects\mhisoft\apps\wallet\dist\ewallet-1.0.exe</outfile>
+  <jar>S:\projects\mhisoft\apps\wallet\dist\tmp_make_exe\evault-combined.jar</jar>
+  <outfile>S:\projects\mhisoft\apps\wallet\dist\evault-1.0.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
@@ -31,9 +31,9 @@
     <copyright>Copyright(c) 2016 Tony Xue</copyright>
     <productVersion>1.0.0.0</productVersion>
     <txtProductVersion>1.0</txtProductVersion>
-    <productName>MHISoft eWallet</productName>
+    <productName>MHISoft eVault</productName>
     <companyName>MHISoft</companyName>
-    <internalName>MHISoft eWallet</internalName>
-    <originalFilename>ewallet.exe</originalFilename>
+    <internalName>MHISoft eVault</internalName>
+    <originalFilename>evault.exe</originalFilename>
   </versionInfo>
 </launch4jConfig>
