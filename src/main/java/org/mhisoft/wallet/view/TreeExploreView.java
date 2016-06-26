@@ -245,17 +245,25 @@ public class TreeExploreView {
 		while (currentNode != null);
 	}
 
-	DefaultMutableTreeNode findNode(DefaultMutableTreeNode node, WalletItem target) {
+	/**
+	 * Find the treeNode starting from the  startFromNode
+	 * @param startFromNode
+	 * @param target
+	 * @return
+	 */
+	DefaultMutableTreeNode findNode(DefaultMutableTreeNode startFromNode, WalletItem target) {
+		if (startFromNode ==null)
+			return null;
 		DefaultMutableTreeNode ret ;
-		WalletItem  a = (WalletItem) node.getUserObject();
+		WalletItem  a = (WalletItem) startFromNode.getUserObject();
 		if (a.equals(target))
-			return node;
-		else if (node.isLeaf())
+			return startFromNode;
+		else if (startFromNode.isLeaf())
 			return null;
 
 		//dive into children
-		for (int i = 0; i < node.getChildCount(); i++) {
-			ret = findNode((DefaultMutableTreeNode)node.getChildAt(i),target);
+		for (int i = 0; i < startFromNode.getChildCount(); i++) {
+			ret = findNode((DefaultMutableTreeNode)startFromNode.getChildAt(i),target);
 			if (ret!=null)
 				return ret;
 		}
@@ -388,6 +396,14 @@ public class TreeExploreView {
 
 			}
 		});
+
+	}
+
+
+	public void setSelectionToCurrentNode() {
+		DefaultMutableTreeNode node = findNode(rootNode, model.getCurrentItem());
+		if (node!=null)
+		       tree.getSelectionModel().setSelectionPath(new TreePath(node.getPath()));
 
 	}
 

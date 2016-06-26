@@ -88,8 +88,9 @@ public class ListExplorerView  implements ListSelectionListener {
 			} else {
 				//Selection, enable the fire button.
 				currentItem = (WalletItem)itemList.getSelectedValue();
-				model.setCurrentItem(currentItem);
 
+				form.saveCurrentEdit(true);
+				model.setCurrentItem(currentItem);
 				form.displayWalletItemDetails(model.getCurrentItem());
 				form.resetHidePassword();
 

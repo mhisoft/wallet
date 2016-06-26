@@ -411,24 +411,54 @@ public class WalletForm {
 
 	}
 
+	public enum TreePanelMode {
+		tree, filter
+	}
 
+
+	private void switchMode(TreePanelMode mode) {
+		switch (mode)    {
+			case tree:
+				treeExploreView.setSelectionToCurrentNode() ;
+
+				fldFilter.setText("");
+				itemListPanel.setVisible(false);
+				treePanel.setVisible(true);
+
+
+
+				treeListPanel.validate();
+
+				 //buttons
+				btnDeleteNode.setEnabled(true);
+				btnMoveNode.setEnabled(true);
+				btnAddNode.setEnabled(true);
+
+				break;
+
+			case filter:
+				itemListPanel.setVisible(true);
+				treePanel.setVisible(false);
+				btnDeleteNode.setEnabled(false);
+				btnMoveNode.setEnabled(false);
+				btnAddNode.setEnabled(false);
+				treeListPanel.validate();
+
+		}
+	}
 
 
 
 	public void doFilter() {
 		if (fldFilter.getText() != null && fldFilter.getText().trim().length() > 0) {
-			itemListPanel.setVisible(true);
-			treePanel.setVisible(false);
-			treeListPanel.validate();
+			switchMode(TreePanelMode.filter) ;
+
 			listExploreView.filterItems(fldFilter.getText());
 		}
 	}
 
 	public void clearFilter() {
-		fldFilter.setText("");
-		itemListPanel.setVisible(false);
-		treePanel.setVisible(true);
-		treeListPanel.validate();
+		switchMode(TreePanelMode.tree) ;
 	}
 
 	public void resetHidePassword() {
@@ -761,6 +791,8 @@ public class WalletForm {
 			}
 
 		}
+		//
+		model.setModified(false) ;
 
 	}
 
