@@ -1,12 +1,10 @@
 package org.mhisoft.wallet.action;
 
+import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 
-import org.mhisoft.common.logger.Loggerfactory;
-import org.mhisoft.common.logger.MHILogger;
 import org.mhisoft.common.util.FileUtils;
-import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -20,8 +18,9 @@ import org.mhisoft.wallet.view.DialogUtils;
  */
 public class BackupAction implements Action {
 
-	private static final MHILogger logger = Loggerfactory.getLogger(BackupAction.class,
-			SystemSettings.loggerLevel);
+
+	private static final Logger logger = Logger.getLogger(BackupAction.class.getName());
+
 
 
 
@@ -48,7 +47,7 @@ public class BackupAction implements Action {
 			FileUtils.copyFile( new File(WalletSettings.getInstance().getLastFile()), new File(targetFile.toString()));
 			DialogUtils.getInstance().info("The data file is backed up at :" + targetFile.toString());
 		} catch (IOException e) {
-			logger.error(e.toString());
+			logger.severe(e.toString());
 			DialogUtils.getInstance().error(e.getMessage());
 		}
 

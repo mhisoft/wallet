@@ -1,11 +1,10 @@
 package org.mhisoft.wallet.service;
 
+import java.util.logging.Logger;
+
 import org.mhisoft.common.event.EventListener;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
-import org.mhisoft.common.logger.Loggerfactory;
-import org.mhisoft.common.logger.MHILogger;
-import org.mhisoft.wallet.SystemSettings;
 
 /**
  * Description:
@@ -14,12 +13,13 @@ import org.mhisoft.wallet.SystemSettings;
  * @since May, 2016
  */
 public class UserActivityCheckinListener implements EventListener {
-	 private static final MHILogger logger = Loggerfactory.getLogger(UserActivityCheckinListener.class,
-			SystemSettings.loggerLevel);
+
+	private static final Logger logger = Logger.getLogger(UserActivityCheckinListener.class.getName());
+
 
 	@Override
 	public void handleEvent(MHIEvent event) {
-		logger.debug("handling event : " + event.toString());
+		logger.fine("handling event : " + event.toString());
 
 		if (event.getId() == EventType.UserCheckInEvent) {
 			IdleTimerService.instance.checkIn();

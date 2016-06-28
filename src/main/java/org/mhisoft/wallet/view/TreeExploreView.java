@@ -23,6 +23,7 @@
 
 package org.mhisoft.wallet.view;
 
+import java.util.logging.Logger;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
@@ -39,9 +40,6 @@ import javax.swing.tree.TreeSelectionModel;
 import org.mhisoft.common.event.EventDispatcher;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
-import org.mhisoft.common.logger.Loggerfactory;
-import org.mhisoft.common.logger.MHILogger;
-import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -53,8 +51,9 @@ import org.mhisoft.wallet.model.WalletModel;
  * @since Mar, 2016
  */
 public class TreeExploreView {
-	private static final MHILogger logger = Loggerfactory.getLogger(TreeExploreView.class,
-			SystemSettings.loggerLevel);
+
+	private static final Logger logger = Logger.getLogger(TreeExploreView.class.getName());
+
 
 
 
@@ -382,7 +381,7 @@ public class TreeExploreView {
 		dialog.display(item, new MoveNodeDialog.SelectCategoryCallback() {
 			@Override
 			public void onSelectWalletItem(WalletItem newParentItem) {
-				logger.debug("move current item  '" + item +"' to :" + newParentItem);
+				logger.fine("move current item  '" + item +"' to :" + newParentItem);
 
 
 				removeItemFromModel(item)  ;

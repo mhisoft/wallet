@@ -36,7 +36,7 @@
 
     <profiles>
         <profile>
-            <id>rdproui</id>
+            <id>main-profile</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -79,7 +79,7 @@
                         <filtering>false</filtering>
                         <directory>${project.basedir}/src/main/resources</directory>
                         <includes>
-                            <include>images/*.png</include>
+                            <include>*</include>
                         </includes>
                     </resource>
                 </resources>
