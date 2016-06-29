@@ -40,9 +40,12 @@ import javax.swing.tree.TreeSelectionModel;
 import org.mhisoft.common.event.EventDispatcher;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
+import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
  * Description: TreeExploreView
@@ -387,10 +390,25 @@ public class TreeExploreView {
 				removeItemFromModel(item)  ;
 
 				DefaultMutableTreeNode newChildNode = addItemAndNode(newParentItem, item)  ;
+
+				//save it
+				SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
+				saveWalletAction.execute();
+
+
 				//now set selection to this new node
 				tree.getSelectionModel().setSelectionPath(new TreePath(newChildNode.getPath()));
 				//Make sure the user can see the lovely new node.
 				tree.scrollPathToVisible(new TreePath(newChildNode.getPath()));
+
+//				SwingUtilities.invokeLater(new Runnable() {
+//
+//					@Override
+//					public void run() {
+//
+//						form.btnSaveForm.setVisible(true);
+//					}
+//				});
 
 
 			}

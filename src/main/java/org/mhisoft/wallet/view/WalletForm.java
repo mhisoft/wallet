@@ -780,7 +780,8 @@ public class WalletForm {
 
 	//called when node changes
 	public void saveCurrentEdit(boolean askToSave) {
-		if (isDetailModified()) {
+		if (isDetailModified()
+				|| model.isModified()) {  //model might be modified  because of item move, even the item is not modified.
 			if (!askToSave || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
 					, "Save the changes?") == Confirmation.YES) {
 				itemDetailView.updateToModel();

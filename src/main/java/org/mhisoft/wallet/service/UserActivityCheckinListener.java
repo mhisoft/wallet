@@ -19,7 +19,7 @@ public class UserActivityCheckinListener implements EventListener {
 
 	@Override
 	public void handleEvent(MHIEvent event) {
-		logger.fine("handling event : " + event.toString());
+		logger.finest("handling event : " + event.toString());
 
 		if (event.getId() == EventType.UserCheckInEvent) {
 			IdleTimerService.instance.checkIn();

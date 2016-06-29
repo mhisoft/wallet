@@ -39,8 +39,7 @@ public class WalletMain {
 		/*initialized*/
 		HashingUtils.init();
 
-		EventDispatcher.instance.registerListener(EventType.UserCheckInEvent,  new UserActivityCheckinListener());
-
+		app.registerEventListeners();
 
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
 		//read the last wallet file header if can.
@@ -64,7 +63,7 @@ public class WalletMain {
 
 	}
 
-	//set hash into model
+	//set hash into model                                                     f
 	// or load empty data for a new wallet.
 	protected void prepareModel() {
 
@@ -82,6 +81,10 @@ public class WalletMain {
 			model.setupEmptyWalletData();
 		}
 
+	}
+
+	protected void registerEventListeners() {
+		EventDispatcher.instance.registerListener(EventType.UserCheckInEvent,  new UserActivityCheckinListener());
 	}
 
 }
