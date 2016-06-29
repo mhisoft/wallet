@@ -23,8 +23,8 @@ import org.mhisoft.wallet.view.WalletForm;
  */
 public class WalletMain {
 
-	public static final String version = "1.0.1";
-	public static final String build = "625";
+	public static final String version = "1.0.2";
+	public static final String build = "626";
 	public static final String BUILD_DETAIL = "MHISoft eVault " + version +" build " +  build;
 
 
@@ -85,6 +85,7 @@ public class WalletMain {
 
 	protected void registerEventListeners() {
 		EventDispatcher.instance.registerListener(EventType.UserCheckInEvent,  new UserActivityCheckinListener());
+		EventDispatcher.instance.registerListener(EventType.ModelChangeEvent,  new UserActivityCheckinListener());
 	}
 
 }

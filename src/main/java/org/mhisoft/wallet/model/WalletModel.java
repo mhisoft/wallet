@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.mhisoft.common.event.EventDispatcher;
+import org.mhisoft.common.event.EventType;
+import org.mhisoft.common.event.MHIEvent;
 import org.mhisoft.common.util.Encryptor;
 
 /**
@@ -92,6 +95,8 @@ public class WalletModel {
 
 	public void setModified(boolean modified) {
 		this.modified = modified;
+		EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ModelChangeEvent, "setModified" , Boolean.valueOf(this.modified) ));
+
 	}
 
 	public void setupTestData() {

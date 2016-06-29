@@ -7,6 +7,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mhisoft.common.event.EventDispatcher;
+import org.mhisoft.common.event.EventType;
+import org.mhisoft.common.event.MHIEvent;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 
@@ -81,6 +84,9 @@ public class ListExplorerView  implements ListSelectionListener {
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getValueIsAdjusting() == false) {
 
+			EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "ListExplorerView.valueChanged" , null ));
+
+
 			if (itemList.getSelectedIndex() == -1) {
 				//No selection, disable fire button.
 				//fireButton.setEnabled(false);
@@ -88,9 +94,9 @@ public class ListExplorerView  implements ListSelectionListener {
 			} else {
 				//Selection, enable the fire button.
 				currentItem = (WalletItem)itemList.getSelectedValue();
+				model.setCurrentItem(currentItem);
 
 				form.saveCurrentEdit(true);
-				model.setCurrentItem(currentItem);
 				form.displayWalletItemDetails(model.getCurrentItem());
 				form.resetHidePassword();
 

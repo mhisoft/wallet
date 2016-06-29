@@ -109,7 +109,7 @@ public class WalletForm {
 
 	JPanel treeButtonPanel;
 	JButton btnEditForm;
-	JButton btnSaveForm;
+	public JButton btnSaveForm;
 	JButton btnCancelEdit;
 	JButton btnClose;
 
@@ -780,8 +780,7 @@ public class WalletForm {
 
 	//called when node changes
 	public void saveCurrentEdit(boolean askToSave) {
-		if (isDetailModified()
-				|| model.isModified()) {  //model might be modified  because of item move, even the item is not modified.
+		if (isDetailModified()) {
 			if (!askToSave || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
 					, "Save the changes?") == Confirmation.YES) {
 				itemDetailView.updateToModel();
@@ -790,10 +789,14 @@ public class WalletForm {
 				saveWalletAction.execute();
 				//model.setModified(false);   save action does it.
 			}
-
+			//
+			model.setModified(false) ;
 		}
-		//
-		model.setModified(false) ;
+		else {
+			if (!model.isModified())
+				btnSaveForm.setVisible(false);
+		}
+
 
 	}
 

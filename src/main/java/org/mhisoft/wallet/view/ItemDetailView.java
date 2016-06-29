@@ -125,8 +125,9 @@ public class ItemDetailView {
 	//	ServiceRegistry.instance.getWalletForm().setMessage("");
 
 		if (displayMode!=DisplayMode.view) {
-			//coming to edit and add mode, set model dirty
-			model.setModified(true);
+			//coming to edit and add model
+			//don't mark model changed yet if data is not changed.
+			//model.setModified(true);
 			item.setLastViewdDate(new Timestamp(System.currentTimeMillis()));
 		}
 

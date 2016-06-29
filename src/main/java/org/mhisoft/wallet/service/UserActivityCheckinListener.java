@@ -24,5 +24,6 @@ public class UserActivityCheckinListener implements EventListener {
 		if (event.getId() == EventType.UserCheckInEvent) {
 			IdleTimerService.instance.checkIn();
 		}
+
 	}
 }
