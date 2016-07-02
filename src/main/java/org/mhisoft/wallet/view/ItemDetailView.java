@@ -198,6 +198,8 @@ public class ItemDetailView {
 	public boolean isModified() {
 		//need a clone of the current Item.
 		WalletItem newItem = ServiceRegistry.instance.getWalletService().cloneItem(model.getCurrentItem());
+		if (newItem==null)
+			return false;
 
 
 		// reflect the current item detail into the newItem

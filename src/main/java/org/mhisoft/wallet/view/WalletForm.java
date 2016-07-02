@@ -780,7 +780,7 @@ public class WalletForm {
 
 	//called when node changes
 	public void saveCurrentEdit(boolean askToSave) {
-		if (isDetailModified()) {
+		if (isDetailModified()  || model.isModified() ) {
 			if (!askToSave || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
 					, "Save the changes?") == Confirmation.YES) {
 				itemDetailView.updateToModel();
@@ -796,6 +796,7 @@ public class WalletForm {
 			if (!model.isModified())
 				btnSaveForm.setVisible(false);
 		}
+
 
 
 	}
