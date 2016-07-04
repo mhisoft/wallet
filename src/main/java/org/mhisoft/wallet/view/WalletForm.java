@@ -23,7 +23,10 @@
 
 package org.mhisoft.wallet.view;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -138,7 +141,7 @@ public class WalletForm {
 	JLabel labelDetail1;
 	JLabel labelDetail2;
 	JLabel labelDetail3;
-	JLabel labelLastMessage;
+	JLabel labelLastMessage2;
 	JButton btnFilter;
 	 JButton btnClearFilter;
 	private JScrollPane itemListPanel;
@@ -156,6 +159,7 @@ public class WalletForm {
 	private JTextField fldIdleTimeout;
 	private JLabel labelIdleTimeOut;
 	private JTextArea textAreaDebug;
+	private JLabel labelLastMessage;
 
 	private JScrollPane rightScrollPane;
 
@@ -765,6 +769,8 @@ public class WalletForm {
 		menuImport.setEnabled(false);
 		menuOpen.setEnabled(true);
 
+		labelLastMessage.setVisible(false);
+
 
 	}
 
@@ -802,9 +808,35 @@ public class WalletForm {
 	}
 
 	public void setMessage(String s) {
-		if (labelLastMessage != null)
+		if (labelLastMessage != null) {
 			labelLastMessage.setText(s);
+			labelLastMessage.setVisible(true);
+			clearMessageLater();
+		}
 	}
+
+
+	Timer t=null;
+	private void clearMessageLater() {
+
+		try {
+			if (t!=null)
+				t.cancel();
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
+
+		t = new Timer(true);
+
+		t.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				labelLastMessage.setVisible(false);
+				labelLastMessage.setText("");
+			}
+		}, new Timestamp(System.currentTimeMillis()+10*1000));
+	}
+
 
 	public void loadOptionsIntoView() {
 		labelCurrentOpenFile.setText(WalletSettings.getInstance().getLastFile());

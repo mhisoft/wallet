@@ -365,6 +365,10 @@ public class TreeExploreView {
 
 			removeItemFromModel (item)  ;
 
+			//save it
+			SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
+			saveWalletAction.execute();
+
 			//now set selection to this new node
 			tree.getSelectionModel().setSelectionPath(new TreePath(parentNode.getPath()));
 			//Make sure the user can see the lovely new node.
