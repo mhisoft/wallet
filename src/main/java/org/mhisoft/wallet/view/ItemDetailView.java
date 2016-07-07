@@ -222,7 +222,7 @@ public class ItemDetailView {
 
 
 	/**
-	 * Update the data from form to model.
+	 * Update the data from form to the model's currentItem
 	 */
 	public void updateToModel() {
 		if (model.getCurrentItem() != null) {

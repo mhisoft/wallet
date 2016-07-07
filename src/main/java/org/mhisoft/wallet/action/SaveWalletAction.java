@@ -30,6 +30,7 @@ import javax.swing.JSplitPane;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.WalletForm;
 
 /**
  * Description: save the wallet changes to file
@@ -42,7 +43,6 @@ public class SaveWalletAction implements Action {
 
 	public void save(String fileName) {
 		//save the wallet
-//		if (ServiceRegistry.instance.getWalletModel().isModified()) {
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		model.buildFlatListFromTree();
 		ServiceRegistry.instance.getWalletService().saveToFile(fileName, model, model.getEncryptor());
@@ -50,9 +50,9 @@ public class SaveWalletAction implements Action {
 		//DialogUtils.getInstance().info("Saved successfully.");
 		ServiceRegistry.instance.getWalletForm().setMessage("Saved successfully.");
 
-		ServiceRegistry.instance.getWalletForm().displayWalletItemDetails(model.getCurrentItem());
+		WalletForm form = ServiceRegistry.instance.getWalletForm();
+		form.displayWalletItemDetails(model.getCurrentItem());
 
-//		}
 	}
 
 	@Override

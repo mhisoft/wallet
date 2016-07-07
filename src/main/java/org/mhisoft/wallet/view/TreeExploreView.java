@@ -24,8 +24,6 @@
 package org.mhisoft.wallet.view;
 
 import java.util.logging.Logger;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 import javax.swing.JFrame;
 import javax.swing.JTree;
@@ -58,10 +56,8 @@ public class TreeExploreView {
 	private static final Logger logger = Logger.getLogger(TreeExploreView.class.getName());
 
 
-
-
 	JFrame frame;
-	WalletModel model ;
+	WalletModel model;
 	JTree tree;
 	WalletForm form;
 	DefaultMutableTreeNode rootNode;
@@ -72,7 +68,6 @@ public class TreeExploreView {
 		this.model = model;
 		this.tree = tree;
 		this.form = walletForm;
-
 
 
 		//Listen for when the selection changes.
@@ -87,48 +82,46 @@ public class TreeExploreView {
 					//Nothing is selected.
 					return;
 				}
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "changeNode", null));
 
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "changeNode" , null ));
 
-				changeNode(node);
+				DefaultMutableTreeNode oldNode = null;
+				if (e.getOldLeadSelectionPath() != null)
+					oldNode = (DefaultMutableTreeNode) e.getOldLeadSelectionPath().getLastPathComponent();
+
+
+				changeNode(oldNode, node);
 
 			}
 		});
-
-
 
 
 		//update the tree node when fldName loses focus.
-		form.fldName.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				//
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-				if (node!=null && treeModel!=null && (form.getDisplayMode()==DisplayMode.add || form.getDisplayMode()==DisplayMode.edit) ) {
-
-					SwingUtilities.invokeLater( new Runnable() {
-						public void run() {
-							WalletItem item = (WalletItem)node.getUserObject();
-							if (item!=null) {
-								item.setName(form.fldName.getText());
-								treeModel.nodeChanged(node);
-								//tree.revalidate();
-							}
-						}
-					});
-
-				}
-			}
-		});
-
-
-
-
-
+//		form.fldName.addFocusListener(new FocusListener() {
+//			@Override
+//			public void focusGained(FocusEvent e) {
+//				//
+//			}
+//
+//			@Override
+//			public void focusLost(FocusEvent e) {
+//				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+//				if (node!=null && treeModel!=null && (form.getDisplayMode()==DisplayMode.add || form.getDisplayMode()==DisplayMode.edit) ) {
+//
+//					SwingUtilities.invokeLater( new Runnable() {
+//						public void run() {
+//							WalletItem item = (WalletItem)node.getUserObject();
+//							if (item!=null) {
+//								item.setName(form.fldName.getText());
+//								treeModel.nodeChanged(node);
+//								//tree.revalidate();
+//							}
+//						}
+//					});
+//
+//				}
+//			}
+//		});
 
 
 	}
@@ -173,8 +166,8 @@ public class TreeExploreView {
 		model.buildTreeFromFlatList();
 
 		//set up root node
-		WalletItem rootItem=model.getItemsFlatList().get(0);
-		rootNode	= new DefaultMutableTreeNode( rootItem);
+		WalletItem rootItem = model.getItemsFlatList().get(0);
+		rootNode = new DefaultMutableTreeNode(rootItem);
 		treeModel = new DefaultTreeModel(rootNode);
 		tree.setModel(treeModel);
 
@@ -184,7 +177,7 @@ public class TreeExploreView {
 
 		tree.getSelectionModel().setSelectionPath(new TreePath(rootNode.getPath()));
 
-		changeNode(rootNode);
+		changeNode(null, rootNode);
 		expandRoot(rootNode);
 
 
@@ -203,12 +196,12 @@ public class TreeExploreView {
 		form.btnClearFilter.setEnabled(false);
 	}
 
-	public void changeNode(DefaultMutableTreeNode node) {
+	public void changeNode(final DefaultMutableTreeNode oldNode, final DefaultMutableTreeNode node) {
 
 
 		form.saveCurrentEdit(true);
 
-		model.setCurrentItem ((WalletItem) node.getUserObject());
+		model.setCurrentItem((WalletItem) node.getUserObject());
 		form.displayWalletItemDetails(model.getCurrentItem());
 		toggleButton(model.getCurrentItem());
 		form.resetHidePassword();
@@ -217,12 +210,11 @@ public class TreeExploreView {
 
 
 	void toggleButton(WalletItem currentItem) {
-		if (currentItem==null)  {
+		if (currentItem == null) {
 			form.btnAddNode.setEnabled(false);
 			form.btnDeleteNode.setEnabled(false);
 			form.btnMoveNode.setEnabled(false);
-		}
-		else {
+		} else {
 
 			if (currentItem.getType() == ItemType.category) {
 				form.btnAddNode.setEnabled(true);
@@ -231,7 +223,7 @@ public class TreeExploreView {
 			} else {
 				form.btnAddNode.setEnabled(true);
 				form.btnDeleteNode.setEnabled(true);
-				form.btnMoveNode.setEnabled( true);
+				form.btnMoveNode.setEnabled(true);
 			}
 		}
 	}
@@ -240,7 +232,7 @@ public class TreeExploreView {
 	public void expandRoot(DefaultMutableTreeNode currentNode) {
 		//DefaultMutableTreeNode currentNode = treeTop.getNextNode();
 		do {
-			if (currentNode.getLevel()==1)
+			if (currentNode.getLevel() == 1)
 				tree.expandPath(new TreePath(currentNode.getPath()));
 			currentNode = currentNode.getNextNode();
 		}
@@ -248,16 +240,17 @@ public class TreeExploreView {
 	}
 
 	/**
-	 * Find the treeNode starting from the  startFromNode
+	 * Find the treeNode for the target Wallet model Item , starting from the  startFromNode
+	 *
 	 * @param startFromNode
 	 * @param target
 	 * @return
 	 */
 	DefaultMutableTreeNode findNode(DefaultMutableTreeNode startFromNode, WalletItem target) {
-		if (startFromNode ==null)
+		if (startFromNode == null)
 			return null;
-		DefaultMutableTreeNode ret ;
-		WalletItem  a = (WalletItem) startFromNode.getUserObject();
+		DefaultMutableTreeNode ret;
+		WalletItem a = (WalletItem) startFromNode.getUserObject();
 		if (a.equals(target))
 			return startFromNode;
 		else if (startFromNode.isLeaf())
@@ -265,61 +258,57 @@ public class TreeExploreView {
 
 		//dive into children
 		for (int i = 0; i < startFromNode.getChildCount(); i++) {
-			ret = findNode((DefaultMutableTreeNode)startFromNode.getChildAt(i),target);
-			if (ret!=null)
+			ret = findNode((DefaultMutableTreeNode) startFromNode.getChildAt(i), target);
+			if (ret != null)
 				return ret;
 		}
 		return null;
 
 	}
 
-	 // add the new item to the parent to both model and item tree.
+	// add the new item to the parent to both model and item tree.
 	private DefaultMutableTreeNode addItemAndNode(WalletItem parentItem, WalletItem newItem) {
 
 		model.addItem(parentItem, newItem);
 
 
 		DefaultMutableTreeNode parentNode = findNode(rootNode, parentItem);
-		if (parentNode==null)
+		if (parentNode == null)
 			throw new RuntimeException("parent node not found for item:" + newItem);
 
 
 		//Update the tree nodes and then notify the model:
 		//don't need to directly  insert into tree model
 		DefaultMutableTreeNode newChildNode = new DefaultMutableTreeNode(newItem);
-		parentNode.add( newChildNode );
-		DefaultTreeModel treeModel = (DefaultTreeModel)tree.getModel();
+		parentNode.add(newChildNode);
+		DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
 		treeModel.reload(parentNode);
 		return newChildNode;
 
 	}
 
 
-
 	public void addItem() {
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 		WalletItem item = (WalletItem) node.getUserObject();
 		WalletItem parentItem;
-		if (item.getType()== ItemType.category) {
-			 parentItem = item;
-		}
-		else {
+		if (item.getType() == ItemType.category) {
+			parentItem = item;
+		} else {
 			//this item is node leaf
 			parentItem = item.getParent();
 		}
-
 
 
 		WalletItem newItem;
 		if (model.isRoot(item)) {
 			//add another category to the  root
 			newItem = new WalletItem(ItemType.category, "New Category - Untitled");
-		}
-		else
+		} else
 			newItem = new WalletItem(ItemType.item, "New Item- Untitled");
 
 
-		DefaultMutableTreeNode newChildNode = addItemAndNode(parentItem, newItem )  ;
+		DefaultMutableTreeNode newChildNode = addItemAndNode(parentItem, newItem);
 
 
 		//now set selection to this new node
@@ -337,15 +326,15 @@ public class TreeExploreView {
 	}
 
 
-	private void removeItemFromModel(	WalletItem item) {
+	private void removeItemFromModel(WalletItem item) {
 		DefaultMutableTreeNode thisNode = findNode(rootNode, item);
 		DefaultMutableTreeNode parentNode = findNode(rootNode, item.getParent());
-		if (parentNode==null)
+		if (parentNode == null)
 			throw new RuntimeException("parent node not found for item:" + item);
 
 		//remove from jTree node
 		parentNode.remove(thisNode);
-		DefaultTreeModel treeModel = (DefaultTreeModel)tree.getModel();
+		DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
 		treeModel.reload(parentNode);
 
 		//remove from the model
@@ -356,14 +345,14 @@ public class TreeExploreView {
 
 	public void removeItem() {
 		WalletItem item = model.getCurrentItem();
-		if (item.getType()==ItemType.category && item.hasChildren())
+		if (item.getType() == ItemType.category && item.hasChildren())
 			return;
 
-		if (DialogUtils.getConfirmation(frame, "Delete the '" + item.getName() + "'?")==Confirmation.YES ) {
+		if (DialogUtils.getConfirmation(frame, "Delete the '" + item.getName() + "'?") == Confirmation.YES) {
 
 			DefaultMutableTreeNode parentNode = findNode(rootNode, item.getParent());
 
-			removeItemFromModel (item)  ;
+			removeItemFromModel(item);
 
 			//save it
 			SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
@@ -380,20 +369,20 @@ public class TreeExploreView {
 
 	public void moveItem() {
 		WalletItem item = model.getCurrentItem();
-		if (item.getType()==ItemType.category && item.hasChildren())
+		if (item.getType() == ItemType.category && item.hasChildren())
 			return;
 
-		MoveNodeDialog  dialog =  new MoveNodeDialog(item);
+		MoveNodeDialog dialog = new MoveNodeDialog(item);
 
 		dialog.display(item, new MoveNodeDialog.SelectCategoryCallback() {
 			@Override
 			public void onSelectWalletItem(WalletItem newParentItem) {
-				logger.fine("move current item  '" + item +"' to :" + newParentItem);
+				logger.fine("move current item  '" + item + "' to :" + newParentItem);
 
 
-				removeItemFromModel(item)  ;
+				removeItemFromModel(item);
 
-				DefaultMutableTreeNode newChildNode = addItemAndNode(newParentItem, item)  ;
+				DefaultMutableTreeNode newChildNode = addItemAndNode(newParentItem, item);
 
 				//save it
 				SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
@@ -423,12 +412,33 @@ public class TreeExploreView {
 
 	public void setSelectionToCurrentNode() {
 		DefaultMutableTreeNode node = findNode(rootNode, model.getCurrentItem());
-		if (node!=null)
-		       tree.getSelectionModel().setSelectionPath(new TreePath(node.getPath()));
+		if (node != null)
+			tree.getSelectionModel().setSelectionPath(new TreePath(node.getPath()));
 
 	}
 
+	/**
+	 * Update the name changes from item to the tree node.
+	 * @param item
+	 */
+	public void updateNameChange(WalletItem item) {
 
+		DefaultMutableTreeNode node =   findNode(rootNode, item )  ;
+		if (node!=null) {
 
-
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					WalletItem nodeItem = (WalletItem) node.getUserObject();
+					if (item != null) {
+						//nodeItem is the same as item. same object.
+						//nodeItem.setName(form.fldName.getText());
+						treeModel.nodeChanged(node);  //this is all we need to refresh the node title.
+						//tree.revalidate();
+					}
+				}
+			});
+		}
+	}
 }
+
+

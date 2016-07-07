@@ -187,6 +187,10 @@ public class WalletForm {
 		this.model = model;
 	}
 
+	public TreeExploreView getTreeExploreView() {
+		return treeExploreView;
+	}
+
 	public WalletForm() {
 
 		model = new WalletModel();
@@ -226,14 +230,8 @@ public class WalletForm {
 
 				//save button click , it is two fold. save the item detail edit
 				//Or save the whole model when model is modified from import for instance.
-				if (isDetailModified())
-					saveCurrentEdit(false);
-				else if (model.isModified()) {
-					//save file
-					SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
-					saveWalletAction.execute();
+				saveCurrentEdit(false);
 
-				}
 			}
 		};
 
@@ -785,15 +783,24 @@ public class WalletForm {
 
 
 	//called when node changes
-	public void saveCurrentEdit(boolean askToSave) {
+
+	/**
+	 * return true when saved.
+	 * @param askToSave
+	 * @return
+	 */
+	public boolean saveCurrentEdit(boolean askToSave) {
+		boolean ret = false;
 		if (isDetailModified()  || model.isModified() ) {
 			if (!askToSave || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
 					, "Save the changes?") == Confirmation.YES) {
-				itemDetailView.updateToModel();
+				itemDetailView.updateToModel();    //model current item is updated.
 				//save file
 				SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
 				saveWalletAction.execute();
 				//model.setModified(false);   save action does it.
+				ret = true;
+				getTreeExploreView().updateNameChange(model.getCurrentItem());
 			}
 			//
 			model.setModified(false) ;
@@ -804,6 +811,7 @@ public class WalletForm {
 		}
 
 
+		return ret ;
 
 	}
 
