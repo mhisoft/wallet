@@ -160,6 +160,7 @@ public class WalletForm {
 	private JLabel labelIdleTimeOut;
 	private JTextArea textAreaDebug;
 	private JLabel labelLastMessage;
+	 JButton btnCollapse;
 
 	private JScrollPane rightScrollPane;
 
@@ -178,6 +179,7 @@ public class WalletForm {
 
 
 	boolean hidePassword = true;
+	boolean treeExpanded  =true;
 
 	public WalletModel getModel() {
 		return model;
@@ -314,6 +316,14 @@ public class WalletForm {
 			}
 		});
 
+		btnCollapse.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCollapse" , null ));
+				expandCollapseTree();
+			}
+		});
+
 		fldIdleTimeout.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -372,6 +382,9 @@ public class WalletForm {
 					} else if (e.getSource() == btnMoveNode) {
 						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnMoveNode", null));
 						treeExploreView.moveItem();
+					}else if (e.getSource() == btnCollapse) {
+						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCollapse", null));
+						expandCollapseTree();
 					}
 				}
 			}
@@ -390,6 +403,7 @@ public class WalletForm {
 		btnAddNode.addKeyListener(keyListener);
 		btnDeleteNode.addKeyListener(keyListener);
 		btnMoveNode.addKeyListener(keyListener);
+		btnCollapse.addKeyListener(keyListener);
 
 		fldFilter.addKeyListener(new KeyListener() {
 			@Override
@@ -411,10 +425,19 @@ public class WalletForm {
 			}
 		});
 
+
 	}
 
 	public enum TreePanelMode {
 		tree, filter
+	}
+
+	private void expandCollapseTree() {
+		treeExpanded = !treeExpanded;
+		if (treeExpanded)
+			treeExploreView.expandTree();
+		else
+			treeExploreView.collapseTree();
 	}
 
 
@@ -435,6 +458,7 @@ public class WalletForm {
 				btnDeleteNode.setEnabled(true);
 				btnMoveNode.setEnabled(true);
 				btnAddNode.setEnabled(true);
+				btnCollapse.setEnabled(true);
 
 				break;
 
@@ -444,6 +468,8 @@ public class WalletForm {
 				btnDeleteNode.setEnabled(false);
 				btnMoveNode.setEnabled(false);
 				btnAddNode.setEnabled(false);
+				btnCollapse.setEnabled(false);
+
 				treeListPanel.validate();
 
 		}

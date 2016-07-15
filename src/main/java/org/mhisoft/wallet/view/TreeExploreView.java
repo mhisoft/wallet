@@ -23,6 +23,7 @@
 
 package org.mhisoft.wallet.view;
 
+import java.util.Enumeration;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -32,6 +33,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -178,7 +180,7 @@ public class TreeExploreView {
 		tree.getSelectionModel().setSelectionPath(new TreePath(rootNode.getPath()));
 
 		changeNode(null, rootNode);
-		expandRoot(rootNode);
+		this.expandTree();
 
 
 		form.btnFilter.setEnabled(true);
@@ -214,7 +216,10 @@ public class TreeExploreView {
 			form.btnAddNode.setEnabled(false);
 			form.btnDeleteNode.setEnabled(false);
 			form.btnMoveNode.setEnabled(false);
+			form.btnCollapse.setEnabled(false);
 		} else {
+
+			form.btnCollapse.setEnabled(true);
 
 			if (currentItem.getType() == ItemType.category) {
 				form.btnAddNode.setEnabled(true);
@@ -229,11 +234,21 @@ public class TreeExploreView {
 	}
 
 
-	public void expandRoot(DefaultMutableTreeNode currentNode) {
-		//DefaultMutableTreeNode currentNode = treeTop.getNextNode();
+	public void expandTree() {
+		DefaultMutableTreeNode currentNode = rootNode;
 		do {
 			if (currentNode.getLevel() == 1)
 				tree.expandPath(new TreePath(currentNode.getPath()));
+			currentNode = currentNode.getNextNode();
+		}
+		while (currentNode != null);
+	}
+
+    public void collapseTree() {
+		DefaultMutableTreeNode currentNode =rootNode;
+		do {
+			if (currentNode.getLevel() == 1)
+				tree.collapsePath(new TreePath(currentNode.getPath()));
 			currentNode = currentNode.getNextNode();
 		}
 		while (currentNode != null);
@@ -439,6 +454,33 @@ public class TreeExploreView {
 			});
 		}
 	}
+
+	private void expandCollapseAll(JTree tree, TreePath parent, boolean expand) {
+		TreeNode node = (TreeNode) parent.getLastPathComponent();
+
+		if (node.getChildCount() > 0) {
+			for (Enumeration e = node.children(); e.hasMoreElements();) {
+				TreeNode n = (TreeNode) e.nextElement();
+				TreePath path = parent.pathByAddingChild(n);
+				expandCollapseAll(tree, path, expand);
+			}
+		}
+		if (expand) {
+			tree.expandPath(parent);
+		} else {
+			tree.collapsePath(parent);
+		}
+	}
+
+
+	public void expandTree(JTree tree) {
+		TreeNode node = (TreeNode) tree.getModel().getRoot();
+		expandCollapseAll(tree, new TreePath(node), true);
+	}
+
+
+
+
 }
 
 
