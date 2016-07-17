@@ -24,8 +24,8 @@ import org.mhisoft.wallet.view.WalletForm;
  */
 public class WalletMain {
 
-	public static final String version = "1.0.2";
-	public static final String build = "628";
+	public static final String version = "1.0.3";
+	public static final String build = "629";
 	public static final String BUILD_DETAIL = "MHISoft eVault " + version +" build " +  build;
 
 
