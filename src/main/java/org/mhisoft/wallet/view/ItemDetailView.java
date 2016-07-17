@@ -31,6 +31,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 
+import org.mhisoft.common.event.EventDispatcher;
+import org.mhisoft.common.event.EventType;
+import org.mhisoft.common.event.MHIEvent;
 import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
@@ -46,7 +49,7 @@ import org.mhisoft.wallet.service.ServiceRegistry;
 public class ItemDetailView {
 	WalletModel model;
 	WalletForm form;
-	DisplayMode currentMode;
+	DisplayMode currentMode= DisplayMode.view;
 
 
 	//for setting with reflection
@@ -59,8 +62,12 @@ public class ItemDetailView {
 		return currentMode;
 	}
 
-	public void setDisplayMode(DisplayMode currentMode) {
-		this.currentMode = currentMode;
+	public void setDisplayMode(DisplayMode mode) {
+		//if (this.currentMode!=mode)
+			EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ViewModeChangeEvent, "setDisplayMode" , mode ));
+
+		this.currentMode = mode;
+
 	}
 
 	class FiledObject {
@@ -120,9 +127,15 @@ public class ItemDetailView {
 	}
 
 
+	public void displayWalletItemDetails(final WalletItem item) {
+		displayWalletItemDetails (item, this.getDisplayMode()) ;
+
+	}
+
 	public void displayWalletItemDetails(final WalletItem item, DisplayMode displayMode) {
 
 	//	ServiceRegistry.instance.getWalletForm().setMessage("");
+		setDisplayMode(displayMode);   //fire events
 
 		if (displayMode!=DisplayMode.view) {
 			//coming to edit and add model
@@ -131,22 +144,10 @@ public class ItemDetailView {
 			item.setLastViewdDate(new Timestamp(System.currentTimeMillis()));
 		}
 
-		currentMode = displayMode;
-		if (displayMode == DisplayMode.edit) {
-			form.btnEditForm.setVisible(false);
-			form.btnCancelEdit.setVisible(true);
-			//form.btnSaveForm.setVisible(true);
-			form.btnClose.setVisible(false);
-			form.menuClose.setVisible(false);
-		} else if (displayMode == DisplayMode.view) {
-			form.btnEditForm.setVisible(true);
-			form.btnCancelEdit.setVisible(false);
-			//form.btnSaveForm.setVisible(false);
-			form.btnClose.setVisible(true);
-			form.menuClose.setVisible(true);
-		}
 
-		form.btnSaveForm.setVisible(model.isModified() || displayMode != DisplayMode.view);
+
+
+		//form.btnSaveForm.setVisible(model.isModified() || displayMode != DisplayMode.view);
 
 		try {
 			for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
@@ -172,7 +173,7 @@ public class ItemDetailView {
 
 		form.btnTogglePasswordView.setVisible(item.getType() == ItemType.item);
 
-		if (displayMode == DisplayMode.edit) {
+		if (displayMode == DisplayMode.edit || displayMode == DisplayMode.add) {
 			form.fldName.requestFocus();
 		}
 

@@ -97,7 +97,7 @@ public class ListExplorerView  implements ListSelectionListener {
 				model.setCurrentItem(currentItem);
 
 				form.saveCurrentEdit(true);
-				form.displayWalletItemDetails(model.getCurrentItem());
+				form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
 				form.resetHidePassword();
 
 

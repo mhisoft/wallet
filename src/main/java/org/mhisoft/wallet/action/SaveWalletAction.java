@@ -30,6 +30,7 @@ import javax.swing.JSplitPane;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.DisplayMode;
 import org.mhisoft.wallet.view.WalletForm;
 
 /**
@@ -51,7 +52,7 @@ public class SaveWalletAction implements Action {
 		ServiceRegistry.instance.getWalletForm().setMessage("Saved successfully.");
 
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
-		form.displayWalletItemDetails(model.getCurrentItem());
+		form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
 
 	}
 

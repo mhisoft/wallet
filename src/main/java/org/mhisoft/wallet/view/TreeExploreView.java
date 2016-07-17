@@ -65,6 +65,8 @@ public class TreeExploreView {
 	DefaultMutableTreeNode rootNode;
 	DefaultTreeModel treeModel;
 
+	boolean addingNode=false;
+
 	public TreeExploreView(JFrame frame, WalletModel model, JTree tree, WalletForm walletForm) {
 		this.frame = frame;
 		this.model = model;
@@ -200,11 +202,11 @@ public class TreeExploreView {
 
 	public void changeNode(final DefaultMutableTreeNode oldNode, final DefaultMutableTreeNode node) {
 
-
-		form.saveCurrentEdit(true);
+		if (!addingNode)
+		   form.saveCurrentEdit(true);
 
 		model.setCurrentItem((WalletItem) node.getUserObject());
-		form.displayWalletItemDetails(model.getCurrentItem());
+		form.displayWalletItemDetails(model.getCurrentItem(), form.getDisplayMode());
 		toggleButton(model.getCurrentItem());
 		form.resetHidePassword();
 
@@ -303,7 +305,9 @@ public class TreeExploreView {
 	}
 
 
+
 	public void addItem() {
+		addingNode =true;
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 		WalletItem item = (WalletItem) node.getUserObject();
 		WalletItem parentItem;
@@ -326,16 +330,21 @@ public class TreeExploreView {
 		DefaultMutableTreeNode newChildNode = addItemAndNode(parentItem, newItem);
 
 
-		//now set selection to this new node
-		tree.getSelectionModel().setSelectionPath(new TreePath(newChildNode.getPath()));
 		//Make sure the user can see the lovely new node.
 		tree.scrollPathToVisible(new TreePath(newChildNode.getPath()));
 
-		form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.edit);
+		form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.add);
+
+		//now set selection to this new node
+		//this will fire the changeNode event.
+		tree.getSelectionModel().setSelectionPath(new TreePath(newChildNode.getPath()));
+
 
 //		if (SystemSettings.debug) {
 //			System.out.println(model.dumpFlatList());
 //		}
+
+		addingNode =false;
 
 
 	}

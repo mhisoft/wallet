@@ -111,10 +111,10 @@ public class WalletForm {
 	JButton btnMoveNode;
 
 	JPanel treeButtonPanel;
-	JButton btnEditForm;
+	public JButton btnEditForm;
 	public JButton btnSaveForm;
-	JButton btnCancelEdit;
-	JButton btnClose;
+	public JButton btnCancelEdit;
+	public JButton btnClose;
 
 	JLabel labelName;
 	JLabel labelURL;
@@ -166,8 +166,8 @@ public class WalletForm {
 
 
 	JMenuBar menuBar;
-	JMenu menuFile;
-	JMenuItem menuOpen, menuClose, menuImport,  menuBackup, menuChangePassword;
+	public JMenu menuFile;
+	public JMenuItem menuOpen, menuClose, menuImport,  menuBackup, menuChangePassword;
 	//JRadioButtonMenuItem rbMenuItem;
 	//JCheckBoxMenuItem cbMenuItem;
 
@@ -744,14 +744,17 @@ public class WalletForm {
 	}
 
 
-	public void displayWalletItemDetails(final WalletItem item) {
-		itemDetailView.displayWalletItemDetails(item, DisplayMode.view);
-	}
 
 
 	public DisplayMode getDisplayMode() {
 		return itemDetailView.getDisplayMode();
 	}
+
+	public void setDisplayMode(final DisplayMode mode) {
+		 itemDetailView.setDisplayMode(mode);
+	}
+
+
 
 	public void displayWalletItemDetails(final WalletItem item, final DisplayMode mode) {
 		itemDetailView.displayWalletItemDetails(item, mode);
@@ -833,9 +836,9 @@ public class WalletForm {
 		}
 		else {
 			if (!model.isModified())
-				btnSaveForm.setVisible(false);
-		}
+				setDisplayMode(DisplayMode.view) ;
 
+		}
 
 		return ret ;
 

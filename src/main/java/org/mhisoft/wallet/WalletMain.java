@@ -11,6 +11,7 @@ import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.FileContentHeader;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.UserActivityCheckinListener;
+import org.mhisoft.wallet.service.ViewModeChangeEventListener;
 import org.mhisoft.wallet.service.WalletSettingsService;
 import org.mhisoft.wallet.view.PasswordForm;
 import org.mhisoft.wallet.view.WalletForm;
@@ -85,7 +86,8 @@ public class WalletMain {
 
 	protected void registerEventListeners() {
 		EventDispatcher.instance.registerListener(EventType.UserCheckInEvent,  new UserActivityCheckinListener());
-		EventDispatcher.instance.registerListener(EventType.ModelChangeEvent,  new UserActivityCheckinListener());
+		//EventDispatcher.instance.registerListener(EventType.ModelChangeEvent,  new UserActivityCheckinListener());
+		EventDispatcher.instance.registerListener(EventType.ViewModeChangeEvent,  new ViewModeChangeEventListener());
 	}
 
 }
