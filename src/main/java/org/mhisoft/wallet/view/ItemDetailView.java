@@ -63,9 +63,7 @@ public class ItemDetailView {
 	}
 
 	public void setDisplayMode(DisplayMode mode) {
-		//if (this.currentMode!=mode)
-			EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ViewModeChangeEvent, "setDisplayMode" , mode ));
-
+		EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ViewModeChangeEvent, "setDisplayMode" , mode ));
 		this.currentMode = mode;
 
 	}
@@ -134,7 +132,6 @@ public class ItemDetailView {
 
 	public void displayWalletItemDetails(final WalletItem item, DisplayMode displayMode) {
 
-	//	ServiceRegistry.instance.getWalletForm().setMessage("");
 		setDisplayMode(displayMode);   //fire events
 
 		if (displayMode!=DisplayMode.view) {

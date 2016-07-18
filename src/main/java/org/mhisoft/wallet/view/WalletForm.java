@@ -750,6 +750,7 @@ public class WalletForm {
 		return itemDetailView.getDisplayMode();
 	}
 
+	//fires the ViewModeChangeEvent
 	public void setDisplayMode(final DisplayMode mode) {
 		 itemDetailView.setDisplayMode(mode);
 	}
@@ -820,8 +821,11 @@ public class WalletForm {
 	 */
 	public boolean saveCurrentEdit(boolean askToSave) {
 		boolean ret = false;
-		if (isDetailModified()  || model.isModified() ) {
-			if (!askToSave || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+		if (isDetailModified()  /*|| model.isModified() */) {
+			// when model is modified, we want the save button to show up but  don't prompt user ask for save every time
+			//change nodes.
+			if (!askToSave
+					|| DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
 					, "Save the changes?") == Confirmation.YES) {
 				itemDetailView.updateToModel();    //model current item is updated.
 				//save file

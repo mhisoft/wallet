@@ -41,5 +41,9 @@ public class ViewModeChangeEventListener implements EventListener {
 			}
 		}
 
+		if (ServiceRegistry.instance.getWalletModel().isModified())  {
+			form.btnSaveForm.setVisible(true);
+		}
+
 	}
 }

@@ -46,6 +46,10 @@ public class WalletModel {
 	boolean modified =false;
 	Encryptor encryptor;
 
+	private boolean addingNode=false;
+	private boolean importing=false;
+
+
 
 	public WalletModel() {
 
@@ -91,6 +95,22 @@ public class WalletModel {
 
 	public boolean isModified() {
 		return modified;
+	}
+
+	public boolean isImporting() {
+		return importing;
+	}
+
+	public boolean isAddingNode() {
+		return addingNode;
+	}
+
+	public void setAddingNode(boolean addingNode) {
+		this.addingNode = addingNode;
+	}
+
+	public void setImporting(boolean importing) {
+		this.importing = importing;
 	}
 
 	public void setModified(boolean modified) {

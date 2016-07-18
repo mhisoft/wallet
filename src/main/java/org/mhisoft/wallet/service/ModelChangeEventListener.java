@@ -26,7 +26,8 @@ public class ModelChangeEventListener implements EventListener {
 
 			WalletForm form = ServiceRegistry.instance.getWalletForm();
 			boolean isModelModified = (Boolean)event.getPayload();
-			form.btnSaveForm.setVisible( isModelModified  );
+			if (isModelModified)
+				form.btnSaveForm.setVisible( true  );
 		}
 
 	}

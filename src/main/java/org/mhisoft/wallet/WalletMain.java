@@ -9,6 +9,7 @@ import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.FileContentHeader;
+import org.mhisoft.wallet.service.ModelChangeEventListener;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.UserActivityCheckinListener;
 import org.mhisoft.wallet.service.ViewModeChangeEventListener;
@@ -25,7 +26,7 @@ import org.mhisoft.wallet.view.WalletForm;
 public class WalletMain {
 
 	public static final String version = "1.0.3";
-	public static final String build = "629";
+	public static final String build = "630";
 	public static final String BUILD_DETAIL = "MHISoft eVault " + version +" build " +  build;
 
 
@@ -86,7 +87,7 @@ public class WalletMain {
 
 	protected void registerEventListeners() {
 		EventDispatcher.instance.registerListener(EventType.UserCheckInEvent,  new UserActivityCheckinListener());
-		//EventDispatcher.instance.registerListener(EventType.ModelChangeEvent,  new UserActivityCheckinListener());
+		EventDispatcher.instance.registerListener(EventType.ModelChangeEvent,  new ModelChangeEventListener());
 		EventDispatcher.instance.registerListener(EventType.ViewModeChangeEvent,  new ViewModeChangeEventListener());
 	}
 

@@ -72,11 +72,15 @@ public class ImportWalletAction implements Action {
 							passwordForm.exitPasswordForm();
 
 							try {
+								ServiceRegistry.instance.getWalletModel().setImporting(true);
 								doTheImport(importFile, pass, importFileHash);
 								//reload the view.
 								ServiceRegistry.instance.getWalletModel().setModified(true);
+
+								//reload the tree and trigger change node.
 								ServiceRegistry.instance.getWalletForm().loadTree();
 								DialogUtils.getInstance().info("Import successfully.");
+								ServiceRegistry.instance.getWalletModel().setImporting(false);
 							} catch (Exception e1) {
 								DialogUtils.getInstance().error(e1.getMessage());
 							}

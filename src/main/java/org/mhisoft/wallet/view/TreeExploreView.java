@@ -65,7 +65,6 @@ public class TreeExploreView {
 	DefaultMutableTreeNode rootNode;
 	DefaultTreeModel treeModel;
 
-	boolean addingNode=false;
 
 	public TreeExploreView(JFrame frame, WalletModel model, JTree tree, WalletForm walletForm) {
 		this.frame = frame;
@@ -202,7 +201,7 @@ public class TreeExploreView {
 
 	public void changeNode(final DefaultMutableTreeNode oldNode, final DefaultMutableTreeNode node) {
 
-		if (!addingNode)
+		if (!model.isAddingNode() && !model.isImporting() )
 		   form.saveCurrentEdit(true);
 
 		model.setCurrentItem((WalletItem) node.getUserObject());
@@ -307,7 +306,8 @@ public class TreeExploreView {
 
 
 	public void addItem() {
-		addingNode =true;
+		model.setAddingNode(true);
+
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 		WalletItem item = (WalletItem) node.getUserObject();
 		WalletItem parentItem;
@@ -344,7 +344,7 @@ public class TreeExploreView {
 //			System.out.println(model.dumpFlatList());
 //		}
 
-		addingNode =false;
+		model.setAddingNode(false);
 
 
 	}
