@@ -41,8 +41,12 @@ public class CreateWalletAction implements Action {
 	public ActionResult execute(Object... params) {
 		String pass = (String) params[0];
 		PasswordForm passwordForm = (PasswordForm) params[1];
+		String fileName=null;
+		if (params.length>=3)
+			fileName = (String) params[2];
 
 		if (createPassword(pass)) {
+			//exit the password form here
 			passwordForm.exitPasswordForm();
 			DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n"
 					+ passwordForm.getUserInputPass() + ", combination:"
@@ -50,7 +54,7 @@ public class CreateWalletAction implements Action {
 
 			//proceed to load wallet
 			LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
-			loadWalletAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash());
+			loadWalletAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash(), fileName);
 		}
 
 		return new ActionResult(true);

@@ -41,7 +41,9 @@ public class CloseWalletAction extends SaveWalletAction {
 	@Override
 	public  void save(String filename) {
 		//save the wallet
-		if (ServiceRegistry.instance.getWalletModel().isModified()) {
+		if (ServiceRegistry.instance.getWalletForm().isDetailModified()
+			|| ServiceRegistry.instance.getWalletModel().isModified()
+				) {
 			if (quiet || DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
 					, "Save the changes before close?") == Confirmation.YES) {
 				WalletModel model = ServiceRegistry.instance.getWalletModel();
@@ -55,8 +57,12 @@ public class CloseWalletAction extends SaveWalletAction {
 
 		}
 
+		//close the tree view.
+		ServiceRegistry.instance.getWalletForm().resetForm();
+
+
 		//either way it is cleared
-		ServiceRegistry.instance.getWalletModel().setModified(false);
+		ServiceRegistry.instance.getWalletModel().reset();
 	}
 
 

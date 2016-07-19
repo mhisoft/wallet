@@ -70,6 +70,7 @@ import org.mhisoft.wallet.action.BackupAction;
 import org.mhisoft.wallet.action.ChangePasswordAction;
 import org.mhisoft.wallet.action.CloseWalletAction;
 import org.mhisoft.wallet.action.ImportWalletAction;
+import org.mhisoft.wallet.action.NewWalletAction;
 import org.mhisoft.wallet.action.OpenWalletFileAction;
 import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.WalletItem;
@@ -167,7 +168,7 @@ public class WalletForm {
 
 	JMenuBar menuBar;
 	public JMenu menuFile;
-	public JMenuItem menuOpen, menuClose, menuImport,  menuBackup, menuChangePassword;
+	public JMenuItem menuOpen, menuNew, menuClose, menuImport,  menuBackup, menuChangePassword;
 	//JRadioButtonMenuItem rbMenuItem;
 	//JCheckBoxMenuItem cbMenuItem;
 
@@ -232,7 +233,7 @@ public class WalletForm {
 
 				//save button click , it is two fold. save the item detail edit
 				//Or save the whole model when model is modified from import for instance.
-				saveCurrentEdit(false);
+				saveButtonClicked();
 
 			}
 		};
@@ -626,6 +627,8 @@ public class WalletForm {
 		menuBar.add(menuFile);
 		menuOpen = new JMenuItem("Open", KeyEvent.VK_O);
 		menuFile.add(menuOpen);
+		menuNew = new JMenuItem("New Vault", KeyEvent.VK_N);
+		menuFile.add(menuNew);
 		menuImport = new JMenuItem("Import and Merge", KeyEvent.VK_I);
 		menuFile.add(menuImport);
 		menuBackup = new JMenuItem("Backup", KeyEvent.VK_B);
@@ -639,6 +642,7 @@ public class WalletForm {
 		componentsList.add(menuBar);
 		componentsList.add(menuFile);
 		componentsList.add(menuOpen);
+		componentsList.add(menuNew);
 		componentsList.add(menuClose);
 		componentsList.add(menuChangePassword);
 		componentsList.add(menuImport);
@@ -690,6 +694,17 @@ public class WalletForm {
 				BackupAction backupAction = ServiceRegistry.instance.getService(BeanType.singleton, BackupAction.class);
 				backupAction.execute();
 			//
+			}
+		});
+
+		menuNew.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuNew" , null ));
+
+				NewWalletAction action = ServiceRegistry.instance.getService(BeanType.singleton, NewWalletAction.class);
+				action.execute();
+
 			}
 		});
 
@@ -813,15 +828,22 @@ public class WalletForm {
 
 
 	//called when node changes
-
-	/**
-	 * return true when saved.
-	 * @param askToSave
-	 * @return
-	 */
 	public boolean saveCurrentEdit(boolean askToSave) {
+		return save(askToSave, false)  ;
+	}
+
+
+	 //called from the save button click
+	private boolean saveButtonClicked() {
+		return save(false, true)  ;
+	}
+
+
+	private boolean save(boolean askToSave, boolean checkModelModified) {
 		boolean ret = false;
-		if (isDetailModified()  /*|| model.isModified() */) {
+		boolean modelModified = checkModelModified   && model.isModified() ;
+
+		if (isDetailModified() ||  modelModified) {
 			// when model is modified, we want the save button to show up but  don't prompt user ask for save every time
 			//change nodes.
 			if (!askToSave
@@ -847,6 +869,7 @@ public class WalletForm {
 		return ret ;
 
 	}
+
 
 	public void setMessage(String s) {
 		if (labelLastMessage != null) {

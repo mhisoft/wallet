@@ -43,7 +43,15 @@ public class LoadWalletAction implements Action {
 	public ActionResult execute(Object... params) {
 		String pass = (String) params[0];
 
-		String fileName = WalletSettings.getInstance().getLastFile();
+		String fileName=null;
+		if (params.length>=3)
+			fileName = (String) params[2];
+
+		if (fileName==null)
+		   fileName = WalletSettings.getInstance().getLastFile();
+		else {
+			WalletSettings.getInstance().setLastFile(fileName); //save will use this
+		}
 
 
 		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);

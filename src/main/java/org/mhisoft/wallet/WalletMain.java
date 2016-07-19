@@ -80,7 +80,7 @@ public class WalletMain {
 			model.setPassHash(header.getPassHash());
 		} else {
 			//create an empty tree with one root.
-			model.setupEmptyWalletData();
+			model.setupEmptyWalletData(null);
 		}
 
 	}

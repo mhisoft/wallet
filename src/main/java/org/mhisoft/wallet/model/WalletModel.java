@@ -55,6 +55,16 @@ public class WalletModel {
 
 	}
 
+	public void reset() {
+		this.itemsFlatList = new ArrayList<>();
+		this.currentItem=null;
+		this.passHash=null;
+		this.modified=false;
+		this.encryptor=null;
+		this.addingNode=false;
+		this.importing=false;
+	}
+
 	public void initEncryptor(final String pass)   {
 		encryptor = new Encryptor(pass);
 	}
@@ -144,9 +154,9 @@ public class WalletModel {
 		buildTreeFromFlatList();
 	}
 
-	public void setupEmptyWalletData() {
+	public void setupEmptyWalletData(String rootName) {
 		//root node
-		itemsFlatList.add(new WalletItem(ItemType.category, "Default Wallet"));
+		itemsFlatList.add(new WalletItem(ItemType.category, rootName==null? "Default eVault" : rootName));
 		itemsFlatList.add(new WalletItem(ItemType.category, "Category 1"));
 		itemsFlatList.add(new WalletItem(ItemType.item, "Item 1"));
 		setModified(true);

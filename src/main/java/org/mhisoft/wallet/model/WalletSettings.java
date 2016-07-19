@@ -39,8 +39,8 @@ public class WalletSettings implements Serializable	 {
 
 	private static final long serialVersionUID = 1L;
 	public static final String userHome =System.getProperty("user.home") + File.separator;
-	public static final String settingsFile =userHome + "WalletSettings.dat"  ;
-	public static final String defaultWalletFile = userHome + "DefaultWallet.dat";
+	public static final String settingsFile =userHome + "eVaultSettings.dat"  ;
+	public static final String defaultWalletFile = userHome + "eVault-default.dat";
 	public static final long DEFAULT_IDLE_TIMEOUT = 15; //min, default 15 min.
 
 

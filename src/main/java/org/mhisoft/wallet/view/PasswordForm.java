@@ -148,16 +148,10 @@ public class PasswordForm implements  ActionListener {
 		dialog.setPreferredSize(new Dimension(800, 400));
 
 
-
-
 //		final Container contentPane = dialog.getContentPane();
 		dialog.getRootPane().setDefaultButton(btnOk);
 
 		dialog.pack();
-
-
-
-
 
 
 		// Put client property
@@ -167,7 +161,6 @@ public class PasswordForm implements  ActionListener {
 		else {
 			labelMsg.setText(title);
 		}
-
 
 
 		if (actionListener!=null)
@@ -295,7 +288,8 @@ public class PasswordForm implements  ActionListener {
 				//user password is no good, did not pass validation.
 				CreateWalletAction createWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CreateWalletAction.class);
 				createWalletAction.execute(pass, this);
-			} else {
+			}
+			else {
 				VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
 				ActionResult result = verifyPasswordAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash());
 				if (result.isSuccess()) {

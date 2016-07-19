@@ -36,6 +36,7 @@ public class MoveNodeDialog extends JDialog {
 	WalletItem currentItem ;
 
 	public MoveNodeDialog(WalletItem currentItem) {
+		this.currentItem = currentItem;
 		labelMoveItem.setText("Move the item '" + currentItem+ "'");
 
 		setContentPane(contentPane);
@@ -93,11 +94,14 @@ public class MoveNodeDialog extends JDialog {
 
 
 	private void createUIComponents() {
+		WalletItem excludeCat = null;
+		if (currentItem!=null)
+			excludeCat = currentItem.getParent();
 
 		List<WalletItem>    items  = new ArrayList<>() ;
 		for (int i = 1; i < ServiceRegistry.instance.getWalletModel().getItemsFlatList().size(); i++) {
 			WalletItem item = ServiceRegistry.instance.getWalletModel().getItemsFlatList().get(i);
-			if (item.getType() == ItemType.category && !item.equals(currentItem))
+			if (item.getType() == ItemType.category && !item.equals(excludeCat))
 				//comboCategories.addItem(item.getName());
 				items.add(item)   ;
 		}
