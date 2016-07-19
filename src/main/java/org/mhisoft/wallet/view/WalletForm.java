@@ -846,19 +846,21 @@ public class WalletForm {
 		if (isDetailModified() ||  modelModified) {
 			// when model is modified, we want the save button to show up but  don't prompt user ask for save every time
 			//change nodes.
-			if (!askToSave
-					|| DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
-					, "Save the changes?") == Confirmation.YES) {
-				itemDetailView.updateToModel();    //model current item is updated.
-				//save file
-				SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
-				saveWalletAction.execute();
-				//model.setModified(false);   save action does it.
-				ret = true;
-				getTreeExploreView().updateNameChange(model.getCurrentItem());
+			if (askToSave) {
+				if (DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+						, "Save the changes?") == Confirmation.YES) {
+					_save();
+
+				}
+				else {
+					//not choose to save now, mark the model modified
+					model.setModified(true) ;
+				}
+
 			}
-			//
-			model.setModified(false) ;
+			else {
+				_save();
+			}
 		}
 		else {
 			if (!model.isModified())
@@ -868,6 +870,18 @@ public class WalletForm {
 
 		return ret ;
 
+	}
+
+
+	private void _save() {
+		itemDetailView.updateToModel();    //model current item is updated.
+		//save file
+		SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
+		saveWalletAction.execute();
+		//model.setModified(false);   save action does it.
+		getTreeExploreView().updateNameChange(model.getCurrentItem());
+		//
+		model.setModified(false) ;
 	}
 
 
