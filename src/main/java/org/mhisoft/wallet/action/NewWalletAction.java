@@ -25,13 +25,12 @@ package org.mhisoft.wallet.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
+import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.view.DialogUtils;
+import org.mhisoft.wallet.view.NewVaultDialog;
 import org.mhisoft.wallet.view.PasswordForm;
 import org.mhisoft.wallet.view.WalletForm;
 
@@ -43,8 +42,27 @@ import org.mhisoft.wallet.view.WalletForm;
  */
 public class NewWalletAction implements Action {
 
+	//pick a file
+	String newVaultfn ;
+
 	@Override
 	public ActionResult execute(Object... params) {
+
+		NewVaultDialog.display(new NewVaultDialog.NewVaultCallback() {
+			@Override
+			public void onOK(String fileName) {
+				newVaultfn = fileName;
+			}
+
+			@Override
+			public void onCancel() {
+				newVaultfn =null;
+			}
+		});
+
+
+		if (newVaultfn==null)
+			return new ActionResult(false);
 
 		/*close and save the current file is needed. */
 		CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
@@ -52,19 +70,18 @@ public class NewWalletAction implements Action {
 
 		if (r.isSuccess()) {
 
+//
+//			//Open old wallet file or create new password.
+//			//todo new file name to be saved.
+//			String fname = "eVault-" + System.currentTimeMillis();
+//			newVaultfn = WalletSettings.userHome+fname +".dat";
+//			//newVaultfn = ViewHelper.chooseFile(null);
+//			if ( new File(newVaultfn).isFile()) {   //file does not exist
+//				DialogUtils.getInstance().error("The file exists. Use a new file name.");
+//				return new ActionResult(false);
+//			}
 
-			//pick a file
-			String newVaultfn ;
 
-			//Open old wallet file or create new password.
-			//todo new file name to be saved.
-			String fname = "eVault-" + System.currentTimeMillis();
-			newVaultfn = WalletSettings.userHome+fname +".dat";
-			//newVaultfn = ViewHelper.chooseFile(null);
-			if ( new File(newVaultfn).isFile()) {   //file does not exist
-				DialogUtils.getInstance().error("The file exists. Use a new file name.");
-				return new ActionResult(false);
-			}
 
 			/*Delegate to the password form the create password*/
 			WalletForm form = ServiceRegistry.instance.getWalletForm();
@@ -82,7 +99,9 @@ public class NewWalletAction implements Action {
 
 						//create an empty tree with one root.
 						WalletModel model  = ServiceRegistry.instance.getWalletModel();
-						model.setupEmptyWalletData(fname);
+						String[] parts  = FileUtils.splitFileParts(newVaultfn) ;
+
+						model.setupEmptyWalletData(parts[1]);
 
 
 						CreateWalletAction createWalletAction = ServiceRegistry.instance.getService(
