@@ -23,11 +23,16 @@
 
 package org.mhisoft.wallet.model;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.File;
 import java.io.Serializable;
 
 import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.WalletForm;
 
 /**
  * Description:
@@ -35,14 +40,18 @@ import org.mhisoft.wallet.service.ServiceRegistry;
  * @author Tony Xue
  * @since Apr, 2016
  */
-public class WalletSettings implements Serializable	 {
+public class WalletSettings implements Serializable {
+
+	private static final Logger logger = Logger.getLogger(WalletSettings.class.getName());
+
 
 	private static final long serialVersionUID = 1L;
-	public static final String userHome =System.getProperty("user.home") + File.separator;
-	public static final String fileExt =".dat"  ;
-	public static final String settingsFile =userHome + "eVaultSettings.dat"  ;
+	public static final String userHome = System.getProperty("user.home") + File.separator;
+	public static final String fileExt = ".dat";
+	public static final String settingsFile = userHome + "eVaultSettings.dat";
 	public static final String defaultWalletFile = userHome + "eVault-default.dat";
 	public static final long DEFAULT_IDLE_TIMEOUT = 15; //min, default 15 min.
+	public static final long RECENT_FILES_LIST_SIZE = 6; //min, default 15 min.
 
 
 	//manage it in the Registry
@@ -60,10 +69,11 @@ public class WalletSettings implements Serializable	 {
 	private double dividerLocation;
 	private String lastFile;
 	private long idleTimeout; //in milli seconds
+	private LinkedList<String> recentFiles ;
 
 
 	public int getFontSize() {
-		return fontSize==0?20:fontSize;
+		return fontSize == 0 ? 20 : fontSize;
 	}
 
 	public void setFontSize(int fontSize) {
@@ -79,7 +89,7 @@ public class WalletSettings implements Serializable	 {
 	}
 
 	public int getDimensionX() {
-		return dimensionX==0?1200:dimensionX;
+		return dimensionX == 0 ? 1200 : dimensionX;
 	}
 
 	public void setDimensionX(int dimensionX) {
@@ -87,7 +97,7 @@ public class WalletSettings implements Serializable	 {
 	}
 
 	public int getDimensionY() {
-		return dimensionY==0?800:dimensionY;
+		return dimensionY == 0 ? 800 : dimensionY;
 	}
 
 	public void setDimensionY(int dimensionY) {
@@ -95,7 +105,7 @@ public class WalletSettings implements Serializable	 {
 	}
 
 	public double getDividerLocation() {
-		return dividerLocation<=0 || dividerLocation>1.0?0.2:dividerLocation;
+		return dividerLocation <= 0 || dividerLocation > 1.0 ? 0.2 : dividerLocation;
 	}
 
 	public void setDividerLocation(double dividerLocation) {
@@ -103,7 +113,7 @@ public class WalletSettings implements Serializable	 {
 	}
 
 	public String getLastFile() {
-	//	return lastFile==null?WalletSettings.defaultWalletFile:lastFile;
+		//	return lastFile==null?WalletSettings.defaultWalletFile:lastFile;
 		return lastFile;
 	}
 
@@ -115,22 +125,60 @@ public class WalletSettings implements Serializable	 {
 		if (SystemSettings.debug)
 			return 3;
 		else
-			return idleTimeout<=0?DEFAULT_IDLE_TIMEOUT:idleTimeout;
+			return idleTimeout <= 0 ? DEFAULT_IDLE_TIMEOUT : idleTimeout;
+
 	}
 
 	public void setIdleTimeout(long idleTimeout) {
 		this.idleTimeout = idleTimeout;
 	}
 
+	public List<String> getRecentFiles() {
+		if (recentFiles==null)
+			recentFiles = new LinkedList<>();
+
+		return recentFiles;
+	}
+
+
+	public void addRecentFile(String fileName) {
+
+		if (recentFiles==null)
+			recentFiles = new LinkedList<>();
+
+		if (recentFiles.contains(fileName))
+			return;  //already in the list
+
+		if (recentFiles.size() >= RECENT_FILES_LIST_SIZE) {
+			recentFiles.removeFirst();
+		}
+		recentFiles.addLast(fileName);
+
+		//add to the current menu
+		//todo use event to make it loose coupled?
+		WalletForm form  = ServiceRegistry.instance.getWalletForm();
+		if (form!=null)
+			form.addRecentFile(fileName);
+
+		if (SystemSettings.debug) {
+			logger.log(Level.FINE, this.toString());
+		}
+
+	}
+
 	@Override
 	public String toString() {
-		return "WalletSettings{" +
-				"passPlain='" + passPlain + '\'' +
-				", fontSize=" + fontSize +
-				", dimensionX=" + dimensionX +
-				", dimensionY=" + dimensionY +
-				", lastFile=" + lastFile +
-				", idleTimeout=" + idleTimeout +
-				'}';
+		final StringBuilder sb = new StringBuilder("WalletSettings{");
+		sb.append("passPlain='").append(passPlain).append('\'');
+		sb.append(", fontSize=").append(fontSize);
+		sb.append(", dimensionX=").append(dimensionX);
+		sb.append(", dimensionY=").append(dimensionY);
+		sb.append(", dividerLocation=").append(dividerLocation);
+		sb.append(", lastFile='").append(lastFile).append('\'');
+		sb.append(", idleTimeout=").append(idleTimeout);
+		sb.append(", recentFiles=").append(recentFiles);
+		sb.append('}');
+		return sb.toString();
 	}
+
 }

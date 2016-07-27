@@ -168,7 +168,9 @@ public class WalletForm {
 
 	JMenuBar menuBar;
 	public JMenu menuFile;
-	public JMenuItem menuOpen, menuNew, menuClose, menuImport,  menuBackup, menuChangePassword;
+	public JMenuItem menuOpen, menuNew, menuClose
+			, menuImport,  menuBackup, menuChangePassword
+			, menuOpenRecent;
 	//JRadioButtonMenuItem rbMenuItem;
 	//JCheckBoxMenuItem cbMenuItem;
 
@@ -604,6 +606,32 @@ public class WalletForm {
 	}
 
 
+	/**
+	 * OpenRecentFilesActionListener
+	 */
+	class  OpenRecentFilesActionListener implements ActionListener {
+		private String fileName;
+
+		public OpenRecentFilesActionListener(String fn) {
+			this.fileName = fn;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuOpenRecent" , null ));
+
+			CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype
+					, CloseWalletAction.class);
+			ActionResult r = closeWalletAction.execute();
+
+			if (r.isSuccess()) {
+				OpenWalletFileAction openWalletFileAction = ServiceRegistry.instance.getService(BeanType.singleton
+						, OpenWalletFileAction.class);
+				r = openWalletFileAction.execute(fileName);
+			}
+		}
+	}   ;
+
 	protected void setupMenu() {
 
 		ActionListener closeAction = new ActionListener() {
@@ -627,14 +655,31 @@ public class WalletForm {
 		menuBar.add(menuFile);
 		menuOpen = new JMenuItem("Open", KeyEvent.VK_O);
 		menuFile.add(menuOpen);
+
+
+
+		menuOpenRecent = new JMenu("Open recent files");
+		menuFile.add(menuOpenRecent);
+		for (String rf : WalletSettings.getInstance().getRecentFiles()) {
+			JMenuItem m  = new JMenuItem(rf);
+			m.addActionListener(new  OpenRecentFilesActionListener(rf));
+			menuOpenRecent.add(m);
+			componentsList.add(m);
+		}
+
+
 		menuNew = new JMenuItem("New Vault", KeyEvent.VK_N);
 		menuFile.add(menuNew);
+
 		menuImport = new JMenuItem("Import and Merge", KeyEvent.VK_I);
 		menuFile.add(menuImport);
+
 		menuBackup = new JMenuItem("Backup", KeyEvent.VK_B);
 		menuFile.add(menuBackup);
+
 		menuChangePassword = new JMenuItem("Change Password", KeyEvent.VK_P);
 		menuFile.add(menuChangePassword);
+
 		menuClose = new JMenuItem("Quit", KeyEvent.VK_Q);
 		menuFile.add(menuClose);
 
@@ -647,6 +692,7 @@ public class WalletForm {
 		componentsList.add(menuChangePassword);
 		componentsList.add(menuImport);
 		componentsList.add(menuBackup);
+		componentsList.add(menuOpenRecent);
 
 
 		menuClose.addActionListener(closeAction);
@@ -719,6 +765,12 @@ public class WalletForm {
 
 	public void exit() {
 		frame.dispose();
+	}
+
+	public void addRecentFile(final String rf)   {
+		JMenuItem m  = new JMenuItem(rf);
+		m.addActionListener(new  OpenRecentFilesActionListener(rf));
+		menuOpenRecent.add(m);
 	}
 
 

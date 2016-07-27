@@ -45,11 +45,14 @@ public class OpenWalletFileAction implements Action {
 
 	@Override
 	public ActionResult execute(Object... params) {
+		String fileName;
 
-
-		String[] parts = FileUtils.splitFileParts(WalletSettings.getInstance().getLastFile());
-
-		String fileName = ViewHelper.chooseFile(parts[0]);
+		if (params.length>0)
+			fileName = (String)params[0];
+		else {
+			String[] parts = FileUtils.splitFileParts(WalletSettings.getInstance().getLastFile());
+			fileName = ViewHelper.chooseFile(parts[0]);  //last file's directory.
+		}
 
 
 		if (fileName != null) {
@@ -58,6 +61,10 @@ public class OpenWalletFileAction implements Action {
 
 			if (new File(fileName).isFile()) {
 				WalletSettings.getInstance().setLastFile(fileName);
+				WalletSettings.getInstance().addRecentFile(fileName);
+
+
+
 				FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 				model.setPassHash(header.getPassHash());
 				//now show password form to enter the password.

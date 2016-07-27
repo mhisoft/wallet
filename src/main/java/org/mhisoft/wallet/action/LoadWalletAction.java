@@ -61,6 +61,7 @@ public class LoadWalletAction implements Action {
 		if (new File(fileName).isFile()) {
 			//read tree from the existing file
 			WalletSettings.getInstance().setLastFile(fileName);
+			WalletSettings.getInstance().addRecentFile(fileName);
 
 			model.initEncryptor(pass);
 			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
