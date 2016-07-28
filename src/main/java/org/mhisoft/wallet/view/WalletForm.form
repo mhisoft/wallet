@@ -91,8 +91,9 @@
                                   <component id="5b54c" class="javax.swing.JTextField" binding="fldExpMonth">
                                     <constraints/>
                                     <properties>
-                                      <columns value="5"/>
+                                      <columns value="10"/>
                                       <foreground color="-16776961"/>
+                                      <horizontalAlignment value="2"/>
                                       <text value=""/>
                                     </properties>
                                   </component>
@@ -100,14 +101,15 @@
                                     <constraints/>
                                     <properties>
                                       <labelFor value="44379"/>
-                                      <text value="Exp. Year"/>
+                                      <text value="    Exp. Year"/>
                                     </properties>
                                   </component>
                                   <component id="44379" class="javax.swing.JTextField" binding="fldExpYear">
                                     <constraints/>
                                     <properties>
-                                      <columns value="5"/>
+                                      <columns value="10"/>
                                       <foreground color="-16776961"/>
+                                      <horizontalAlignment value="2"/>
                                     </properties>
                                   </component>
                                 </children>
@@ -414,8 +416,9 @@
                                   <component id="e07bd" class="javax.swing.JPasswordField" binding="fldPin">
                                     <constraints/>
                                     <properties>
-                                      <columns value="8"/>
+                                      <columns value="10"/>
                                       <foreground color="-16776961"/>
+                                      <horizontalAlignment value="2"/>
                                       <text value=""/>
                                     </properties>
                                   </component>
@@ -423,13 +426,13 @@
                                     <constraints/>
                                     <properties>
                                       <labelFor value="cf18d"/>
-                                      <text value="CVC#"/>
+                                      <text value="      CVC#"/>
                                     </properties>
                                   </component>
                                   <component id="cf18d" class="javax.swing.JPasswordField" binding="fldCVC">
                                     <constraints/>
                                     <properties>
-                                      <columns value="8"/>
+                                      <columns value="10"/>
                                       <foreground color="-16776961"/>
                                     </properties>
                                   </component>

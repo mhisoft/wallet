@@ -24,6 +24,7 @@
 package org.mhisoft.wallet.view;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -344,6 +345,7 @@ public class WalletForm {
 
 					} catch (NumberFormatException e1) {
 						//
+
 					}
 				}
 
@@ -771,6 +773,11 @@ public class WalletForm {
 		JMenuItem m  = new JMenuItem(rf);
 		m.addActionListener(new  OpenRecentFilesActionListener(rf));
 		menuOpenRecent.add(m);
+
+		//adjust the new item's font size.
+		List<Component> dummyList = new ArrayList<>();
+		dummyList.add(m);
+		ViewHelper.setFontSize(dummyList, WalletSettings.getInstance().getFontSize());
 	}
 
 
