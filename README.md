@@ -41,8 +41,9 @@ Apache License 2.0, January 2004 http://www.apache.org/licenses/
 
 
 ## Please Donate
-any amount helps. 
-https://www.paypal.me/mhisoft
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.me/mhisoft)
+Any amount helps :)
+
 
 
 
