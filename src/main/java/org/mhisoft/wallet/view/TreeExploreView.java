@@ -44,6 +44,7 @@ import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
@@ -153,6 +154,14 @@ public class TreeExploreView {
 
 	}
 
+	private void loadPreferences() {
+		if (WalletSettings.getInstance().isTreeExpanded())
+			expandTree();
+		else
+			collapseTree();
+	}
+
+
 	/**
 	 * Set up the explorer tree base on flat list in the model.
 	 * buildTreeFromFlatList will be called.
@@ -181,7 +190,7 @@ public class TreeExploreView {
 		tree.getSelectionModel().setSelectionPath(new TreePath(rootNode.getPath()));
 
 		changeNode(null, rootNode);
-		this.expandTree();
+		loadPreferences();
 
 
 		form.btnFilter.setEnabled(true);

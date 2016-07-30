@@ -70,6 +70,7 @@ public class WalletSettings implements Serializable {
 	private String lastFile;
 	private long idleTimeout; //in milli seconds
 	private LinkedList<String> recentFiles ;
+	private boolean treeExpanded;
 
 
 	public int getFontSize() {
@@ -133,6 +134,14 @@ public class WalletSettings implements Serializable {
 		this.idleTimeout = idleTimeout;
 	}
 
+	public boolean isTreeExpanded() {
+		return treeExpanded;
+	}
+
+	public void setTreeExpanded(boolean treeExpanded) {
+		this.treeExpanded = treeExpanded;
+	}
+
 	public List<String> getRecentFiles() {
 		if (recentFiles==null)
 			recentFiles = new LinkedList<>();
@@ -177,6 +186,7 @@ public class WalletSettings implements Serializable {
 		sb.append(", lastFile='").append(lastFile).append('\'');
 		sb.append(", idleTimeout=").append(idleTimeout);
 		sb.append(", recentFiles=").append(recentFiles);
+		sb.append(", treeExpanded=").append(treeExpanded);
 		sb.append('}');
 		return sb.toString();
 	}

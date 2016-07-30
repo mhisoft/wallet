@@ -430,8 +430,10 @@ public class WalletForm {
 			}
 		});
 
+		treeExpanded = WalletSettings.getInstance().isTreeExpanded();
 
-	}
+
+	} //end of form construstor
 
 	public enum TreePanelMode {
 		tree, filter
@@ -439,11 +441,13 @@ public class WalletForm {
 
 	private void expandCollapseTree() {
 		treeExpanded = !treeExpanded;
+		WalletSettings.getInstance().setTreeExpanded(treeExpanded);
 		if (treeExpanded)
 			treeExploreView.expandTree();
 		else
 			treeExploreView.collapseTree();
 	}
+
 
 
 	private void switchMode(TreePanelMode mode) {
