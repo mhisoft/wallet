@@ -41,7 +41,7 @@ Apache License 2.0, January 2004 http://www.apache.org/licenses/
 
 
 ## Please Donate
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.me/mhisoft)
+[![paypal](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/silver-pill-paypal-26px.png)](https://www.paypal.me/mhisoft)
 Any amount helps :)
 
 
