@@ -40,4 +40,10 @@ The author is not responsible for loss of any kind incurred directly or indirect
 Apache License 2.0, January 2004 http://www.apache.org/licenses/
 
 
+## Please Donate
+any amount helps. 
+https://www.paypal.me/mhisoft
+
+
+
 
