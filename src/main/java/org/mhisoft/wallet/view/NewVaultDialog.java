@@ -1,5 +1,6 @@
 package org.mhisoft.wallet.view;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -13,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.StringUtils;
@@ -40,6 +40,10 @@ public class NewVaultDialog extends JDialog {
 		getRootPane().setDefaultButton(buttonOK);
 		//ViewHelper.setUIManagerFontSize();
 		ViewHelper.setFontSize(contentPane, WalletSettings.getInstance().getFontSize());
+		contentPane.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX()/3
+				, WalletSettings.getInstance().getDimensionY()/6
+		));
+
 
 
 		buttonOK.addActionListener(new ActionListener() {
@@ -118,14 +122,14 @@ public class NewVaultDialog extends JDialog {
 		dialog.setVisible(true);
 
 
-
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-
-			}
-		});
+//
+//		SwingUtilities.invokeLater(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//
+//			}
+//		});
 
 
 	}

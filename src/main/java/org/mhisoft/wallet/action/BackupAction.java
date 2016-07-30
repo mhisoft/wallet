@@ -29,7 +29,7 @@ public class BackupAction implements Action {
 
 		if (ServiceRegistry.instance.getWalletModel().isModified()) {
 			SaveWalletAction saveWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, SaveWalletAction.class);
-			saveWalletAction.save(WalletSettings.getInstance().getLastFile());
+			saveWalletAction.saveVault(WalletSettings.getInstance().getLastFile());
 		}
 
 

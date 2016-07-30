@@ -39,7 +39,7 @@ public class CloseWalletAction extends SaveWalletAction {
 	boolean quiet = false;
 
 	@Override
-	public  void save(String filename) {
+	public  void saveVault(String filename) {
 		//save the wallet
 		if (ServiceRegistry.instance.getWalletForm().isDetailModified()
 			|| ServiceRegistry.instance.getWalletModel().isModified()

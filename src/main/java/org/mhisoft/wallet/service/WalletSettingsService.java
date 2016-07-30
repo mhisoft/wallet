@@ -23,12 +23,15 @@
 
 package org.mhisoft.wallet.service;
 
+import java.awt.Dimension;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import javax.swing.JSplitPane;
 
 import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.model.WalletSettings;
@@ -92,6 +95,21 @@ public class WalletSettingsService {
 			}
 	}
 
+
+	public void updateAndSavePreferences() {
+		//save the settings
+		Dimension d = ServiceRegistry.instance.getWalletForm().getFrame().getSize();
+		WalletSettings settings = ServiceRegistry.instance.getWalletSettings();
+		settings.setDimensionX(d.width);
+		settings.setDimensionY(d.height);
+
+		//calculate proportion
+		JSplitPane split = ServiceRegistry.instance.getWalletForm().getSplitPanel();
+		double p = Double.valueOf(split.getDividerLocation()).doubleValue() / Double.valueOf(split.getWidth() - split.getDividerSize());
+		settings.setDividerLocation(Double.valueOf(p * 100 + 0.5).intValue() / Double.valueOf(100));
+
+		ServiceRegistry.instance.getWalletSettingsService().saveSettingsToFile(settings);
+	}
 
 
 }

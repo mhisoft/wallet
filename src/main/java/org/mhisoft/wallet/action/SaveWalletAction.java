@@ -23,10 +23,6 @@
 
 package org.mhisoft.wallet.action;
 
-import java.awt.Dimension;
-
-import javax.swing.JSplitPane;
-
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -42,7 +38,7 @@ import org.mhisoft.wallet.view.WalletForm;
 public class SaveWalletAction implements Action {
 
 
-	public void save(String fileName) {
+	protected void saveVault(String fileName) {
 		//save the wallet
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		model.buildFlatListFromTree();
@@ -56,27 +52,12 @@ public class SaveWalletAction implements Action {
 
 	}
 
+
 	@Override
 	public ActionResult execute(Object... params) {
-
 		String fileName = WalletSettings.getInstance().getLastFile();
-
-		save(fileName);
-
-
-		//save the settings
-		Dimension d = ServiceRegistry.instance.getWalletForm().getFrame().getSize();
-		WalletSettings settings = ServiceRegistry.instance.getWalletSettings();
-		settings.setDimensionX(d.width);
-		settings.setDimensionY(d.height);
-
-		//calculate proportion
-		JSplitPane split = ServiceRegistry.instance.getWalletForm().getSplitPanel();
-		double p = Double.valueOf(split.getDividerLocation()).doubleValue() / Double.valueOf(split.getWidth() - split.getDividerSize());
-		settings.setDividerLocation(Double.valueOf(p * 100 + 0.5).intValue() / Double.valueOf(100));
-
-		ServiceRegistry.instance.getWalletSettingsService().saveSettingsToFile(settings);
-
+		saveVault(fileName);
+		ServiceRegistry.instance.getWalletSettingsService().updateAndSavePreferences();
 		return new ActionResult(true);
 
 
