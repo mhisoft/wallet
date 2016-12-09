@@ -7,7 +7,7 @@ It is a secure password vault which is best suitable for storing passwords and p
 The password once lost can't be recovered. This is by design. The author of this code can't even recover the lost password. And without the password and combination, the vault can't be opened, thus the data in the vault will be lost. 
 
 #Download
-from the Releases tab above. 
+from the Releases tab above : https://github.com/mhisoft/eVault/releases
 
 #Features
 * Free. 
