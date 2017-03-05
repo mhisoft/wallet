@@ -31,12 +31,16 @@ package org.mhisoft.wallet.service;
  */
 public class DataServiceFactory {
 
+	public static int LATEST_DATA_VERSION=13;
+
 	public static DataService createDataService(int version) {
 
 		if (version==10 || version==11)
 			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv10.class);
 		else if (version==12)
 			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv12.class);
+		else if (version==13)
+			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv13.class);
 
 		throw new RuntimeException("version " + version + " not supported.");
 
@@ -47,6 +51,6 @@ public class DataServiceFactory {
 	 * @return
 	 */
 	public static DataService createDataService() {
-		return createDataService(DataServiceImplv12.DATA_VERSION);
+		return createDataService(LATEST_DATA_VERSION);
 	}
 }

@@ -34,6 +34,7 @@ public class FileContentHeader {
 	private int itemSize;
 	private String passHash;
 	private int  numberOfItems;
+	private String combinationHash; //added in v13
 
 	public FileContentHeader() {
 	}
@@ -73,5 +74,14 @@ public class FileContentHeader {
 
 	public void setItemSize(int itemSize) {
 		this.itemSize = itemSize;
+	}
+
+
+	public String getCombinationHash() {
+		return combinationHash;
+	}
+
+	public void setCombinationHash(String combinationHash) {
+		this.combinationHash = combinationHash;
 	}
 }

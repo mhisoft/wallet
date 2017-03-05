@@ -43,6 +43,7 @@ public class WalletModel {
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
 	String passHash;
+	String combinationHash;
 	boolean modified =false;
 	Encryptor encryptor;
 
@@ -59,6 +60,7 @@ public class WalletModel {
 		this.itemsFlatList = new ArrayList<>();
 		this.currentItem=null;
 		this.passHash=null;
+		this.combinationHash=null;
 		this.modified=false;
 		this.encryptor=null;
 		this.addingNode=false;
@@ -101,6 +103,14 @@ public class WalletModel {
 
 	public void setPassHash(String passHash) {
 		this.passHash = passHash;
+	}
+
+	public String getCombinationHash() {
+		return combinationHash;
+	}
+
+	public void setCombinationHash(String combinationHash) {
+		this.combinationHash = combinationHash;
 	}
 
 	public boolean isModified() {

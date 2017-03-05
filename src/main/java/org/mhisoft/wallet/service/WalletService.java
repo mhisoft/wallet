@@ -31,13 +31,14 @@ public class WalletService {
 
 	public  FileContentHeader readHeader(final String filename, boolean closeAfterRead) {
 		DataService dataServicev10 = DataServiceFactory.createDataService(10);
-		DataService dataServicev12 = DataServiceFactory.createDataService(DataServiceImplv12.DATA_VERSION);
+		DataService dataServicev12 = DataServiceFactory.createDataService(12);
+		DataService dataServicev13 = DataServiceFactory.createDataService(13);
 
 		int v;
 		FileContentHeader header=null;
 
 		try {
-			 header = dataServicev12.readHeader(filename, true);
+			header = dataServicev12.readHeader(filename, true);
 			v= header.getVersion();
 		} catch (IOException e) {
 			try {

@@ -125,11 +125,17 @@ public class WalletFileTest {
 			ServiceRegistry.instance.getWalletForm().setModel(model);
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
+
 			model.setPassHash(hash);
+			String combinationHash = HashingUtils.createHash("034509");
+			model.setCombinationHash(combinationHash);
 			model.initEncryptor("testPa!ss213%");
 
 
-			walletService.saveToFile("test_v12.dat", model, model.getEncryptor());
+			//walletService.saveToFile("test_v12.dat", model, model.getEncryptor());
+			DataService dataServicev12 = DataServiceFactory.createDataService(12);
+			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptor());
+
 			FileContent fileContent = walletService.readFromFile("test_v12.dat" , model.getEncryptor());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
@@ -196,7 +202,7 @@ public class WalletFileTest {
 	}
 
 
-	//read from v10 format and write to v11 format.
+	//read from v10 format and write to v12 format.
 	@Test
 	public void testReadOldVersoinFile() {
 		try {
@@ -216,18 +222,18 @@ public class WalletFileTest {
 			DataService dataServicev10 = DataServiceFactory.createDataService(10);
 
 			//latest
-			DataService dsLatest = DataServiceFactory.createDataService();
+			DataService dataServicev12 = DataServiceFactory.createDataService(12);
 
 
 			dataServicev10.saveToFile("test_v10.dat", model, model.getEncryptor());
 			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",model.getEncryptor());
 
-			//now save to v11 format
+			//now save to v12 format
 			model.setItemsFlatList(fileContent.getWalletItems());
-			dsLatest.saveToFile("test_v12.dat", model, model.getEncryptor());
+			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptor());
 
 			//verify by reding it
-			fileContent = dsLatest.readFromFile("test_v12.dat", model.getEncryptor());
+			fileContent = dataServicev12.readFromFile("test_v12.dat", model.getEncryptor());
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
