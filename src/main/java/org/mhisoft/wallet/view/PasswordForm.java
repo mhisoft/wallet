@@ -85,7 +85,7 @@ public class PasswordForm implements ActionListener {
 
 	PasswordValidator passwordValidator = ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class);
 
-	Object spinner1Value, spinner2Value, spinner3Value;
+	Object spinner1Value=1, spinner2Value=1, spinner3Value=1;
 
 
 	public PasswordForm(String title) {
@@ -115,18 +115,20 @@ public class PasswordForm implements ActionListener {
 						//spinner1.setValue(spinner1Value);
 						//System.out.println("focus gained on spinner 1");
 						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						editor.getTextField().setText(spinner1.getValue().toString());
-
+						int v = (Integer)spinner1.getValue();
+						editor.getTextField().setText( v==1?"":spinner1.getValue().toString());
 
 					} else if (spinner2 == spinner && spinner2Value != null) {
 						//	spinner2.setValue(spinner2Value);
 						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						editor.getTextField().setText(spinner2.getValue().toString());
+						int v = (Integer)spinner2.getValue();
+						editor.getTextField().setText( v==1?"":spinner2.getValue().toString());
 						//System.out.println("focus gained on spinner 2");
 					} else if (spinner3 == spinner && spinner3Value != null) {
 						//spinner3.setValue(spinner3Value);
 						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						editor.getTextField().setText(spinner3.getValue().toString());
+						int v = (Integer)spinner3.getValue();
+						editor.getTextField().setText( v==1?"":spinner3.getValue().toString());
 						//System.out.println("focus gained on spinner 3");
 					}
 				}
@@ -239,6 +241,14 @@ public class PasswordForm implements ActionListener {
 //		final Container contentPane = dialog.getContentPane();
 		dialog.getRootPane().setDefaultButton(btnOk);
 
+		//set up spinner to be blank
+		JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner1.getEditor();
+		editor.getTextField().setText("");
+		editor = (JSpinner.DefaultEditor) spinner2.getEditor();
+		editor.getTextField().setText("");
+		editor = (JSpinner.DefaultEditor) spinner3.getEditor();
+		editor.getTextField().setText("");
+
 		dialog.pack();
 
 
@@ -272,6 +282,9 @@ public class PasswordForm implements ActionListener {
 
 		dialog.setLocationRelativeTo(walletForm.frame);
 		dialog.setVisible(true);
+
+
+
 		spinner1.requestFocusInWindow();
 
 	}

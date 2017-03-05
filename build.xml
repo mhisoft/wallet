@@ -25,7 +25,8 @@
 <project name="eWallet build" default="dist" >
 
     <property environment="env"/>
-    <property name="version" value="1.0"/>
+    <property name="version" value="1.0.9"/>
+    <property name="commonutil.version" value="1.0"/>
     <property name="AppVersion" value="MHISoft eVault ${version}"/>
     <property name="ARTIFACT_NAME" value="evault-${version}"/>
     <property name="src.dir" value="src"/>
@@ -84,7 +85,7 @@
 
         <!--copy the jar to the dist folder -->
         <copy file="target/${ARTIFACT_NAME}.jar" todir="dist" overwrite="true" failonerror="true"/>
-        <copy file="../common-utils/target/common-utils-${version}.jar" todir="dist\lib" overwrite="true"/>
+        <copy file="../common-utils/target/common-utils-${commonutil.version}.jar" todir="dist\lib" overwrite="true"/>
 
         <if>
             <equals arg1="${isWindows}" arg2="true"/>
