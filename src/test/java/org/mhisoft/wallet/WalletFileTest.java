@@ -38,7 +38,7 @@ import org.mhisoft.wallet.service.FileContent;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.WalletService;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 /**
  * Description: WalletModelTest
@@ -54,6 +54,10 @@ public class WalletFileTest {
 	WalletItem gNode;
 	WalletItem cNode;
 	WalletItem dNode;
+
+	//latest
+	DataService dataServicev12 = DataServiceFactory.createDataService(12);
+	DataService dataServicev13 = DataServiceFactory.createDataService(13);
 
 
 	WalletService walletService;
@@ -139,8 +143,8 @@ public class WalletFileTest {
 			FileContent fileContent = walletService.readFromFile("test_v12.dat" , model.getEncryptor());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
-			Assert.assertEquals(7, model.getItemsFlatList().size());
-			Assert.assertEquals(hash, fileContent.getHeader().getPassHash());
+			assertEquals(7, model.getItemsFlatList().size());
+			assertEquals(hash, fileContent.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -169,8 +173,8 @@ public class WalletFileTest {
 			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",model.getEncryptor());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
-			Assert.assertEquals(7, model.getItemsFlatList().size());
-			Assert.assertEquals(hash, fileContent.getHeader().getPassHash());
+			assertEquals(7, model.getItemsFlatList().size());
+			assertEquals(hash, fileContent.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -200,6 +204,8 @@ public class WalletFileTest {
 
 
 	}
+
+
 
 
 	//read from v10 format and write to v12 format.
@@ -237,12 +243,53 @@ public class WalletFileTest {
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
-			Assert.assertEquals(7, model.getItemsFlatList().size());
-			Assert.assertEquals(hash, fileContent.getHeader().getPassHash());
+			assertEquals(7, model.getItemsFlatList().size());
+			assertEquals(hash, fileContent.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Test
+	public void testFileConversionV12toV13() {
+		try {
+			File f = new File("test_v12.dat");
+			f.delete();
+
+			model.getItemsFlatList().clear();
+			model.setupTestData();
+			//protype model is used in test
+			ServiceRegistry.instance.getWalletForm().setModel(model);
+
+			String hash = HashingUtils.createHash("testPa!ss213%");
+			model.initEncryptor("testPa!ss213%");
+			model.setPassHash(hash);
+
+			//save to v12 format
+			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptor());
+			//read the file using v12 service impl
+			FileContent fileContent = dataServicev12.readFromFile("test_v12.dat",model.getEncryptor());
+			assertEquals(7, model.getItemsFlatList().size());
+			assertEquals(hash, fileContent.getHeader().getPassHash());
+
+			//write to v13 file format.
+			String combinationHash = HashingUtils.createHash("034509");
+			model.setCombinationHash(combinationHash);
+			dataServicev13.saveToFile("test_v13.dat", model, model.getEncryptor());
+			//read it back.
+			fileContent = dataServicev13.readFromFile("test_v13.dat",model.getEncryptor());
+			assertEquals(7, model.getItemsFlatList().size());
+			assertEquals(hash, fileContent.getHeader().getPassHash());
+			assertEquals(combinationHash, fileContent.getHeader().getCombinationHash());
+
+			 f = new File("test_v13.dat");
+			f.delete();
+
+
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
+		}
 
 	}
 

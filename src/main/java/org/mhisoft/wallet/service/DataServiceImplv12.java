@@ -61,7 +61,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 		int version = readVersion(fileIN, dataIn)  ;
 		if (version!=getVersion())
-			throw new IOException("not a v12 data file") ;
+			throw new IOException("not a v"+getVersion()+" data file") ;
 		header.setVersion(version);
 		header.setPassHash(readString(fileIN));
 		header.setNumberOfItems(FileUtils.readInt(fileIN));
