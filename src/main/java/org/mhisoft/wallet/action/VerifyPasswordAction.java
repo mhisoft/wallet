@@ -24,6 +24,7 @@
 package org.mhisoft.wallet.action;
 
 import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.view.DialogUtils;
 
 /**
@@ -36,14 +37,23 @@ public class VerifyPasswordAction implements Action {
 
 	@Override
 	public ActionResult execute(Object... params)    {
-		String pass = (String)params[0];
+		PassCombinationVO passVO = (PassCombinationVO)params[0];
 		String hash = (String)params[1];
+		String combinationHash = (String)params[2];
 		try {
-			boolean verify = HashingUtils.verifyPassword(pass, hash );
+			boolean verify = HashingUtils.verifyPassword(passVO.getPass(), hash );
 			if (!verify) {
 				DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
 				return new ActionResult(false);
 			}
+			//if (combinationHash!=null) {
+				 verify = HashingUtils.verifyPassword(passVO.getCombination(), combinationHash);
+				if (!verify) {
+					DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
+					return new ActionResult(false);
+				}
+			//}
+
 			return new ActionResult(true);
 
 		} catch (HashingUtils.CannotPerformOperationException | HashingUtils.InvalidHashException e) {

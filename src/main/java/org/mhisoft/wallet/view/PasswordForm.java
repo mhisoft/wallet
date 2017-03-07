@@ -43,13 +43,13 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
-import org.mhisoft.common.util.StringUtils;
-import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.CreateWalletAction;
 import org.mhisoft.wallet.action.LoadWalletAction;
 import org.mhisoft.wallet.action.VerifyPasswordAction;
+import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.PasswordValidator;
+import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
@@ -85,7 +85,7 @@ public class PasswordForm implements ActionListener {
 
 	PasswordValidator passwordValidator = ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class);
 
-	Object spinner1Value=1, spinner2Value=1, spinner3Value=1;
+	Object spinner1Value = 1, spinner2Value = 1, spinner3Value = 1;
 
 
 	public PasswordForm(String title) {
@@ -115,20 +115,20 @@ public class PasswordForm implements ActionListener {
 						//spinner1.setValue(spinner1Value);
 						//System.out.println("focus gained on spinner 1");
 						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						int v = (Integer)spinner1.getValue();
-						editor.getTextField().setText( v==1?"":spinner1.getValue().toString());
+						int v = (Integer) spinner1.getValue();
+						editor.getTextField().setText(v == 1 ? "" : spinner1.getValue().toString());
 
 					} else if (spinner2 == spinner && spinner2Value != null) {
 						//	spinner2.setValue(spinner2Value);
 						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						int v = (Integer)spinner2.getValue();
-						editor.getTextField().setText( v==1?"":spinner2.getValue().toString());
+						int v = (Integer) spinner2.getValue();
+						editor.getTextField().setText(v == 1 ? "" : spinner2.getValue().toString());
 						//System.out.println("focus gained on spinner 2");
 					} else if (spinner3 == spinner && spinner3Value != null) {
 						//spinner3.setValue(spinner3Value);
 						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						int v = (Integer)spinner3.getValue();
-						editor.getTextField().setText( v==1?"":spinner3.getValue().toString());
+						int v = (Integer) spinner3.getValue();
+						editor.getTextField().setText(v == 1 ? "" : spinner3.getValue().toString());
 						//System.out.println("focus gained on spinner 3");
 					}
 				}
@@ -163,7 +163,7 @@ public class PasswordForm implements ActionListener {
 	}
 
 
-	// TODO: place custom component creation code here
+	/* place custom component creation code here*/
 	private void createUIComponents() {
 
 		spinner1 = new JSpinner(new SpinnerNumberModel(1, 1, 99, 1));
@@ -284,7 +284,6 @@ public class PasswordForm implements ActionListener {
 		dialog.setVisible(true);
 
 
-
 		spinner1.requestFocusInWindow();
 
 	}
@@ -340,11 +339,8 @@ public class PasswordForm implements ActionListener {
 	}
 
 
-	public String getUserEnterPassword() {
+	public PassCombinationVO getUserEnterPassword() {
 
-		if (SystemSettings.debug && !StringUtils.hasValue(fldPassword.getText())) {
-			return "12Abc12334&5AB1310";
-		}
 
 		if (!passwordValidator.validate(fldPassword.getText())) {
 			DialogUtils.getInstance().info("Please use a password following the above rules.");
@@ -356,8 +352,14 @@ public class PasswordForm implements ActionListener {
 		}
 		//
 
-
-		return spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString();
+		PassCombinationVO ret = new PassCombinationVO();
+		WalletModel model = ServiceRegistry.instance.getWalletModel();
+		if (model.getDataFileVersion() == 13) {
+			ret.setPass(fldPassword.getText());
+			ret.setCombination(spinner2.getValue().toString() + spinner1.getValue().toString() + spinner3.getValue().toString());
+		} else
+			ret.setPass(spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString());
+		return ret;
 
 
 	}
@@ -365,25 +367,28 @@ public class PasswordForm implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		boolean createHash = ServiceRegistry.instance.getWalletModel().getPassHash() == null;
-		String pass = getUserEnterPassword();
+		PassCombinationVO passVO = getUserEnterPassword();
 
-		if (pass == null) {
+		if (passVO == null) {
 			//user input is not good. try again.
 		} else {
 			if (createHash) {
 				//user password is no good, did not pass validation.
 				CreateWalletAction createWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CreateWalletAction.class);
-				createWalletAction.execute(pass, this);
+				createWalletAction.execute(passVO, this);
 			} else {
 				VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
-				ActionResult result = verifyPasswordAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash());
+				ActionResult result = verifyPasswordAction.execute(passVO,
+						ServiceRegistry.instance.getWalletModel().getPassHash() ,
+						ServiceRegistry.instance.getWalletModel().getCombinationHash()
+				);
 				if (result.isSuccess()) {
 					//clsoe the password form
 					exitPasswordForm();
 
 					//load the wallet
 					LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
-					loadWalletAction.execute(pass);
+					loadWalletAction.execute(passVO);
 				}
 			}
 		}

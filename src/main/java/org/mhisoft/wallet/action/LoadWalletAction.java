@@ -25,6 +25,7 @@ package org.mhisoft.wallet.action;
 
 import java.io.File;
 
+import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.FileContent;
@@ -41,7 +42,7 @@ public class LoadWalletAction implements Action {
 
 	@Override
 	public ActionResult execute(Object... params) {
-		String pass = (String) params[0];
+		PassCombinationVO pass = (PassCombinationVO) params[0];
 
 		String fileName=null;
 		if (params.length>=3)
@@ -65,9 +66,10 @@ public class LoadWalletAction implements Action {
 
 			model.initEncryptor(pass);
 			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
-					model.getEncryptor());
+					model.getEncryptorForRead());
 			model.setItemsFlatList(fileContent.getWalletItems());
 			model.setPassHash(fileContent.getHeader().getPassHash());
+			model.setCombinationHash(fileContent.getHeader().getCombinationHash());
 
 
 		} else {

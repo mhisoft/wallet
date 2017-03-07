@@ -62,7 +62,7 @@ public class WalletSettings implements Serializable {
 	}
 
 
-	private transient String passPlain;
+	private transient PassCombinationVO passPlain;
 	private int fontSize;
 	private int dimensionX;
 	private int dimensionY;
@@ -81,11 +81,11 @@ public class WalletSettings implements Serializable {
 		this.fontSize = fontSize;
 	}
 
-	public String getPassPlain() {
+	public PassCombinationVO getPassPlain() {
 		return passPlain;
 	}
 
-	public void setPassPlain(String passPlain) {
+	public void setPassPlain(PassCombinationVO passPlain) {
 		this.passPlain = passPlain;
 	}
 

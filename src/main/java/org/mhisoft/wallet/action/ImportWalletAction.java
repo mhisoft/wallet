@@ -29,6 +29,7 @@ import java.io.File;
 
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.wallet.model.ItemType;
+import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
@@ -58,22 +59,24 @@ public class ImportWalletAction implements Action {
 			if (new File(importFile).isFile()) {
 				FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(importFile, true);
 				String importFileHash = header.getPassHash();
+				String combinationHash = header. getCombinationHash();
 
 				//now show password form to enter the password.
 				PasswordForm passwordForm = new PasswordForm("Opening file: " + importFile);
 				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						String pass = passwordForm.getUserEnterPassword();
+						PassCombinationVO passVO = passwordForm.getUserEnterPassword();
+
 						VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
-						ActionResult result = verifyPasswordAction.execute(pass, importFileHash);
+						ActionResult result = verifyPasswordAction.execute(passVO, importFileHash, combinationHash);
 						if (result.isSuccess()) {
 							//close the password form
 							passwordForm.exitPasswordForm();
 
 							try {
 								ServiceRegistry.instance.getWalletModel().setImporting(true);
-								doTheImport(importFile, pass, importFileHash);
+								doTheImport(importFile, passVO, importFileHash);
 								//reload the view.
 								ServiceRegistry.instance.getWalletModel().setModified(true);
 
@@ -119,8 +122,9 @@ public class ImportWalletAction implements Action {
 
 
 
-	protected void doTheImport(String filename, String importFilePass, String importFileHash) {
-		Encryptor encryptor = new Encryptor(importFilePass);
+	protected void doTheImport(String filename, PassCombinationVO importFilePass, String importFileHash) {
+
+		Encryptor encryptor = new Encryptor(importFilePass.getPassAndCombination());
 		FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(filename, encryptor);
 
 

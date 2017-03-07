@@ -45,7 +45,10 @@ public class WalletModel {
 	String passHash;
 	String combinationHash;
 	boolean modified =false;
+
 	Encryptor encryptor;
+	Encryptor encryptor_v12; //for reading the v12 data file
+	int dataFileVersion;  //version read from exist data file.
 
 	private boolean addingNode=false;
 	private boolean importing=false;
@@ -65,15 +68,24 @@ public class WalletModel {
 		this.encryptor=null;
 		this.addingNode=false;
 		this.importing=false;
+		this.dataFileVersion=-1;
 	}
 
-	public void initEncryptor(final String pass)   {
-		encryptor = new Encryptor(pass);
+	public void initEncryptor(final PassCombinationVO pass)   {
+		encryptor = new Encryptor(pass.getPassAndCombination());
+		if (dataFileVersion==12)
+			encryptor_v12 = new Encryptor(pass.getPass());
 	}
 
 
 	public Encryptor getEncryptor() {
 		return encryptor;
+
+	}public Encryptor getEncryptorForRead() {
+		if (dataFileVersion<=12)
+		     return encryptor_v12;
+		else
+			return encryptor;
 	}
 
 	public void setEncryptor(Encryptor encryptor) {
@@ -137,6 +149,14 @@ public class WalletModel {
 		this.modified = modified;
 		EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ModelChangeEvent, "setModified" , Boolean.valueOf(this.modified) ));
 
+	}
+
+	public int getDataFileVersion() {
+		return dataFileVersion;
+	}
+
+	public void setDataFileVersion(int dataFileVersion) {
+		this.dataFileVersion = dataFileVersion;
 	}
 
 	public void setupTestData() {

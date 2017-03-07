@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.mhisoft.common.util.FileUtils;
+import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -72,7 +73,7 @@ public class NewWalletAction implements Action {
 
 //
 //			//Open old wallet file or create new password.
-//			//todo new file name to be saved.
+//			// new file name to be saved.
 //			String fname = "eVault-" + System.currentTimeMillis();
 //			newVaultfn = WalletSettings.userHome+fname +".dat";
 //			//newVaultfn = ViewHelper.chooseFile(null);
@@ -90,7 +91,7 @@ public class NewWalletAction implements Action {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					String pass = passwordForm.getUserEnterPassword();
+					PassCombinationVO pass = passwordForm.getUserEnterPassword();
 
 					if (pass == null) {
 						//user input is not good. try again.

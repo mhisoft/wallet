@@ -29,6 +29,19 @@ public class WalletService {
 		DataServiceFactory.createDataService().saveToFile(filename, model, encryptor);
 	}
 
+
+	private FileContentHeader readVersion(DataService ds, final String filename) {
+		try {
+			FileContentHeader header = ds.readHeader(filename, true);
+			int v= header.getVersion();
+			return header;
+		} catch (IOException e) {
+			if (DialogUtils.getInstance()!=null)
+				DialogUtils.getInstance().error("Error occurred", "Can't read file " + filename);
+		}
+		return null;
+	}
+
 	public  FileContentHeader readHeader(final String filename, boolean closeAfterRead) {
 		DataService dataServicev10 = DataServiceFactory.createDataService(10);
 		DataService dataServicev12 = DataServiceFactory.createDataService(12);
@@ -37,23 +50,15 @@ public class WalletService {
 		int v;
 		FileContentHeader header=null;
 
-		try {
-			header = dataServicev12.readHeader(filename, true);
-			v= header.getVersion();
-		} catch (IOException e) {
-			try {
-				header = dataServicev10.readHeader(filename, true);
-				v= header.getVersion();
-			} catch (IOException e1) {
-				e.printStackTrace();
-				DialogUtils.getInstance().error("Error occurred", "Can't read file " + filename);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			DialogUtils.getInstance().error("Error occurred", "Can't read file " + filename);
+		header = readVersion(dataServicev13, filename);
+		if (header == null) {
+			header = readVersion(dataServicev12, filename);
+			if (header == null)
+				header = readVersion(dataServicev10, filename);
 		}
 
+		if (DialogUtils.getInstance()!=null)
+		DialogUtils.getInstance().info("file version:"+header.getVersion());
 		return header;
 
 

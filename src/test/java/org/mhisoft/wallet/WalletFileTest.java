@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.ItemType;
+import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
@@ -108,7 +109,7 @@ public class WalletFileTest {
 			model.setupTestData();
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setPassHash(hash);
-			model.initEncryptor("testPa!ss213%");
+			model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
 			//protype model is used in test
 			ServiceRegistry.instance.getWalletForm().setModel(model);
 			DataServiceFactory.createDataService(11).saveToFile("testv11.dat", model, model.getEncryptor());
@@ -133,7 +134,7 @@ public class WalletFileTest {
 			model.setPassHash(hash);
 			String combinationHash = HashingUtils.createHash("034509");
 			model.setCombinationHash(combinationHash);
-			model.initEncryptor("testPa!ss213%");
+			model.initEncryptor(new PassCombinationVO("testPa!ss213%", "034509"));
 
 
 			//walletService.saveToFile("test_v12.dat", model, model.getEncryptor());
@@ -164,7 +165,7 @@ public class WalletFileTest {
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setPassHash(hash);
-			model.initEncryptor("testPa!ss213%");
+			model.initEncryptor(new PassCombinationVO("testPa!ss213%","112233"));
 
 			DataService dataServicev10 = DataServiceFactory.createDataService(10);
 			//save
@@ -185,7 +186,7 @@ public class WalletFileTest {
 
 	public void testReadFilev11() {
 		try {
-			model.initEncryptor("12Abc12334&5AB1310");
+			model.initEncryptor(new PassCombinationVO("12Abc12334&5AB1310","112233"));
 
 			DataService dataServicev11 = DataServiceFactory.createDataService(11);
 			FileContent fileContent = dataServicev11.readFromFile("test_DefaultWallet_v11.dat",model.getEncryptor());
@@ -223,7 +224,8 @@ public class WalletFileTest {
 			ServiceRegistry.instance.getWalletForm().setModel(model);
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
-			model.initEncryptor("testPa!ss213%");
+			model.setDataFileVersion(12);
+			model.initEncryptor(new PassCombinationVO("testPa!ss213%","112233"));
 			model.setPassHash(hash);
 			DataService dataServicev10 = DataServiceFactory.createDataService(10);
 
@@ -231,15 +233,15 @@ public class WalletFileTest {
 			DataService dataServicev12 = DataServiceFactory.createDataService(12);
 
 
-			dataServicev10.saveToFile("test_v10.dat", model, model.getEncryptor());
-			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",model.getEncryptor());
+			dataServicev10.saveToFile("test_v10.dat", model, model.getEncryptorForRead()); //v12 encryptor
+			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",model.getEncryptorForRead());
 
 			//now save to v12 format
 			model.setItemsFlatList(fileContent.getWalletItems());
-			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptor());
+			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptorForRead());
 
 			//verify by reding it
-			fileContent = dataServicev12.readFromFile("test_v12.dat", model.getEncryptor());
+			fileContent = dataServicev12.readFromFile("test_v12.dat", model.getEncryptorForRead());
 			model.setItemsFlatList(fileContent.getWalletItems());
 
 			model.setItemsFlatList(fileContent.getWalletItems());
@@ -262,23 +264,30 @@ public class WalletFileTest {
 			//protype model is used in test
 			ServiceRegistry.instance.getWalletForm().setModel(model);
 
-			String hash = HashingUtils.createHash("testPa!ss213%");
-			model.initEncryptor("testPa!ss213%");
+			PassCombinationVO passVO = new PassCombinationVO("testPa!ss213%","112233") ;
+			String hash = HashingUtils.createHash(passVO.getPass());
+			model.setDataFileVersion(12);
+			model.initEncryptor(passVO);
 			model.setPassHash(hash);
 
+
 			//save to v12 format
-			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptor());
+			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptorForRead()); //v12 encryptor
 			//read the file using v12 service impl
-			FileContent fileContent = dataServicev12.readFromFile("test_v12.dat",model.getEncryptor());
+			FileContent fileContent = dataServicev12.readFromFile("test_v12.dat",model.getEncryptorForRead());
 			assertEquals(7, model.getItemsFlatList().size());
 			assertEquals(hash, fileContent.getHeader().getPassHash());
 
 			//write to v13 file format.
-			String combinationHash = HashingUtils.createHash("034509");
+			model.setDataFileVersion(13);
+			model.initEncryptor(passVO);
+			hash = HashingUtils.createHash(passVO.getPassAndCombination());
+			model.setPassHash(hash);
+			String combinationHash = HashingUtils.createHash("112233");
 			model.setCombinationHash(combinationHash);
 			dataServicev13.saveToFile("test_v13.dat", model, model.getEncryptor());
 			//read it back.
-			fileContent = dataServicev13.readFromFile("test_v13.dat",model.getEncryptor());
+			fileContent = dataServicev13.readFromFile("test_v13.dat",model.getEncryptorForRead());
 			assertEquals(7, model.getItemsFlatList().size());
 			assertEquals(hash, fileContent.getHeader().getPassHash());
 			assertEquals(combinationHash, fileContent.getHeader().getCombinationHash());
