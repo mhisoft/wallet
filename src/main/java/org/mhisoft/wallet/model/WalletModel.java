@@ -40,6 +40,8 @@ import org.mhisoft.common.util.Encryptor;
  */
 public class WalletModel {
 
+	static final int LATEST_DATA_VERSION=13;
+
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
 	String passHash;
@@ -48,7 +50,7 @@ public class WalletModel {
 
 	Encryptor encryptor;
 	Encryptor encryptor_v12; //for reading the v12 data file
-	int dataFileVersion;  //version read from exist data file.
+	int dataFileVersion=LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
 	private boolean addingNode=false;
 	private boolean importing=false;
@@ -68,7 +70,7 @@ public class WalletModel {
 		this.encryptor=null;
 		this.addingNode=false;
 		this.importing=false;
-		this.dataFileVersion=-1;
+		this.dataFileVersion=LATEST_DATA_VERSION;
 	}
 
 	public void initEncryptor(final PassCombinationVO pass)   {
