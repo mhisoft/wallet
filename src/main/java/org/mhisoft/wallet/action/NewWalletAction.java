@@ -91,7 +91,7 @@ public class NewWalletAction implements Action {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 
-					PassCombinationVO pass = passwordForm.getUserEnterPassword();
+					PassCombinationVO pass = passwordForm.getUserEnteredPassForVerification();
 
 					if (pass == null) {
 						//user input is not good. try again.

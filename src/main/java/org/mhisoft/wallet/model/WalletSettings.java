@@ -62,7 +62,7 @@ public class WalletSettings implements Serializable {
 	}
 
 
-	private transient PassCombinationVO passPlain;
+
 	private int fontSize;
 	private int dimensionX;
 	private int dimensionY;
@@ -81,13 +81,7 @@ public class WalletSettings implements Serializable {
 		this.fontSize = fontSize;
 	}
 
-	public PassCombinationVO getPassPlain() {
-		return passPlain;
-	}
 
-	public void setPassPlain(PassCombinationVO passPlain) {
-		this.passPlain = passPlain;
-	}
 
 	public int getDimensionX() {
 		return dimensionX == 0 ? 1200 : dimensionX;
@@ -178,7 +172,6 @@ public class WalletSettings implements Serializable {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("WalletSettings{");
-		sb.append("passPlain='").append(passPlain).append('\'');
 		sb.append(", fontSize=").append(fontSize);
 		sb.append(", dimensionX=").append(dimensionX);
 		sb.append(", dimensionY=").append(dimensionY);

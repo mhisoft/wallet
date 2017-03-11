@@ -69,7 +69,7 @@ public class CreateWalletAction implements Action {
 			String combinationHash = HashingUtils.createHash(passVO.getCombination());
 			ServiceRegistry.instance.getWalletModel().setPassHash(hash);
 			ServiceRegistry.instance.getWalletModel().setCombinationHash(combinationHash);
-			ServiceRegistry.instance.getWalletSettings().setPassPlain(passVO);
+			ServiceRegistry.instance.getWalletModel().setPassPlain(passVO);
 
 
 		} catch (HashingUtils.CannotPerformOperationException e1) {
@@ -80,7 +80,7 @@ public class CreateWalletAction implements Action {
 
 
 	public boolean createPassword(PassCombinationVO pass) {
-		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
+		ServiceRegistry.instance.getWalletModel().setPassPlain(pass);
 		createHash(pass);
 		return true;
 	}

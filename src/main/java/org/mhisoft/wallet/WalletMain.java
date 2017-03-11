@@ -84,6 +84,7 @@ public class WalletMain {
 			FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 			model.setPassHash(header.getPassHash());
 			model.setCombinationHash(header.getCombinationHash());
+			model.setDataFileVersion(header.getVersion());
 		} else {
 			//create an empty tree with one root.
 			model.setupEmptyWalletData(null);

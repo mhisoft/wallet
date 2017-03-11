@@ -339,7 +339,8 @@ public class PasswordForm implements ActionListener {
 	}
 
 
-	public PassCombinationVO getUserEnterPassword() {
+	//set the user entered pass and combination to the PassCombinationVO
+	public PassCombinationVO getUserEnteredPassForVerification() {
 
 
 		if (!passwordValidator.validate(fldPassword.getText())) {
@@ -352,14 +353,22 @@ public class PasswordForm implements ActionListener {
 		}
 		//
 
-		PassCombinationVO ret = new PassCombinationVO();
+		PassCombinationVO passVO = new PassCombinationVO();
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
-		if (model.getDataFileVersion() == 13) {
-			ret.setPass(fldPassword.getText());
-			ret.setCombination(spinner2.getValue().toString() + spinner1.getValue().toString() + spinner3.getValue().toString());
-		} else
-			ret.setPass(spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString());
-		return ret;
+		//set the raw data only, do not add logic here. or later we can't get the raw pass
+		//	if (model.getDataFileVersion() == 13) {
+		passVO.setPass(fldPassword.getText());
+		passVO.setCombination(spinner1.getValue().toString(), spinner2.getValue().toString(), spinner3.getValue().toString());
+//		} else {
+//			ret.setPass(spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString());
+//			//read old file, set the combination as well so the encryptor can be initialized for write later
+//			ret.setCombination(spinner2.getValue().toString() + spinner1.getValue().toString() + spinner3.getValue().toString());
+//		}
+
+
+		model.setPassPlain(passVO);
+
+		return model.getUserEnteredPassForVerification();
 
 
 	}
@@ -367,7 +376,7 @@ public class PasswordForm implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		boolean createHash = ServiceRegistry.instance.getWalletModel().getPassHash() == null;
-		PassCombinationVO passVO = getUserEnterPassword();
+		PassCombinationVO passVO = getUserEnteredPassForVerification();
 
 		if (passVO == null) {
 			//user input is not good. try again.
@@ -379,7 +388,7 @@ public class PasswordForm implements ActionListener {
 			} else {
 				VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
 				ActionResult result = verifyPasswordAction.execute(passVO,
-						ServiceRegistry.instance.getWalletModel().getPassHash() ,
+						ServiceRegistry.instance.getWalletModel().getPassHash(),
 						ServiceRegistry.instance.getWalletModel().getCombinationHash()
 				);
 				if (result.isSuccess()) {

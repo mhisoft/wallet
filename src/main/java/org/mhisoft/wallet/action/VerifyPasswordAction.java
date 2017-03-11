@@ -25,6 +25,7 @@ package org.mhisoft.wallet.action;
 
 import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.PassCombinationVO;
+import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.DialogUtils;
 
 /**
@@ -46,13 +47,16 @@ public class VerifyPasswordAction implements Action {
 				DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
 				return new ActionResult(false);
 			}
-			//if (combinationHash!=null) {
+
+			//v12 data file has no combination Hash
+			if (ServiceRegistry.instance.getWalletModel().getDataFileVersion()>=13  //v13 data file can't have null combinations.
+					) {
 				 verify = HashingUtils.verifyPassword(passVO.getCombination(), combinationHash);
 				if (!verify) {
 					DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
 					return new ActionResult(false);
 				}
-			//}
+			}
 
 			return new ActionResult(true);
 

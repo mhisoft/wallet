@@ -23,9 +23,11 @@
 
 package org.mhisoft.wallet.action;
 
+import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.DialogUtils;
 import org.mhisoft.wallet.view.DisplayMode;
 import org.mhisoft.wallet.view.WalletForm;
 
@@ -42,6 +44,25 @@ public class SaveWalletAction implements Action {
 		//save the wallet
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		model.buildFlatListFromTree();
+
+		try {
+			if (model.getDataFileVersion()<13)  {
+				//data conversion.
+				//to be saved to the latest v13 version , prepare the new hashes.
+				// and need the combination hash set
+				model.setDataFileVersion(13);
+				String combinationHash = HashingUtils.createHash(model.getPassPlain().getCombination());
+				model.setCombinationHash(combinationHash);
+				model.setPassHash(HashingUtils.createHash(model.getPassPlain().getPass()));
+				model.initEncryptor(model.getPassPlain());
+
+			}
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
+			DialogUtils.getInstance().error("An error occurred", "Failed to save:" + e.getMessage());
+		}
+
+
 		ServiceRegistry.instance.getWalletService().saveToFile(fileName, model, model.getEncryptor());
 		ServiceRegistry.instance.getWalletModel().setModified(false);
 		//DialogUtils.getInstance().info("Saved successfully.");

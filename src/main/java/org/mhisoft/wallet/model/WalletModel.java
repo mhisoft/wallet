@@ -55,6 +55,8 @@ public class WalletModel {
 	private boolean addingNode=false;
 	private boolean importing=false;
 
+	private transient PassCombinationVO passPlain;     //todo move to model?
+
 
 
 	public WalletModel() {
@@ -71,6 +73,7 @@ public class WalletModel {
 		this.addingNode=false;
 		this.importing=false;
 		this.dataFileVersion=LATEST_DATA_VERSION;
+		this.passPlain=null;
 	}
 
 	public void initEncryptor(final PassCombinationVO pass)   {
@@ -159,6 +162,14 @@ public class WalletModel {
 
 	public void setDataFileVersion(int dataFileVersion) {
 		this.dataFileVersion = dataFileVersion;
+	}
+
+	public PassCombinationVO getPassPlain() {
+		return passPlain;
+	}
+
+	public void setPassPlain(PassCombinationVO passPlain) {
+		this.passPlain = passPlain;
 	}
 
 	public void setupTestData() {
@@ -370,6 +381,29 @@ public class WalletModel {
 		return null;
 
 	}
+
+
+	/**
+	 *
+	 * @return
+	 */
+	public PassCombinationVO getUserEnteredPassForVerification(){
+		if (dataFileVersion >= 13) {
+			return passPlain;
+		} else {
+			//v12 format
+			PassCombinationVO ret =  new PassCombinationVO();
+			ret.setPass(passPlain.spinner2 + passPlain.pass + passPlain.spinner1 + passPlain.spinner3);  //v12 version format
+			return ret;
+		}
+	}
+
+	public PassCombinationVO getPassVOForEncryptor() {
+		//ret.setPass(passPlain.spinner2 + passPlain.pass + passPlain.spinner1 + passPlain.spinner3);  //v12 version format
+		return getUserEnteredPassForVerification();
+	}
+
+
 
 
 

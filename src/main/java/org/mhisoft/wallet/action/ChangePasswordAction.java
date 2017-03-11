@@ -56,7 +56,7 @@ public class ChangePasswordAction implements Action {
 		passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PassCombinationVO newPass = passwordForm.getUserEnterPassword();
+				PassCombinationVO newPass = passwordForm.getUserEnteredPassForVerification();
 
 				try {
 					String hash = HashingUtils.createHash(newPass.getPass());
@@ -65,7 +65,7 @@ public class ChangePasswordAction implements Action {
 					model.setPassHash(hash);
 					model.setPassHash(combinationHash);
 
-					ServiceRegistry.instance.getWalletSettings().setPassPlain(newPass);
+					model.setPassPlain(newPass);
 					passwordForm.exitPasswordForm();
 
 

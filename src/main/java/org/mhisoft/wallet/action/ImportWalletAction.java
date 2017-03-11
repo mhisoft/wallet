@@ -66,7 +66,7 @@ public class ImportWalletAction implements Action {
 				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						PassCombinationVO passVO = passwordForm.getUserEnterPassword();
+						PassCombinationVO passVO = passwordForm.getUserEnteredPassForVerification();
 
 						VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
 						ActionResult result = verifyPasswordAction.execute(passVO, importFileHash, combinationHash);
