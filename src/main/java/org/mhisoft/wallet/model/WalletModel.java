@@ -76,6 +76,11 @@ public class WalletModel {
 		this.passPlain=null;
 	}
 
+	public Encryptor createNewEncryptor(final PassCombinationVO newPass)   {
+		Encryptor enc = new  Encryptor(newPass.getPassAndCombination());
+		return enc;
+	}
+
 	public void initEncryptor(final PassCombinationVO pass)   {
 		encryptor = new Encryptor(pass.getPassAndCombination());
 		if (dataFileVersion==12)

@@ -63,7 +63,7 @@ public class ChangePasswordAction implements Action {
 					String combinationHash = HashingUtils.createHash(newPass.getCombination());
 					WalletModel model = ServiceRegistry.instance.getWalletModel();
 					model.setPassHash(hash);
-					model.setPassHash(combinationHash);
+					model.setCombinationHash(combinationHash);
 
 					model.setPassPlain(newPass);
 					passwordForm.exitPasswordForm();
@@ -72,12 +72,12 @@ public class ChangePasswordAction implements Action {
 //			Encryptor oldEnc = new  Encryptor(newPass);
 //			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile,  oldEnc  );
 //			model.setItemsFlatList(fileContent.getWalletItems());
-					Encryptor enc = new  Encryptor(newPass.getPassAndCombination());
+					Encryptor newEnc = model.createNewEncryptor(newPass) ;
 
 					//save the file with new password.
 					ServiceRegistry.instance.getWalletService().saveToFile(  //
 							WalletSettings.getInstance().getLastFile() //
-							, model, enc);  //
+							, model, newEnc);  //
 
 					DialogUtils.getInstance().info("<html>The password has successfully been changed.<br>"
 							+"Please keep this in a safe place, it can't be recovered when lost:\n"
