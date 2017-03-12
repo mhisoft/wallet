@@ -28,9 +28,11 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.StringUtils;
+import org.mhisoft.wallet.model.WalletModel;
 
 /**
  * Description:
@@ -65,6 +67,38 @@ public abstract class AbstractDataService implements  DataService {
 
 	abstract protected FileContentHeader readHeader(FileContentHeader header, FileInputStream fileIN, DataInputStream dataIn  )
 			throws IOException ;
+
+	abstract protected void saveHeader(DataOutputStream dataOut, final WalletModel model) throws IOException ;
+
+
+	//read the first int
+	//if the header stores it, file pos will advanced a int.
+	//for the old 10 version, where there is no int stored inthe file, pos remains at zero.
+	protected int readVersion(FileInputStream fileIN, DataInputStream dataIn  )
+			throws IOException {
+
+		int version;
+
+		try {
+			version = dataIn.readInt();
+		} catch (Exception e) {
+			// no version in this file.
+			//old version
+			version =10;
+			FileChannel fc = fileIN.getChannel();
+			fc.position(0);// set the file pointer to byte position 0;
+		}
+
+		if (version<0 || version>50) {
+			//wrong integer
+			version =10;
+			FileChannel fc = fileIN.getChannel();
+			fc.position(0);// set the file pointer to byte position 0;
+
+		}
+
+		return version;
+	}
 
 	/**
 	 * Read the file header info and close it.

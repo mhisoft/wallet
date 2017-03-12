@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.security.AlgorithmParameters;
 
 import org.mhisoft.common.util.Encryptor;
@@ -60,28 +59,10 @@ public class DataServiceImplv10 extends AbstractDataService {
 	protected FileContentHeader readHeader(FileContentHeader header, FileInputStream fileIN, DataInputStream dataIn  )
 			throws IOException {
 
-
-		int version;
-
-		try {
-			version = dataIn.readInt();
-		} catch (Exception e) {
-			// no version in this file.
-			//old version
-			version =10;
-			FileChannel fc = fileIN.getChannel();
-			fc.position(0);// set the file pointer to byte position 0;
-		}
-
-		if (version<0 || version>50) {
-			//wrong integer
-			version =10;
-			FileChannel fc = fileIN.getChannel();
-			fc.position(0);// set the file pointer to byte position 0;
-
-		}
-
-		//header.setVersion(version);
+		int version = readVersion(fileIN, dataIn)  ;
+		if (version!=getVersion())
+			throw new IOException("not a v10 data file") ;
+		header.setVersion(version);
 		header.setPassHash(readString(fileIN));
 		header.setNumberOfItems(FileUtils.readInt(fileIN));
 		//header.setItemSize(dataIn.readInt());
@@ -154,6 +135,15 @@ public class DataServiceImplv10 extends AbstractDataService {
 
 	}
 
+	protected void saveHeader(DataOutputStream dataOut, final WalletModel model) throws IOException {
+			/*#1: hash*/
+		writeString( dataOut, model.getPassHash() );
+			/*#2: list size 4 bytes*/
+		dataOut.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));
+
+	}
+
+
 
 	@Override
 	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
@@ -167,9 +157,7 @@ public class DataServiceImplv10 extends AbstractDataService {
 
 			Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
 
-			//dataOut.writeInt(DATA_VERSION);
-			writeString( dataOut, model.getPassHash() );
-			dataOut.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));
+			saveHeader(dataOut, model);
 
 			int i=0;
 			byte[] cipherParameters;

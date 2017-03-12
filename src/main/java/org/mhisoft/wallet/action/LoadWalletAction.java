@@ -41,7 +41,7 @@ public class LoadWalletAction implements Action {
 
 	@Override
 	public ActionResult execute(Object... params) {
-		String pass = (String) params[0];
+		//PassCombinationVO pass = (PassCombinationVO) params[0];
 
 		String fileName=null;
 		if (params.length>=3)
@@ -54,7 +54,7 @@ public class LoadWalletAction implements Action {
 		}
 
 
-		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
+
 		WalletModel model  = ServiceRegistry.instance.getWalletModel();
 
 
@@ -63,17 +63,21 @@ public class LoadWalletAction implements Action {
 			WalletSettings.getInstance().setLastFile(fileName);
 			WalletSettings.getInstance().addRecentFile(fileName);
 
-			model.initEncryptor(pass);
+			model.initEncryptor(model.getPassVOForEncryptor());
 			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
-					model.getEncryptor());
+					model.getEncryptorForRead());
 			model.setItemsFlatList(fileContent.getWalletItems());
 			model.setPassHash(fileContent.getHeader().getPassHash());
+			model.setCombinationHash(fileContent.getHeader().getCombinationHash());
+			//opened a old version file, need to save to v13 version on close. .
+			if (model.getDataFileVersion()<=13)
+				ServiceRegistry.instance.getWalletModel().setModified(true);
 
 
 		} else {
 			//new file, needs to be saved on close.
 			ServiceRegistry.instance.getWalletModel().setModified(true);
-			model.initEncryptor(pass);
+			model.initEncryptor(model.getPassVOForEncryptor());
 		}
 		ServiceRegistry.instance.getWalletForm().loadTree();
 		ServiceRegistry.instance.getWalletForm().loadOptionsIntoView();

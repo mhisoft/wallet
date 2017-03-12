@@ -63,10 +63,11 @@ public class OpenWalletFileAction implements Action {
 				WalletSettings.getInstance().setLastFile(fileName);
 				WalletSettings.getInstance().addRecentFile(fileName);
 
-
-
+				//read header and populate the model with hashes.
 				FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
+				model.setDataFileVersion(header.getVersion());
 				model.setPassHash(header.getPassHash());
+				model.setCombinationHash(header.getCombinationHash());
 				//now show password form to enter the password.
 				PasswordForm passwordForm = new PasswordForm("Opening file:"+ fileName);
 				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), null);

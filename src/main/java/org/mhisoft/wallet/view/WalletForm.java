@@ -815,7 +815,6 @@ public class WalletForm {
 
 
 	void createUIComponents() {
-		// TODO: place custom component creation code here
 		fldNotes = new RSyntaxTextArea();
 		fldNotes.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
 		fldNotes.setCodeFoldingEnabled(true);

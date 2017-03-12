@@ -25,8 +25,13 @@ import org.mhisoft.wallet.view.WalletForm;
  */
 public class WalletMain {
 
-	public static final String version = "1.0.7";
-	public static final String build = "643";
+	 //three places to update the version number,
+	//here  in the code
+	// pom.xml and build.xml
+	public static final String version = "1.1.0";
+
+
+	public static final String build = "646";
 	public static final String BUILD_DETAIL = "MHISoft eVault " + version +" build " +  build;
 
 
@@ -65,7 +70,7 @@ public class WalletMain {
 
 	}
 
-	//set hash into model                                                     f
+	//set hash into model
 	// or load empty data for a new wallet.
 	protected void prepareModel() {
 
@@ -78,6 +83,8 @@ public class WalletMain {
 			WalletSettings.getInstance().setLastFile(fileName);
 			FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(fileName, true);
 			model.setPassHash(header.getPassHash());
+			model.setCombinationHash(header.getCombinationHash());
+			model.setDataFileVersion(header.getVersion());
 		} else {
 			//create an empty tree with one root.
 			model.setupEmptyWalletData(null);

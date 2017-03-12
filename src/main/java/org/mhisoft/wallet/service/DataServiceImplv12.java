@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.security.AlgorithmParameters;
 
 import org.mhisoft.common.util.Encryptor;
@@ -50,37 +49,19 @@ import org.mhisoft.wallet.view.DialogUtils;
 public class DataServiceImplv12 extends AbstractDataService {
 
 	private static int FIXED_RECORD_LENGTH =2000;
-	public  static int DATA_VERSION =12; //
+
 
 	public int getVersion() {
-		return DATA_VERSION;
+		return 12;
 	}
 
 
 	public FileContentHeader readHeader(FileContentHeader header, FileInputStream fileIN, DataInputStream dataIn  )
 			throws IOException {
 
-		int version;
-
-		try {
-			version = dataIn.readInt();
-		} catch (Exception e) {
-			// no version in this file.
-			//old version
-			version =10;
-			FileChannel fc = fileIN.getChannel();
-			fc.position(0);// set the file pointer to byte position 0;
-		}
-
-		if (version<0 || version>50) {
-			//wrong integer
-			version =10;
-			FileChannel fc = fileIN.getChannel();
-			fc.position(0);// set the file pointer to byte position 0;
-
-		}
-
-
+		int version = readVersion(fileIN, dataIn)  ;
+		if (version!=getVersion())
+			throw new IOException("not a v"+getVersion()+" data file") ;
 		header.setVersion(version);
 		header.setPassHash(readString(fileIN));
 		header.setNumberOfItems(FileUtils.readInt(fileIN));
@@ -156,7 +137,19 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 	}
 
-	       //hash, flat list in the model and Encryptor
+
+	protected void saveHeader(DataOutputStream dataOut, final WalletModel model) throws IOException {
+		dataOut.writeInt(getVersion());
+			/*#1: hash*/
+		writeString( dataOut, model.getPassHash() );
+			/*#2: list size 4 bytes*/
+		dataOut.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));
+		dataOut.writeInt(FIXED_RECORD_LENGTH);
+
+	}
+
+
+	//hash, flat list in the model and Encryptor
 	@Override
 	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
 		FileOutputStream stream = null;
@@ -169,13 +162,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 			Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
 
-			dataOut.writeInt(DATA_VERSION);
-			/*#1: hash*/
-			writeString( dataOut, model.getPassHash() );
-			/*#2: list size 4 bytes*/
-			dataOut.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));
-			dataOut.writeInt(FIXED_RECORD_LENGTH);
-
+			saveHeader(dataOut, model);
 
 			int i=0;
 			byte[] cipherParameters;

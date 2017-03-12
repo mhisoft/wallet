@@ -24,6 +24,7 @@
 package org.mhisoft.wallet.action;
 
 import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.DialogUtils;
@@ -39,13 +40,13 @@ public class CreateWalletAction implements Action {
 
 	@Override
 	public ActionResult execute(Object... params) {
-		String pass = (String) params[0];
+		PassCombinationVO passVO = (PassCombinationVO) params[0];
 		PasswordForm passwordForm = (PasswordForm) params[1];
 		String fileName=null;
 		if (params.length>=3)
 			fileName = (String) params[2];
 
-		if (createPassword(pass)) {
+		if (createPassword(passVO)) {
 			//exit the password form here
 			passwordForm.exitPasswordForm();
 			DialogUtils.getInstance().info("Please keep this in a safe place, it can't be recovered\n"
@@ -54,7 +55,7 @@ public class CreateWalletAction implements Action {
 
 			//proceed to load wallet
 			LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
-			loadWalletAction.execute(pass, ServiceRegistry.instance.getWalletModel().getPassHash(), fileName);
+			loadWalletAction.execute(passVO, ServiceRegistry.instance.getWalletModel().getPassHash(), fileName);
 		}
 
 		return new ActionResult(true);
@@ -62,11 +63,13 @@ public class CreateWalletAction implements Action {
 	}
 
 	//create the hash and save to file.
-	protected void createHash(String pass) {
+	protected void createHash(PassCombinationVO passVO) {
 		try {
-			String hash = HashingUtils.createHash(pass);
+			String hash = HashingUtils.createHash(passVO.getPass());
+			String combinationHash = HashingUtils.createHash(passVO.getCombination());
 			ServiceRegistry.instance.getWalletModel().setPassHash(hash);
-			ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
+			ServiceRegistry.instance.getWalletModel().setCombinationHash(combinationHash);
+			ServiceRegistry.instance.getWalletModel().setPassPlain(passVO);
 
 
 		} catch (HashingUtils.CannotPerformOperationException e1) {
@@ -76,8 +79,8 @@ public class CreateWalletAction implements Action {
 	}
 
 
-	public boolean createPassword(String pass) {
-		ServiceRegistry.instance.getWalletSettings().setPassPlain(pass);
+	public boolean createPassword(PassCombinationVO pass) {
+		ServiceRegistry.instance.getWalletModel().setPassPlain(pass);
 		createHash(pass);
 		return true;
 	}

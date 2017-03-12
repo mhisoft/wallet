@@ -40,14 +40,22 @@ import org.mhisoft.common.util.Encryptor;
  */
 public class WalletModel {
 
+	static final int LATEST_DATA_VERSION=13;
+
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
 	String passHash;
+	String combinationHash;
 	boolean modified =false;
+
 	Encryptor encryptor;
+	Encryptor encryptor_v12; //for reading the v12 data file
+	int dataFileVersion=LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
 	private boolean addingNode=false;
 	private boolean importing=false;
+
+	private transient PassCombinationVO passPlain;     //todo move to model?
 
 
 
@@ -59,19 +67,35 @@ public class WalletModel {
 		this.itemsFlatList = new ArrayList<>();
 		this.currentItem=null;
 		this.passHash=null;
+		this.combinationHash=null;
 		this.modified=false;
 		this.encryptor=null;
 		this.addingNode=false;
 		this.importing=false;
+		this.dataFileVersion=LATEST_DATA_VERSION;
+		this.passPlain=null;
 	}
 
-	public void initEncryptor(final String pass)   {
-		encryptor = new Encryptor(pass);
+	public Encryptor createNewEncryptor(final PassCombinationVO newPass)   {
+		Encryptor enc = new  Encryptor(newPass.getPassAndCombination());
+		return enc;
+	}
+
+	public void initEncryptor(final PassCombinationVO pass)   {
+		encryptor = new Encryptor(pass.getPassAndCombination());
+		if (dataFileVersion==12)
+			encryptor_v12 = new Encryptor(pass.getPass());
 	}
 
 
 	public Encryptor getEncryptor() {
 		return encryptor;
+
+	}public Encryptor getEncryptorForRead() {
+		if (dataFileVersion<=12)
+		     return encryptor_v12;
+		else
+			return encryptor;
 	}
 
 	public void setEncryptor(Encryptor encryptor) {
@@ -103,6 +127,14 @@ public class WalletModel {
 		this.passHash = passHash;
 	}
 
+	public String getCombinationHash() {
+		return combinationHash;
+	}
+
+	public void setCombinationHash(String combinationHash) {
+		this.combinationHash = combinationHash;
+	}
+
 	public boolean isModified() {
 		return modified;
 	}
@@ -127,6 +159,22 @@ public class WalletModel {
 		this.modified = modified;
 		EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ModelChangeEvent, "setModified" , Boolean.valueOf(this.modified) ));
 
+	}
+
+	public int getDataFileVersion() {
+		return dataFileVersion;
+	}
+
+	public void setDataFileVersion(int dataFileVersion) {
+		this.dataFileVersion = dataFileVersion;
+	}
+
+	public PassCombinationVO getPassPlain() {
+		return passPlain;
+	}
+
+	public void setPassPlain(PassCombinationVO passPlain) {
+		this.passPlain = passPlain;
 	}
 
 	public void setupTestData() {
@@ -338,6 +386,29 @@ public class WalletModel {
 		return null;
 
 	}
+
+
+	/**
+	 *
+	 * @return
+	 */
+	public PassCombinationVO getUserEnteredPassForVerification(){
+		if (dataFileVersion >= 13) {
+			return passPlain;
+		} else {
+			//v12 format
+			PassCombinationVO ret =  new PassCombinationVO();
+			ret.setPass(passPlain.spinner2 + passPlain.pass + passPlain.spinner1 + passPlain.spinner3);  //v12 version format
+			return ret;
+		}
+	}
+
+	public PassCombinationVO getPassVOForEncryptor() {
+		//ret.setPass(passPlain.spinner2 + passPlain.pass + passPlain.spinner1 + passPlain.spinner3);  //v12 version format
+		return getUserEnteredPassForVerification();
+	}
+
+
 
 
 

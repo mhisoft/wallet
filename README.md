@@ -6,6 +6,9 @@ It is a secure password vault which is best suitable for storing passwords and p
 
 The password once lost can't be recovered. This is by design. The author of this code can't even recover the lost password. And without the password and combination, the vault can't be opened, thus the data in the vault will be lost. 
 
+#Download
+from the Releases tab above : https://github.com/mhisoft/eVault/releases
+
 #Features
 * Free. 
 * Runs offline.
@@ -38,6 +41,13 @@ The author is not responsible for loss of any kind incurred directly or indirect
 
 ## License
 Apache License 2.0, January 2004 http://www.apache.org/licenses/
+
+
+## Please Donate
+[![paypal](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/silver-pill-paypal-26px.png)](https://www.paypal.me/mhisoft)
+Any amount helps :)
+
+
 
 
 
