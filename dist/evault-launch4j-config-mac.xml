@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>/Users/i831964/projects/mhisoft/apps/wallet/dist/tmp_make_exe/evault-combined.jar</jar>
+  <outfile>/Users/i831964/projects/mhisoft/apps/wallet/dist/evault-1.1.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon></icon>
+  <classPath>
+    <mainClass>org.mhisoft.wallet.WalletMain</mainClass>
+  </classPath>
+  <jre>
+    <path>./jre</path>
+    <bundledJre64Bit>true</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.1.0.0</fileVersion>
+    <txtFileVersion>1.1</txtFileVersion>
+    <fileDescription>MHISoft eVault</fileDescription>
+    <copyright>Copyright(c) 2016 Tony Xue</copyright>
+    <productVersion>1.1.0.0</productVersion>
+    <txtProductVersion>1.1</txtProductVersion>
+    <productName>MHISoft eVault</productName>
+    <companyName>MHISoft</companyName>
+    <internalName>MHISoft eVault</internalName>
+    <originalFilename>evault.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_US</language>
+  </versionInfo>
+</launch4jConfig>
