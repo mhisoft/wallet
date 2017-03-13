@@ -18,6 +18,17 @@
     <orderEntry type="library" scope="TEST" name="Gradle: org.junit:com.springsource.org.junit:4.7.0" level="project" />
     <orderEntry type="module" module-name="common-utils" />
     <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
+    <orderEntry type="module" module-name="common-utils" />
     <orderEntry type="library" name="Maven: com.fifesoft:rsyntaxtextarea:2.5.8" level="project" />
     <orderEntry type="library" name="Maven: com.intellij:forms_rt:14.0" level="project" />
     <orderEntry type="library" name="Maven: org.jasypt:jasypt:1.9.2" level="project" />

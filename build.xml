@@ -25,11 +25,22 @@
 <project name="eWallet build" default="dist" >
 
     <property environment="env"/>
+
+    <!--
+         PROPERTY FILE HIERARCHY:
+            first declared properties wins!
+     -->
+    <property file="local.properties"/>
+
     <property name="version" value="1.1"/>
     <property name="commonutil.version" value="1.0"/>
-    <property name="AppVersion" value="MHISoft eVault ${version}"/>
+    <property name="AppNameWithVersion" value="MHISoft eVault ${version}"/>
     <property name="ARTIFACT_NAME" value="evault-${version}"/>
     <property name="src.dir" value="src"/>
+
+    <property name="application.title" value="MHISoft eVault"/>
+    <property name="launch4j.tmp.make,dir" value="dist/tmp_make_exe"/>
+    <property name="launch4j.home.dir" location="/Users/i831964/bin/launch4j" />
 
     <property name="MAC_JRE_BUNDLE_DIR" value="dist/MAC/jdk1.8.0_51.jdk/Contents/Home"/>
 
@@ -41,6 +52,11 @@
             <pathelement path="../dist/lib/ant-contrib-1.0b3.jar" />
         </classpath>
     </taskdef>
+
+    <taskdef name="launch4j"
+             classname="net.sf.launch4j.ant.Launch4jTask"
+             classpath="${launch4j.home.dir}/launch4j.jar:${launch4j.home.dir}/lib/xstream.jar" />
+
 
     <!-- set the operating system test properties -->
     <condition property="isMac">
@@ -76,7 +92,6 @@
 
     <target name="dist" description="package and distribute">
 
-
         <delete file="dist/${ARTIFACT_NAME}.exe"/>
         <delete file="dist/${ARTIFACT_NAME}.jar"/>
 
@@ -87,18 +102,47 @@
         <copy file="target/${ARTIFACT_NAME}.jar" todir="dist" overwrite="true" failonerror="true"/>
         <copy file="../common-utils/target/common-utils-${commonutil.version}.jar" todir="dist\lib" overwrite="true"/>
 
-        <if>
-            <equals arg1="${isWindows}" arg2="true"/>
-            <then>
-                <antcall target="package-app"/>
-            </then>
+        <!--<if>-->
+            <!--<equals arg1="${isWindows}" arg2="true"/>-->
+            <!--<then>-->
+                <!--<antcall target="package-app"/>-->
+            <!--</then>-->
 
 
-        </if>
+        <!--</if>-->
+
+        <antcall target="package-windows-exe-app"/>
 
         <antcall target="bundle-mac-app"/>
 
     </target>
+
+    <target name="release"  depends="dist">
+
+        <antcall target="update-version"/>
+
+
+         <!--for mac make a tar : MHISoft-eVault-1.1-bin-for-MacOS.tar"-->
+        <delete file="dist/release/${AppNameWithVersion}-bin-MacOS.tar"/>
+        <delete file="dist/release/${AppNameWithVersion}-bin-Windows.zip"/>
+
+
+        <!--mac, some how this does not work.
+        manual comrpess it for now. -->
+        <!--<zip  destfile="dist/release/${AppNameWithVersion}-bin-MacOS.zip">-->
+            <!--<zipfileset dir="dist/MHISoft eVault 1.1.app"  prefix="MHISoft eVault 1.1.app"/>-->
+        <!--</zip>-->
+
+        <zip  destfile="dist/release/${AppNameWithVersion}-bin-Windows.zip">
+            <zipfileset dir="dist" includes="${ARTIFACT_NAME}.exe" />
+            <zipfileset dir="dist" includes="wallet-2-128.ico" />
+            <zipfileset dir="dist/jre"  prefix="jre"/>
+        </zip>
+
+
+    </target>
+
+
 
     <target name="update-version">
         <echo message="Updating version to ${version}"/>
@@ -113,20 +157,29 @@
         </replaceregexp>
 
 
+
+        <property name="version.match2" value="&lt;version&gt;(.*)&lt;/version&gt;   &lt;!--app version--&gt;" />
+        <property name="version.replace2" value="&lt;version&gt;${version}&lt;/version&gt;   &lt;!--app version--&gt;" />
+        <replaceregexp encoding="UTF-8" flags="g" match="${version.match2}" replace="${version.replace2}">
+            <fileset dir="./">
+                <include name="pom.xml" />
+            </fileset>
+        </replaceregexp>
+
     </target>
 
 
 
     <target name="bundle-mac-app"   if="${isMac}">
 
-        <delete file="dist/${AppVersion}.app"/>
+        <delete file="dist/${AppNameWithVersion}.app"/>
 
         <property name="sourceJar" value="${ARTIFACT_NAME}.jar"/>
         <property name="launch4jFinalJar" value="evault-combined.jar"/>
         <property name="AppMainClass" value="org.mhisoft.rdpro.ui.ReproMainForm"/>
         <bundleapp outputdirectory="./dist"
-                   name="${AppVersion}"
-                   displayname="${AppVersion}"
+                   name="${AppNameWithVersion}"
+                   displayname="${AppNameWithVersion}"
                    identifier="org.mhisoft.wallet.WalletMain"
                    icon="dist/wallet-multi-size.icns"
                    mainclassname="org.mhisoft.wallet.WalletMain">
@@ -140,20 +193,18 @@
         launch 4j package the exe
     ======================================= -->
 
-    <property name="application.title" value="RdPro"/>
-    <property name="launch4j.dir" value="dist/tmp_make_exe"/>
-    <property name="launch4jexe.dir" location="s:\bin\Launch4j" />
 
-    <if>
-        <equals arg1="${isWindows}" arg2="true"/>
-        <then>
-            <taskdef name="launch4j"
-                     classname="net.sf.launch4j.ant.Launch4jTask"
-                     classpath="${launch4jexe.dir}/launch4j.jar:${launch4jexe.dir}/lib/xstream.jar" />
 
-        </then>
+    <!--<if>-->
+        <!--<equals arg1="${isWindows}" arg2="true"/>-->
+        <!--<then>-->
+            <!--<taskdef name="launch4j"-->
+                     <!--classname="net.sf.launch4j.ant.Launch4jTask"-->
+                     <!--classpath="${launch4j.home.dir}/launch4j.jar:${launch4j.home.dir}/lib/xstream.jar" />-->
 
-    </if>
+        <!--</then>-->
+
+    <!--</if>-->
 
 
     <!--https://java.net/downloads/appbundler/appbundler.html-->
@@ -163,7 +214,7 @@
 
 
 
-    <target name="package-app">
+    <target name="package-windows-exe-app">
 
         <property name="sourceJar" value="${ARTIFACT_NAME}.jar"/>
         <property name="launch4jFinalJar" value="evault-combined.jar"/>
@@ -171,7 +222,19 @@
 
         <antcall target="_make-one-jar"/>
 
-        <launch4j configFile="dist/evault-launch4j-config.xml"  />
+        <if>
+            <equals arg1="${isWindows}" arg2="true"/>
+            <then>
+                <launch4j configFile="dist/evault-launch4j-config.xml"  />
+
+            </then>
+            <else>
+                <launch4j configFile="dist/evault-launch4j-config-mac.xml"  />
+            </else>
+
+        </if>
+
+
         <!--clean up-->
         <!--<delete dir="${launch4j.dir}" failonerror="false"/>-->
 
@@ -179,20 +242,20 @@
 
 
     <target name="_make-one-jar" description="make the Win Exe Bundle" >
-        <property name="launch4j.jar" value="${launch4j.dir}/${launch4jFinalJar}"/>
+        <property name="launch4j.jar" value="${launch4j.tmp.make,dir}/${launch4jFinalJar}"/>
 
 
 
         <echo message="  --> Packaging ${application.title} into a single JAR at ${launch4j.jar}"/>
-        <delete dir="${launch4j.dir}" failonerror="false"/>
-        <mkdir dir="${launch4j.dir}"/>
+        <delete dir="${launch4j.tmp.make,dir}" failonerror="false"/>
+        <mkdir dir="${launch4j.tmp.make,dir}"/>
 
         <!--make the temp_final.jar-->
 
         <if>
             <equals arg1="${sourceJar}" arg2="${ARTIFACT_NAME}.jar"/>
             <then>
-                <jar destfile="${launch4j.dir}/temp_final.jar" filesetmanifest="skip">
+                <jar destfile="${launch4j.tmp.make,dir}/temp_final.jar" filesetmanifest="skip">
                     <zipgroupfileset dir="dist" includes="${sourceJar}"/>
                     <zipgroupfileset dir="dist/lib" includes="*.jar"/>
                     <manifest>
@@ -202,7 +265,7 @@
             </then>
             <else>
                 <echo message="  -->use source jar: ${sourceJar}"/>
-                <jar destfile="${launch4j.dir}/temp_final.jar" filesetmanifest="skip">
+                <jar destfile="${launch4j.tmp.make,dir}/temp_final.jar" filesetmanifest="skip">
                     <zipgroupfileset dir="dist" includes="${sourceJar}"/>
                     <manifest>
                         <attribute name="Main-Class" value="${AppMainClass}"/>
@@ -215,7 +278,7 @@
         <!--make the combined jar-->
         <echo message="  --> make the ${launch4j.jar}}"/>
         <zip destfile="${launch4j.jar}">
-            <zipfileset src="${launch4j.dir}/temp_final.jar"
+            <zipfileset src="${launch4j.tmp.make,dir}/temp_final.jar"
                         excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA, META-INF/maven/*, META-INF/jb/*"/>
         </zip>
 
