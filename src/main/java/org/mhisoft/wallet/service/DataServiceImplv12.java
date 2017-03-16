@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.AlgorithmParameters;
 
+import org.mhisoft.common.util.ByteArrayHelper;
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.Serializer;
@@ -63,7 +64,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 		if (version!=getVersion())
 			throw new IOException("not a v"+getVersion()+" data file") ;
 		header.setVersion(version);
-		header.setPassHash(readString(fileIN));
+		header.setPassHash(FileUtils.readString(fileIN));
 		header.setNumberOfItems(FileUtils.readInt(fileIN));
 		header.setItemSize(dataIn.readInt());
 
@@ -141,9 +142,9 @@ public class DataServiceImplv12 extends AbstractDataService {
 	protected void saveHeader(DataOutputStream dataOut, final WalletModel model) throws IOException {
 		dataOut.writeInt(getVersion());
 			/*#1: hash*/
-		writeString( dataOut, model.getPassHash() );
+		FileUtils.writeString(dataOut, model.getPassHash());
 			/*#2: list size 4 bytes*/
-		dataOut.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));
+		dataOut.write(ByteArrayHelper.intToBytes(model.getItemsFlatList().size()));
 		dataOut.writeInt(FIXED_RECORD_LENGTH);
 
 	}
@@ -175,7 +176,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 				//have to write for each encryption because a random salt is used.
 				cipherParameters = ret.getCipherParameters();
 								/*#3: cipherParameters size 4 bytes*/
-				dataOut.write(FileUtils.intToByteArray(cipherParameters.length));
+				dataOut.write(ByteArrayHelper.intToBytes(cipherParameters.length));
 				/*#4: cipherParameters body*/
 				dataOut.write(cipherParameters);
 
@@ -183,7 +184,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 
 				/*//length*/
-				dataOut.write(FileUtils.intToByteArray(encrypted.length));
+				dataOut.write(ByteArrayHelper.intToBytes(encrypted.length));
 				/*#5: item body*/
 				//write the object byte stream
 				dataOut.write(encrypted);

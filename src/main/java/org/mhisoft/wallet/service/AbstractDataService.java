@@ -30,8 +30,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-import org.mhisoft.common.util.FileUtils;
-import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.model.WalletModel;
 
 /**
@@ -42,28 +40,7 @@ import org.mhisoft.wallet.model.WalletModel;
  */
 public abstract class AbstractDataService implements  DataService {
 
-	protected void writeString(DataOutputStream out, String str) throws IOException {
-		if (str==null)
-			throw new RuntimeException("input str is null");
 
-		byte[] _byte = StringUtils.getBytes(str);
-		//write size
-		out.write(FileUtils.intToByteArray(_byte.length));
-		out.write(_byte);
-
-	}
-
-
-	protected String readString(FileInputStream fileInputStream) throws IOException  {
-		int numBytes = FileUtils.readInt(fileInputStream);
-		byte[] _byte = new byte[numBytes];
-		int readBytes = fileInputStream.read(_byte);
-		if (readBytes!=numBytes)
-			throw new RuntimeException("readString() failed, " + "read " + readBytes +" bytes only, expected to read:"+ numBytes);
-
-		return StringUtils.bytesToString(_byte);
-
-	}
 
 	abstract protected FileContentHeader readHeader(FileContentHeader header, FileInputStream fileIN, DataInputStream dataIn  )
 			throws IOException ;

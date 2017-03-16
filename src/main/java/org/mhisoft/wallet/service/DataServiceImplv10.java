@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.AlgorithmParameters;
 
+import org.mhisoft.common.util.ByteArrayHelper;
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.Serializer;
@@ -63,7 +64,7 @@ public class DataServiceImplv10 extends AbstractDataService {
 		if (version!=getVersion())
 			throw new IOException("not a v10 data file") ;
 		header.setVersion(version);
-		header.setPassHash(readString(fileIN));
+		header.setPassHash(FileUtils.readString(fileIN));
 		header.setNumberOfItems(FileUtils.readInt(fileIN));
 		//header.setItemSize(dataIn.readInt());
 
@@ -137,9 +138,9 @@ public class DataServiceImplv10 extends AbstractDataService {
 
 	protected void saveHeader(DataOutputStream dataOut, final WalletModel model) throws IOException {
 			/*#1: hash*/
-		writeString( dataOut, model.getPassHash() );
+		FileUtils.writeString(dataOut, model.getPassHash());
 			/*#2: list size 4 bytes*/
-		dataOut.write(FileUtils.intToByteArray(model.getItemsFlatList().size()));
+		dataOut.write(ByteArrayHelper.intToBytes(model.getItemsFlatList().size()));
 
 	}
 
@@ -167,7 +168,7 @@ public class DataServiceImplv10 extends AbstractDataService {
 				byte[] enc = encResult.getEncryptedData();
 				cipherParameters = encryptor.getCipherParameters();
 				/*#3: cipherParameters size 4 bytes*/
-				dataOut.write(FileUtils.intToByteArray(cipherParameters.length));
+				dataOut.write(ByteArrayHelper.intToBytes(cipherParameters.length));
 
 				/*#4: cipherParameters body*/
 				dataOut.write(cipherParameters);

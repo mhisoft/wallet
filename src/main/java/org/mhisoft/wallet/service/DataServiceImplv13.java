@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.WalletModel;
 
 /**
@@ -24,7 +25,7 @@ public class DataServiceImplv13 extends DataServiceImplv12 {
 
 		super.readHeader(header, fileIN, dataIn)  ;
 
-		header.setCombinationHash(readString(fileIN));
+		header.setCombinationHash(FileUtils.readString(fileIN));
 
 		return header;
 	}
@@ -32,7 +33,7 @@ public class DataServiceImplv13 extends DataServiceImplv12 {
 
 	protected void saveHeader(DataOutputStream dataOut, final WalletModel model) throws IOException {
 		super.saveHeader(dataOut, model);
-		writeString( dataOut, model.getCombinationHash() );
+		FileUtils.writeString(dataOut, model.getCombinationHash());
 	}
 
 
