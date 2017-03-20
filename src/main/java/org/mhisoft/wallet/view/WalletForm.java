@@ -30,6 +30,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -37,7 +40,10 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -56,6 +62,7 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -163,6 +170,8 @@ public class WalletForm {
 	private JTextArea textAreaDebug;
 	private JLabel labelLastMessage;
 	 JButton btnCollapse;
+	private JLabel imageLabel;
+	private JPanel imagePanel;
 
 	private JScrollPane rightScrollPane;
 
@@ -593,9 +602,61 @@ public class WalletForm {
 //			}
 //		});
 
+		// start the image loading SwingWorker in a background thread
+		loadimages.execute();
 
 	}
 
+	/**
+	 * SwingWorker class that loads the images a background thread and calls publish
+	 * when a new one is ready to be displayed.
+	 *
+	 * We use Void as the first SwingWroker param as we do not need to return
+	 * anything from doInBackground().
+	 */
+	private SwingWorker<Void, ThumbnailAction> loadimages = new SwingWorker<Void, ThumbnailAction>() {
+		@Override
+		protected Void doInBackground() throws Exception {
+
+			ImageIcon icon = new ImageIcon("/Users/i831964/Dropbox/Photos/paintball2016.jpeg");
+			int scaledHeight = icon.getIconHeight()   *  fldNotes.getWidth() / icon.getIconWidth() ;
+			ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
+
+			// = new JLabel("", image, JLabel.CENTER);
+			imageLabel.setIcon(thumbnailIcon);
+
+			return null;
+		}
+
+	} ;
+
+	private class ThumbnailAction extends AbstractAction {
+		/**
+		 * Shows the full image in the main area and sets the application title.
+		 */
+		public void actionPerformed(ActionEvent e) {
+//			photographLabel.setIcon(displayPhoto);
+//			setTitle("Icon Demo: " + getValue(SHORT_DESCRIPTION).toString());
+		}
+
+	}
+
+
+	/**
+	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
+	 * @param srcImg - source image to scale
+	 * @param w - desired width
+	 * @param h - desired height
+	 * @return - the new resized image
+	 */
+	private Image getScaledImage(Image srcImg, int w, int h){
+		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2 = resizedImg.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.drawImage(srcImg, 0, 0, w, h, null);
+		g2.dispose();
+		return resizedImg;
+	}
 
 	public void jreDebug() {
 		textAreaDebug.setText("");

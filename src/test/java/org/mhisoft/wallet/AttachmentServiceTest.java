@@ -24,16 +24,15 @@
 package org.mhisoft.wallet;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.mhisoft.common.util.ByteArrayHelper;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
+import org.mhisoft.wallet.service.AttachmentService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -47,8 +46,11 @@ import org.testng.annotations.Test;
  */
 public class AttachmentServiceTest {
 
+	AttachmentService attachmentService = new AttachmentService();
+
 	@Test()
 	public void testWriteFileAcccessTable() {
+		new File("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat").delete();
 
 		FileAccessTable t = new FileAccessTable();
 		FileAccessEntry fileEntry =  t.addEntry();
@@ -60,65 +62,19 @@ public class AttachmentServiceTest {
 		Assert.assertEquals(t.getSize(), 2);
 
 
-		int currentPosition=0;
-		int uuidSize=-1, entrySize, headerSize, posStart;
-
-		File out=null;
-		FileOutputStream fileOut =null;
-		try {
-			//write it out
-			out = new File("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat");
-			fileOut = new FileOutputStream(out);
-			DataOutputStream dataOut = new DataOutputStream(fileOut);
-
-			//write the total number of entries first
-		   	/*#0*/
-			dataOut.writeInt( t.getEntries().size() );
-			currentPosition =0;
-
-			for (int i = 0; i < t.getEntries().size(); i++) {
-				FileAccessEntry item = t.getEntries().get(i);
-
-				if (uuidSize==-1) {
-					/*#1*/
-					uuidSize = FileUtils.writeString(dataOut, item.getGUID()); //36+ 4 , UUID size total 40
-					entrySize = uuidSize + 8 + 8;  //56
-					headerSize = 4+ entrySize * t.getEntries().size();
-					currentPosition  =headerSize;
-				}
-				else
-					uuidSize = FileUtils.writeString(dataOut, item.getGUID()); //36+ 4 , UUID size total 40
-
-				/*#2*/
-				item.setPosition(  currentPosition );
-				dataOut.write(ByteArrayHelper.longToBytes(item.getPosition()));
-
-				/*#3*/
-				dataOut.write(ByteArrayHelper.longToBytes(item.getSize()));
-
-				//advance pos
-				currentPosition +=  item.getSize();
+		attachmentService.write("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat", t);
 
 
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		finally {
-			if (fileOut!=null)
-				try {
-					fileOut.close();
-				} catch (IOException e) {
-					//e.printStackTrace();
-				}
-		}
 
 	}
 
 	@Test(dependsOnMethods = { "testWriteFileAcccessTable" })
 	public void testReadFileAccessTable() {
 		try {
-			File fIn = new File("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat");
+
+			String dataFile = "./target/classes/AttachmentServiceTest_testFileAcccessTable.dat";
+
+			File fIn = new File(dataFile);
 			FileInputStream fileIn = new FileInputStream(fIn);
 			DataInputStream dataIn = new DataInputStream(fileIn);
 
@@ -129,15 +85,31 @@ public class AttachmentServiceTest {
 			for (int i = 0; i < size; i++) {
 				FileAccessEntry item = new FileAccessEntry(FileUtils.readString(fileIn));
 				item.setPosition(dataIn.readLong());
+				item.setFile(new File("./target/classes/.png"));
+
+				item.setFile(new File("./target/classes/testReadFileAccessTable_" + i+".png"));
 				item.setSize(dataIn.readLong());
 
 				t.addEntry(item);
 
+				byte[] bytes = attachmentService.read(dataFile, item) ;
+				//String[] parts = FileUtils.splitFileParts(item.getFile().getAbsolutePath())   ;
+
+				FileOutputStream out = new FileOutputStream(
+						//parts[0]+parts[1]     +"_test_rewritten." + parts[2]
+						"./target/classes/testReadFileAccessTable_" + i+".png"
+				);
+				out.write(bytes);
+
 			}
+
 
 			Assert.assertEquals( t.getSize(), 2);
 			Assert.assertEquals( t.getEntries().get(0).getSize(), 366 );
 			Assert.assertEquals( t.getEntries().get(1).getSize(), 412 );
+
+
+
 
 		} catch ( IOException e) {
 			e.printStackTrace();
