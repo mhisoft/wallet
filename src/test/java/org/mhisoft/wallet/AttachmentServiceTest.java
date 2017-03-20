@@ -23,13 +23,10 @@
 
 package org.mhisoft.wallet;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
 import org.mhisoft.wallet.service.AttachmentService;
@@ -64,8 +61,6 @@ public class AttachmentServiceTest {
 
 		attachmentService.write("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat", t);
 
-
-
 	}
 
 	@Test(dependsOnMethods = { "testWriteFileAcccessTable" })
@@ -74,25 +69,15 @@ public class AttachmentServiceTest {
 
 			String dataFile = "./target/classes/AttachmentServiceTest_testFileAcccessTable.dat";
 
-			File fIn = new File(dataFile);
-			FileInputStream fileIn = new FileInputStream(fIn);
-			DataInputStream dataIn = new DataInputStream(fileIn);
+			FileAccessTable t = attachmentService.read(dataFile ) ;
+			Assert.assertEquals( t.getSize(), 2);
+			Assert.assertEquals( t.getEntries().get(0).getSize(), 366 );
+			Assert.assertEquals( t.getEntries().get(1).getSize(), 412 );
 
-			int size = dataIn.readInt();
-			Assert.assertEquals( size, 2);
-
-			FileAccessTable t = new FileAccessTable();
-			for (int i = 0; i < size; i++) {
-				FileAccessEntry item = new FileAccessEntry(FileUtils.readString(fileIn));
-				item.setPosition(dataIn.readLong());
-				item.setFile(new File("./target/classes/.png"));
-
-				item.setFile(new File("./target/classes/testReadFileAccessTable_" + i+".png"));
-				item.setSize(dataIn.readLong());
-
-				t.addEntry(item);
-
-				byte[] bytes = attachmentService.read(dataFile, item) ;
+			int i=0;
+			for (FileAccessEntry item : t.getEntries()) {
+				i++;
+				byte[] bytes = attachmentService.readFileContent(dataFile, item) ;
 				//String[] parts = FileUtils.splitFileParts(item.getFile().getAbsolutePath())   ;
 
 				FileOutputStream out = new FileOutputStream(
@@ -102,13 +87,6 @@ public class AttachmentServiceTest {
 				out.write(bytes);
 
 			}
-
-
-			Assert.assertEquals( t.getSize(), 2);
-			Assert.assertEquals( t.getEntries().get(0).getSize(), 366 );
-			Assert.assertEquals( t.getEntries().get(1).getSize(), 412 );
-
-
 
 
 		} catch ( IOException e) {

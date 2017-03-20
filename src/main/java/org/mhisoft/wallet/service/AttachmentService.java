@@ -24,6 +24,7 @@
 package org.mhisoft.wallet.service;
 
 import java.util.logging.Logger;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -143,7 +144,34 @@ public class AttachmentService {
 		fileStore.close();
 	}
 
-	public byte[] read(String fileStoreDataFile, FileAccessEntry item) {
+	public FileAccessTable read(String dataFile) {
+		FileAccessTable t =null;
+		try {
+			File fIn = new File(dataFile);
+			FileInputStream fileIn = new FileInputStream(fIn);
+			DataInputStream dataIn = new DataInputStream(fileIn);
+
+			int size = dataIn.readInt();
+
+			t = new FileAccessTable();
+			for (int i = 0; i < size; i++) {
+				FileAccessEntry item = new FileAccessEntry(FileUtils.readString(fileIn));
+				item.setPosition(dataIn.readLong());
+				item.setSize(dataIn.readLong());
+
+				t.addEntry(item);
+
+				//byte[] bytes =readFileContent(dataFile, item) ;
+
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return t;
+	}
+
+	public byte[] readFileContent(String fileStoreDataFile, FileAccessEntry item) {
 		try {
 			RandomAccessFile fileStore = new RandomAccessFile(fileStoreDataFile, "rw");
 			fileStore.seek(item.getPosition());
