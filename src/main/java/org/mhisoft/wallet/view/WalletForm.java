@@ -269,6 +269,8 @@ public class WalletForm {
 		btnLaunchURL.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLaunchURL" , null ));
+
 				if (StringUtils.hasValue(fldURL.getText())) {
 					FileUtils.launchURL(fldURL.getText().trim());
 				}
@@ -409,7 +411,9 @@ public class WalletForm {
 						expandCollapseTree();
 					}else if (e.getSource() == btnLaunchURL) {
 						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLaunchURL", null));
-
+						if (StringUtils.hasValue(fldURL.getText())) {
+							FileUtils.launchURL(fldURL.getText().trim());
+						}
 					}
 				}
 			}
