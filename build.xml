@@ -40,7 +40,7 @@
 
     <property name="application.title" value="MHISoft eVault"/>
     <property name="launch4j.tmp.make,dir" value="dist/tmp_make_exe"/>
-    <property name="launch4j.home.dir" location="/Users/i831964/bin/launch4j" />
+    <!--<property name="launch4j.home.dir" location="/Users/i831964/bin/launch4j" />-->
 
     <property name="MAC_JRE_BUNDLE_DIR" value="dist/MAC/jdk1.8.0_51.jdk/Contents/Home"/>
 
@@ -163,6 +163,19 @@
         <replaceregexp encoding="UTF-8" flags="g" match="${version.match2}" replace="${version.replace2}">
             <fileset dir="./">
                 <include name="pom.xml" />
+            </fileset>
+        </replaceregexp>
+
+        <!--up date the launch 4j file version as well
+           <outfile>S:\projects\mhisoft\apps\wallet\dist\evault-1.1.2.exe</outfile>
+
+         -->
+        <property name="version.match3" value="evault-(.*)\.exe" />
+        <property name="version.replace3" value="evault-${version}.exe" />
+        <replaceregexp encoding="UTF-8" flags="g" match="${version.match3}" replace="${version.replace3}">
+            <fileset dir="./dist">
+                <include name="evault-launch4j-config.xml" />
+                <include name="evault-launch4j-config-mac.xml" />
             </fileset>
         </replaceregexp>
 

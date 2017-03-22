@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
   <jar>S:\projects\mhisoft\apps\wallet\dist\tmp_make_exe\evault-combined.jar</jar>
-  <outfile>S:\projects\mhisoft\apps\wallet\dist\evault-1.1.exe</outfile>
+  <outfile>S:\projects\mhisoft\apps\wallet\dist\evault-1.1.2.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
