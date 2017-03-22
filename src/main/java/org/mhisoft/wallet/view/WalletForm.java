@@ -43,7 +43,6 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -71,6 +70,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.mhisoft.common.event.EventDispatcher;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
+import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.WalletMain;
 import org.mhisoft.wallet.action.ActionResult;
@@ -171,6 +171,7 @@ public class WalletForm {
 	private JLabel labelLastMessage;
 	 JButton btnCollapse;
 	private JLabel imageLabel;
+	JButton btnLaunchURL;
 	private JPanel imagePanel;
 
 	private JScrollPane rightScrollPane;
@@ -255,8 +256,6 @@ public class WalletForm {
 
 
 
-
-
 		btnTogglePasswordView.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -266,6 +265,15 @@ public class WalletForm {
 			}
 		});
 
+
+		btnLaunchURL.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (StringUtils.hasValue(fldURL.getText())) {
+					FileUtils.launchURL(fldURL.getText().trim());
+				}
+			}
+		});
 
 		//constructor
 		btnAddNode.addActionListener(new ActionListener() {
@@ -399,6 +407,9 @@ public class WalletForm {
 					}else if (e.getSource() == btnCollapse) {
 						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCollapse", null));
 						expandCollapseTree();
+					}else if (e.getSource() == btnLaunchURL) {
+						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLaunchURL", null));
+
 					}
 				}
 			}
@@ -418,6 +429,7 @@ public class WalletForm {
 		btnDeleteNode.addKeyListener(keyListener);
 		btnMoveNode.addKeyListener(keyListener);
 		btnCollapse.addKeyListener(keyListener);
+		btnLaunchURL.addKeyListener(keyListener);
 
 		fldFilter.addKeyListener(new KeyListener() {
 			@Override
@@ -440,6 +452,7 @@ public class WalletForm {
 		});
 
 		treeExpanded = WalletSettings.getInstance().isTreeExpanded();
+
 
 
 	} //end of form construstor
@@ -617,13 +630,15 @@ public class WalletForm {
 	private SwingWorker<Void, ThumbnailAction> loadimages = new SwingWorker<Void, ThumbnailAction>() {
 		@Override
 		protected Void doInBackground() throws Exception {
+			//todo
 
-			ImageIcon icon = new ImageIcon("/Users/i831964/Dropbox/Photos/paintball2016.jpeg");
-			int scaledHeight = icon.getIconHeight()   *  fldNotes.getWidth() / icon.getIconWidth() ;
-			ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
-
-			// = new JLabel("", image, JLabel.CENTER);
-			imageLabel.setIcon(thumbnailIcon);
+//			ImageIcon icon = new ImageIcon("/Users/i831964/Dropbox/Photos/paintball2016.jpeg");
+//			int scaledHeight = icon.getIconHeight()   *  fldNotes.getWidth() / icon.getIconWidth() ;
+//			ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
+//
+//			// = new JLabel("", image, JLabel.CENTER);
+//			imageLabel.setIcon(thumbnailIcon);
+			imageLabel.setVisible(false);
 
 			return null;
 		}
