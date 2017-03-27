@@ -34,15 +34,23 @@ import org.mhisoft.common.util.StringUtils;
  * @since Mar, 2017
  */
 public class FileAccessEntry {
-	String GUID;
+	String GUID;     //40
 	long position;   //8 bytes
 	long size;       //8 bytes
+	transient String accessFlag; //Add, Remove
+
+	public static  int getHeaderBytes() {
+		return 40 + 8 + 8;
+	}
+
 
 	File file;
 
 	public FileAccessEntry(String GUID) {
 		if (GUID == null)
 			this.GUID = StringUtils.getGUID();
+		else
+			this.GUID = GUID;
 	}
 
 	public String getGUID() {

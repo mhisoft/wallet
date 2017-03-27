@@ -24,7 +24,6 @@
 package org.mhisoft.wallet.service;
 
 import java.util.logging.Logger;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +31,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import org.mhisoft.common.util.ByteArrayHelper;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
@@ -48,66 +46,111 @@ public class AttachmentService {
 	private static final Logger logger = Logger.getLogger(AttachmentService.class.getName());
 
 
+
+	public void createNewDataStore(final String outoutFIleName, final FileAccessTable t) {
+
+	}
+
+
+	public void addNewFileToDataStore(DataOutputStream dataOut, FileAccessEntry item ) {
+
+	}
+
+
+
+
+	/**
+	 *
+	 * @param outoutFIleName
+	 * @param t
+	 */
 	public void write(final String outoutFIleName, final FileAccessTable t) {
 
-		int currentPosition = 0;
+		int itemStartPos = 0;
 		int uuidSize = -1, entrySize, headerSize, posStart;
 
 		File out = null;
-		FileOutputStream fileOut = null;
+		//FileOutputStream fileOut = null;
+		DataOutputStream dataOut=null;
 		try {
 			//write it out
-			out = new File(outoutFIleName);
-			fileOut = new FileOutputStream(out);
-			DataOutputStream dataOut = new DataOutputStream(fileOut);
+			dataOut = new DataOutputStream(new FileOutputStream(new File(outoutFIleName)));
 
 			//write the total number of entries first
 		   	/*#0*/
 			dataOut.writeInt(t.getEntries().size());
-			currentPosition = 0;
+			itemStartPos = 4 ;
 
 
 			//write the FAT
 			for (int i = 0; i < t.getEntries().size(); i++) {
 				FileAccessEntry item = t.getEntries().get(i);
 
-				if (uuidSize == -1) {
-					/*#1*/
-					uuidSize = FileUtils.writeString(dataOut, item.getGUID()); //36+ 4 , UUID size total 40
-					entrySize = uuidSize + 8 + 8;  //56
-					headerSize = 4 + entrySize * t.getEntries().size();
-					currentPosition = headerSize;
-				} else
-					uuidSize = FileUtils.writeString(dataOut, item.getGUID()); //36+ 4 , UUID size total 40
+				itemStartPos += FileAccessEntry.getHeaderBytes();
+				item.setPosition(itemStartPos);
 
-				/*#2*/
-				item.setPosition(currentPosition);
-				dataOut.write(ByteArrayHelper.longToBytes(item.getPosition()));
 
-				/*#3*/
-				dataOut.write(ByteArrayHelper.longToBytes(item.getSize()));
+				/*#1 UUID*/
+				uuidSize = FileUtils.writeString(dataOut, item.getGUID());
+
+
+				/*#2 pos of the attachment content*/
+				dataOut.writeLong(item.getPosition());
+
+
+				/*#3 size of the attachment content*/
+				dataOut.writeLong(item.getSize());
+
+
+				/* write the file data */
+				writeFileData (item, dataOut);
 
 				//advance pos
-				currentPosition += item.getSize();
+				itemStartPos += item.getSize();
 			}
-			fileOut.flush();
-			fileOut.close();
+			dataOut.flush();
+			dataOut.close();
 
-			writeFileContents(outoutFIleName, t);
 
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if (fileOut != null)
+			if (dataOut != null)
 				try {
-					fileOut.close();
+					dataOut.close();
 				} catch (IOException e) {
 					//e.printStackTrace();
 				}
 		}
 
 	}
+
+
+	private int writeFileData(FileAccessEntry item, DataOutputStream dataOut) throws IOException {
+		byte[] bytes = new byte[4096];
+
+		int nRead, totalwrite = 0;
+
+		FileInputStream fin = new FileInputStream(item.getFile());
+
+		while ((nRead = fin.read(bytes, 0, bytes.length)) != -1) {
+			dataOut.write(bytes, 0, nRead);
+			totalwrite += nRead;
+		}
+
+
+		logger.info("wrote total " + totalwrite + " bytes for file:" + item.getFile().getName());
+		if (totalwrite != item.getSize())
+			throw new RuntimeException("Didn't write the full content, size expected to write " + item.getSize()
+					+ "actual write bytes:" + totalwrite);
+
+		return totalwrite;
+
+
+
+	}
+
 
 
 	private void writeFileContents(final String outoutFIleName, final FileAccessTable t) throws IOException {
@@ -144,24 +187,39 @@ public class AttachmentService {
 		fileStore.close();
 	}
 
+
+
 	public FileAccessTable read(String dataFile) {
 		FileAccessTable t =null;
 		try {
 			File fIn = new File(dataFile);
-			FileInputStream fileIn = new FileInputStream(fIn);
-			DataInputStream dataIn = new DataInputStream(fileIn);
+			//FileInputStream fileIn = new FileInputStream(fIn);
+			//DataInputStream dataIn = new DataInputStream(fileIn);
 
-			int size = dataIn.readInt();
+			RandomAccessFile raFile = new RandomAccessFile(dataFile, "rw");
+
+
+			int size = raFile.readInt();
 
 			t = new FileAccessTable();
+
+			int pos = 4;
+
 			for (int i = 0; i < size; i++) {
-				FileAccessEntry item = new FileAccessEntry(FileUtils.readString(fileIn));
-				item.setPosition(dataIn.readLong());
-				item.setSize(dataIn.readLong());
+
+				raFile.seek(pos);
+
+				String UUID = FileUtils.readString(raFile);
+				FileAccessEntry item = new FileAccessEntry(UUID);
+				item.setPosition(raFile.readLong());
+				item.setSize(raFile.readLong());
 
 				t.addEntry(item);
 
 				//byte[] bytes =readFileContent(dataFile, item) ;
+
+				//advance to the next item pos , header start
+				pos+= FileAccessEntry.getHeaderBytes() + item.getSize();
 
 
 			}
