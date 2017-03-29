@@ -108,14 +108,16 @@ public class ViewHelper {
 	}
 
 
-	public static String chooseFile(String defaultDir) {
+	public static String chooseFile(String defaultDir, String... extensions) {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
 		if (defaultDir == null)
 			defaultDir = WalletSettings.userHome;
 		chooser.setCurrentDirectory(new File(defaultDir));
-		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Wallet data files", "dat", "wlt"));
+		if (extensions==null)
+			extensions = new String[] {"dat"} ;
+		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Wallet data files", extensions));
 
 		//set font
 		setFileChooserFont(chooser.getComponents(), WalletSettings.getInstance().getFontSize());

@@ -67,6 +67,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 	private transient WalletItem parent;
 	private transient List<WalletItem> children;
+	private transient FileAccessEntry attachmentEntry;
 
 	@Override
 	public boolean equals(Object o) {
@@ -453,6 +454,16 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 						|| isJavaPatternMatch(p, phone)
 
 				;
+	}
+
+	public FileAccessEntry getAttachmentEntry() {
+		if (attachmentEntry==null)
+			this.attachmentEntry =  new FileAccessEntry(this.sysGUID);
+		return attachmentEntry;
+	}
+
+	public void setAttachmentEntry(FileAccessEntry attachmentEntry) {
+		this.attachmentEntry = attachmentEntry;
 	}
 
 }

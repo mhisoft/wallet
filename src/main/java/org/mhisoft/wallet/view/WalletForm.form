@@ -453,14 +453,21 @@
                                   <text value="URL"/>
                                 </properties>
                               </component>
-                              <component id="f438c" class="javax.swing.JLabel" binding="imageLabel">
+                              <scrollpane id="e5e7d">
                                 <constraints>
-                                  <grid row="12" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                                  <grid row="12" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                                 </constraints>
-                                <properties>
-                                  <text value="image label"/>
-                                </properties>
-                              </component>
+                                <properties/>
+                                <border type="none"/>
+                                <children>
+                                  <component id="f438c" class="javax.swing.JLabel" binding="imageLabel">
+                                    <constraints/>
+                                    <properties>
+                                      <text value="image label"/>
+                                    </properties>
+                                  </component>
+                                </children>
+                              </scrollpane>
                             </children>
                           </grid>
                         </children>
@@ -472,6 +479,12 @@
                         <properties/>
                         <border type="none"/>
                         <children>
+                          <component id="bdf9" class="javax.swing.JButton" binding="btnLoadImage">
+                            <constraints/>
+                            <properties>
+                              <text value="Image"/>
+                            </properties>
+                          </component>
                           <component id="7012f" class="javax.swing.JButton" binding="btnEditForm">
                             <constraints/>
                             <properties>

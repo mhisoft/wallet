@@ -41,8 +41,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -172,6 +174,7 @@ public class WalletForm {
 	 JButton btnCollapse;
 	private JLabel imageLabel;
 	JButton btnLaunchURL;
+	private JButton btnLoadImage;
 	private JPanel imagePanel;
 
 	private JScrollPane rightScrollPane;
@@ -253,6 +256,26 @@ public class WalletForm {
 
 
 		btnSaveForm.addActionListener(saveFormListener);
+
+		ActionListener uploadImageListener =  new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLoadImage" , null ));
+				String imageFile = ViewHelper.chooseFile(null, "png", "gif", "jpg", "jpeg");
+
+				//todo validate size.
+				File f = new File(imageFile) ;
+				//if (f.get)
+
+				model.getCurrentItem().getAttachmentEntry().setFileName( imageFile);
+				loadImageWorker.execute();
+
+
+
+			}
+		}  ;
+
+		btnLoadImage.addActionListener( uploadImageListener );
 
 
 
@@ -620,34 +643,11 @@ public class WalletForm {
 //		});
 
 		// start the image loading SwingWorker in a background thread
-		loadimages.execute();
+		//loadimages.execute();
 
 	}
 
-	/**
-	 * SwingWorker class that loads the images a background thread and calls publish
-	 * when a new one is ready to be displayed.
-	 *
-	 * We use Void as the first SwingWroker param as we do not need to return
-	 * anything from doInBackground().
-	 */
-	private SwingWorker<Void, ThumbnailAction> loadimages = new SwingWorker<Void, ThumbnailAction>() {
-		@Override
-		protected Void doInBackground() throws Exception {
-			//todo
 
-//			ImageIcon icon = new ImageIcon("/Users/i831964/Dropbox/Photos/paintball2016.jpeg");
-//			int scaledHeight = icon.getIconHeight()   *  fldNotes.getWidth() / icon.getIconWidth() ;
-//			ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
-//
-//			// = new JLabel("", image, JLabel.CENTER);
-//			imageLabel.setIcon(thumbnailIcon);
-			imageLabel.setVisible(false);
-
-			return null;
-		}
-
-	} ;
 
 	private class ThumbnailAction extends AbstractAction {
 		/**
@@ -661,21 +661,6 @@ public class WalletForm {
 	}
 
 
-	/**
-	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
-	 * @param srcImg - source image to scale
-	 * @param w - desired width
-	 * @param h - desired height
-	 * @return - the new resized image
-	 */
-	private Image getScaledImage(Image srcImg, int w, int h){
-		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g2 = resizedImg.createGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g2.drawImage(srcImg, 0, 0, w, h, null);
-		g2.dispose();
-		return resizedImg;
-	}
 
 	public void jreDebug() {
 		textAreaDebug.setText("");
@@ -1064,53 +1049,50 @@ public class WalletForm {
 	}
 
 
+
+	/**
+	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
+	 * @param srcImg - source image to scale
+	 * @param w - desired width
+	 * @param h - desired height
+	 * @return - the new resized image
+	 */
+	private Image getScaledImage(Image srcImg, int w, int h){
+		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2 = resizedImg.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.drawImage(srcImg, 0, 0, w, h, null);
+		g2.dispose();
+		return resizedImg;
+	}
+
+	/**
+	 * SwingWorker class that loads the images a background thread and calls publish
+	 * when a new one is ready to be displayed.
+	 *
+	 * We use Void as the first SwingWroker param as we do not need to return
+	 * anything from doInBackground().
+	 */
+	private SwingWorker<Void, ThumbnailAction> loadImageWorker = new SwingWorker<Void, ThumbnailAction>() {
+
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			//todo
+			ImageIcon icon = new ImageIcon(model.getCurrentItem().getAttachmentEntry().getFileName());
+			int scaledHeight = icon.getIconHeight()   *  fldNotes.getWidth() / icon.getIconWidth() ;
+			ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
+
+
+			// = new JLabel("", image, JLabel.CENTER);
+			imageLabel.setIcon(thumbnailIcon);
+			imageLabel.setVisible(true);
+
+			return null;
+		}
+
+	} ;
+
+
 }
 
-
-/*
-class MyDocumentListener implements DocumentListener {
-	// implement the methods
-	JTextField field;
-	String itemFieldName; //name, URL etc
-	WalletModel model;
-
-	public MyDocumentListener(JTextField field, String itemFieldName, WalletModel model) {
-		this.field = field;
-		this.itemFieldName = itemFieldName;
-		this.model = model;
-	}
-
-	@Override
-	public void insertUpdate(DocumentEvent e) {
-		valueChanged();
-	}
-
-	@Override
-	public void removeUpdate(DocumentEvent e) {
-		valueChanged();
-	}
-
-	@Override
-	public void changedUpdate(DocumentEvent e) {
-		valueChanged();
-
-	}
-
-	public void valueChanged() {
-		try {
-			if (model.getCurrentItem() != null) {
-				ReflectionUtil.setFieldValue(model.getCurrentItem(), itemFieldName, field.getText());
-			}
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-			DialogUtils.getInstance().error("Error occured", e.getMessage());
-		}
-	}
-
-	//read settings
-	private void initSettings() {
-
-	}
-
-
-}*/

@@ -38,13 +38,13 @@ public class FileAccessEntry {
 	long position;   //8 bytes
 	long size;       //8 bytes
 	transient String accessFlag; //Add, Remove
+	transient String fileName;
+	transient File file;
 
 	public static  int getHeaderBytes() {
 		return 40 + 8 + 8;
 	}
 
-
-	File file;
 
 	public FileAccessEntry(String GUID) {
 		if (GUID == null)
@@ -84,5 +84,14 @@ public class FileAccessEntry {
 	public void setFile(File file) {
 		this.file = file;
 		setSize(file.length());
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+		setFile(new File(fileName)) ;
 	}
 }
