@@ -36,12 +36,14 @@ public class IdleTimerService {
 
 		t = new Timer(true);
 		startTime = System.currentTimeMillis();
-		long idleTimeoutInMilliSec = WalletSettings.getInstance().getIdleTimeout() * 60* 1000;
+
 
 		t.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				long elapsed = System.currentTimeMillis() - startTime;
+				//need to load the latest timeout config. bug fix : when value changed on the UI. it is not reflected.
+				long idleTimeoutInMilliSec = WalletSettings.getInstance().getIdleTimeout() * 60* 1000;
 				if (elapsed > idleTimeoutInMilliSec ) {
 					//times out , close the wallet file
 					t.cancel();
