@@ -3,6 +3,8 @@ package org.mhisoft.wallet.service;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.SwingUtilities;
+
 import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.CloseWalletAction;
@@ -48,11 +50,23 @@ public class IdleTimerService {
 					//times out , close the wallet file
 					t.cancel();
 
-					CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
-					ActionResult r = closeWalletAction.execute(Boolean.TRUE); //close the wallet file quietly
 
-					//close the tree view.
-					ServiceRegistry.instance.getWalletForm().resetForm();
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+
+							CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
+							ActionResult r = closeWalletAction.execute(Boolean.TRUE); //close the wallet file quietly
+
+							//close the tree view.
+							ServiceRegistry.instance.getWalletForm().resetForm();
+
+						}
+					});
+
+
+
 
 					//close the wallet
 					DialogUtils.getInstance().info("<html>Closing the wallet as it has been idling too long.<br>You can use the Open menu to open it again.</html>");

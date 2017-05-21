@@ -144,6 +144,13 @@ public class WalletSettings implements Serializable {
 	}
 
 
+	public void moveFront(String fileName)  {
+		recentFiles.remove(fileName) ;
+		recentFiles.addFirst(fileName);
+		ServiceRegistry.instance.getWalletForm().refreshRecentFilesMenu();
+	}
+
+
 	public void addRecentFile(String fileName) {
 
 		if (recentFiles==null)
@@ -153,9 +160,10 @@ public class WalletSettings implements Serializable {
 			return;  //already in the list
 
 		if (recentFiles.size() >= RECENT_FILES_LIST_SIZE) {
-			recentFiles.removeFirst();
+			recentFiles.removeLast();
 		}
-		recentFiles.addLast(fileName);
+
+		recentFiles.addFirst(fileName);
 
 		//add to the current menu
 		//todo use event to make it loose coupled?

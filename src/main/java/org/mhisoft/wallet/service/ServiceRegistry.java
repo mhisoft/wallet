@@ -73,6 +73,7 @@ public class ServiceRegistry {
 
 	/**
 	 * get the singleton WalletSettings
+	 *
 	 * @return
 	 */
 	public WalletSettings getWalletSettings() {
@@ -81,35 +82,44 @@ public class ServiceRegistry {
 
 	/**
 	 * get the singleton WalletService
+	 *
 	 * @return
 	 */
-	public  WalletService getWalletService() {
+	public WalletService getWalletService() {
 		return ServiceRegistry.instance.getService(BeanType.singleton, WalletService.class);
+	}
+
+
+	public AttachmentService getAttachmentService() {
+		return ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
 	}
 
 
 	/**
 	 * get the singleton WalletForm
+	 *
 	 * @return
 	 */
-	public  WalletForm getWalletForm() {
+	public WalletForm getWalletForm() {
 		return ServiceRegistry.instance.getService(BeanType.singleton, WalletForm.class);
 	}
 
 	/**
 	 * get the singleton WalletSettingsService
+	 *
 	 * @return
 	 */
-	public  WalletSettingsService getWalletSettingsService() {
+	public WalletSettingsService getWalletSettingsService() {
 		return ServiceRegistry.instance.getService(BeanType.singleton, WalletSettingsService.class);
 	}
 
 
 	/**
 	 * get the model from the singleton WalletForm
+	 *
 	 * @return
 	 */
-	public  WalletModel getWalletModel() {
+	public WalletModel getWalletModel() {
 		return ServiceRegistry.instance.getWalletForm().getModel();
 	}
 

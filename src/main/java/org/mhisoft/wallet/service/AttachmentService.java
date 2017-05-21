@@ -34,6 +34,7 @@ import java.io.RandomAccessFile;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
+import org.mhisoft.wallet.model.WalletModel;
 
 /**
  * Description:
@@ -47,6 +48,7 @@ public class AttachmentService {
 
 
 
+
 	public void createNewDataStore(final String outoutFIleName, final FileAccessTable t) {
 
 	}
@@ -55,6 +57,14 @@ public class AttachmentService {
 	public void addNewFileToDataStore(DataOutputStream dataOut, FileAccessEntry item ) {
 
 	}
+
+
+	public void saveAttachments(WalletModel model) {
+		//iterate the model item's FileAccessEntry
+
+
+	}
+
 
 
 

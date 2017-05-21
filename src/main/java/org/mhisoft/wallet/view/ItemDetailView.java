@@ -63,7 +63,7 @@ public class ItemDetailView {
 	}
 
 	public void setDisplayMode(DisplayMode mode) {
-		EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ViewModeChangeEvent, "setDisplayMode" , mode ));
+		EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ViewModeChangeEvent, "setDisplayMode", mode));
 		this.currentMode = mode;
 
 	}
@@ -100,23 +100,22 @@ public class ItemDetailView {
 		fields.put("detail2", new FiledObject(ItemType.item, form.labelDetail2, form.fldDetail2));
 		fields.put("detail3", new FiledObject(ItemType.item, form.labelDetail3, form.fldDetail3));
 		fields.put("cvc", new FiledObject(ItemType.item, form.labelCVC, form.fldCVC));
-
-
+		fields.put("imageLabel", new FiledObject(ItemType.item, form.imageLabel, form.imageLabel));
 
 
 	}
 
 	//clear all the fields as the model is closed
 	public void closeView() {
-			for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
-				if (entry.getValue().fld instanceof JTextComponent) {
-					JTextComponent fld =  (JTextComponent)   entry.getValue().fld;
-					fld.setText( null);
-					fld.setEditable( false);
-				}
-
-
+		for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
+			if (entry.getValue().fld instanceof JTextComponent) {
+				JTextComponent fld = (JTextComponent) entry.getValue().fld;
+				fld.setText(null);
+				fld.setEditable(false);
 			}
+
+
+		}
 		form.btnSaveForm.setVisible(false);
 		form.btnClose.setVisible(true);
 		form.btnCancelEdit.setVisible(false);
@@ -126,7 +125,7 @@ public class ItemDetailView {
 
 
 	public void displayWalletItemDetails(final WalletItem item) {
-		displayWalletItemDetails (item, this.getDisplayMode()) ;
+		displayWalletItemDetails(item, this.getDisplayMode());
 
 	}
 
@@ -134,7 +133,7 @@ public class ItemDetailView {
 
 		setDisplayMode(displayMode);   //fire events
 
-		if (displayMode!=DisplayMode.view) {
+		if (displayMode != DisplayMode.view) {
 			//coming to edit and add model
 			//don't mark model changed yet if data is not changed.
 			//model.setModified(true);
@@ -143,23 +142,21 @@ public class ItemDetailView {
 
 
 
-
-		//form.btnSaveForm.setVisible(model.isModified() || displayMode != DisplayMode.view);
+		 /*set model value to fileds and set visibility*/
 
 		try {
 			for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
 				if (entry.getValue().fld instanceof JTextComponent) {
-					JTextComponent fld =  (JTextComponent)   entry.getValue().fld;
-					fld.setText( (String) ReflectionUtil.getFieldValue(item, entry.getKey() ) );
-					fld.setEditable( displayMode != DisplayMode.view );
+					JTextComponent fld = (JTextComponent) entry.getValue().fld;
+					fld.setText((String) ReflectionUtil.getFieldValue(item, entry.getKey()));
+					fld.setEditable(displayMode != DisplayMode.view);
 				}
 
 				JComponent fld = entry.getValue().fld;
 				if (entry.getValue().type == ItemType.item) {
 					fld.setVisible(item.getType() == ItemType.item);
 					entry.getValue().labelFld.setVisible(item.getType() == ItemType.item);
-				}
-				else
+				} else
 					fld.setVisible(true);
 
 			}
@@ -168,13 +165,16 @@ public class ItemDetailView {
 
 		}
 
+		/* load image*/
+		form.loadImage();
+
+
 		form.btnTogglePasswordView.setVisible(item.getType() == ItemType.item);
 		form.btnLaunchURL.setVisible(item.getType() == ItemType.item);
 
 		if (displayMode == DisplayMode.edit || displayMode == DisplayMode.add) {
 			form.fldName.requestFocus();
 		}
-
 
 
 	}
@@ -197,7 +197,7 @@ public class ItemDetailView {
 	public boolean isModified() {
 		//need a clone of the current Item.
 		WalletItem newItem = ServiceRegistry.instance.getWalletService().cloneItem(model.getCurrentItem());
-		if (newItem==null)
+		if (newItem == null)
 			return false;
 
 
@@ -210,7 +210,7 @@ public class ItemDetailView {
 				}
 			}
 
-			boolean b =   model.getCurrentItem().isSame(newItem);
+			boolean b = model.getCurrentItem().isSame(newItem);
 			return !b;
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
@@ -246,10 +246,6 @@ public class ItemDetailView {
 			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
 		}
 	}
-
-
-
-
 
 
 }

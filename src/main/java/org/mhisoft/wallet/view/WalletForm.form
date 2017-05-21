@@ -463,7 +463,7 @@
                                   <component id="f438c" class="javax.swing.JLabel" binding="imageLabel">
                                     <constraints/>
                                     <properties>
-                                      <text value="image label"/>
+                                      <text value=""/>
                                     </properties>
                                   </component>
                                 </children>

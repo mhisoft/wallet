@@ -41,7 +41,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -154,7 +153,7 @@ public class WalletForm {
 	JLabel labelDetail3;
 	JLabel labelLastMessage2;
 	JButton btnFilter;
-	 JButton btnClearFilter;
+	JButton btnClearFilter;
 	private JScrollPane itemListPanel;
 	private JScrollPane treePanel;
 	private JPanel filterPanel;
@@ -171,8 +170,8 @@ public class WalletForm {
 	private JLabel labelIdleTimeOut;
 	private JTextArea textAreaDebug;
 	private JLabel labelLastMessage;
-	 JButton btnCollapse;
-	private JLabel imageLabel;
+	JButton btnCollapse;
+	JLabel imageLabel;
 	JButton btnLaunchURL;
 	private JButton btnLoadImage;
 	private JPanel imagePanel;
@@ -182,9 +181,7 @@ public class WalletForm {
 
 	JMenuBar menuBar;
 	public JMenu menuFile;
-	public JMenuItem menuOpen, menuNew, menuClose
-			, menuImport,  menuBackup, menuChangePassword
-			, menuOpenRecent;
+	public JMenuItem menuOpen, menuNew, menuClose, menuImport, menuBackup, menuChangePassword, menuOpenRecent;
 	//JRadioButtonMenuItem rbMenuItem;
 	//JCheckBoxMenuItem cbMenuItem;
 
@@ -196,7 +193,7 @@ public class WalletForm {
 
 
 	boolean hidePassword = true;
-	boolean treeExpanded  =true;
+	boolean treeExpanded = true;
 
 	public WalletModel getModel() {
 		return model;
@@ -229,14 +226,14 @@ public class WalletForm {
 		btnEditForm.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnEditForm" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnEditForm", null));
 				itemDetailView.editDetailAction();
 			}
 		});
 		btnCancelEdit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCancelEdit" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCancelEdit", null));
 				itemDetailView.cancelEditAction();
 			}
 		});
@@ -245,7 +242,7 @@ public class WalletForm {
 		ActionListener saveFormListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnSaveForm" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnSaveForm", null));
 
 				//save button click , it is two fold. save the item detail edit
 				//Or save the whole model when model is modified from import for instance.
@@ -257,32 +254,33 @@ public class WalletForm {
 
 		btnSaveForm.addActionListener(saveFormListener);
 
-		ActionListener uploadImageListener =  new ActionListener() {
+		ActionListener uploadImageListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLoadImage" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLoadImage", null));
 				String imageFile = ViewHelper.chooseFile(null, "png", "gif", "jpg", "jpeg");
 
 				//todo validate size.
-				File f = new File(imageFile) ;
+				//File f = new File(imageFile) ;
 				//if (f.get)
 
-				model.getCurrentItem().getAttachmentEntry().setFileName( imageFile);
+				model.getCurrentItem().addOrReplaceAttachment(imageFile);
+				LoadImageWorker loadImageWorker = new LoadImageWorker();
 				loadImageWorker.execute();
 
+				ServiceRegistry.instance.getWalletModel().setModified(true);
 
 
 			}
-		}  ;
+		};
 
-		btnLoadImage.addActionListener( uploadImageListener );
-
+		btnLoadImage.addActionListener(uploadImageListener);
 
 
 		btnTogglePasswordView.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnTogglePasswordView" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnTogglePasswordView", null));
 				hidePassword = !hidePassword;
 				updatePasswordChar();
 			}
@@ -292,7 +290,7 @@ public class WalletForm {
 		btnLaunchURL.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLaunchURL" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLaunchURL", null));
 
 				if (StringUtils.hasValue(fldURL.getText())) {
 					FileUtils.launchURL(fldURL.getText().trim());
@@ -304,7 +302,7 @@ public class WalletForm {
 		btnAddNode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAddNode" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAddNode", null));
 				treeExploreView.addItem();
 			}
 		});
@@ -312,24 +310,24 @@ public class WalletForm {
 		btnDeleteNode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnDeleteNode" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnDeleteNode", null));
 				treeExploreView.removeItem();
 			}
 		});
 
-		btnMoveNode.addActionListener( new ActionListener() {
+		btnMoveNode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnMoveNode" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnMoveNode", null));
 				treeExploreView.moveItem();
 
 			}
-		} );
+		});
 
 		btnFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnFilter" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnFilter", null));
 				doFilter();
 
 			}
@@ -337,7 +335,7 @@ public class WalletForm {
 		btnClearFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnClearFilter" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnClearFilter", null));
 
 				clearFilter();
 
@@ -347,7 +345,7 @@ public class WalletForm {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnFilter" , null ));
+					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnFilter", null));
 					doFilter();
 				}
 			}
@@ -356,7 +354,7 @@ public class WalletForm {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnClearFilter" , null ));
+					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnClearFilter", null));
 					clearFilter();
 				}
 			}
@@ -365,7 +363,7 @@ public class WalletForm {
 		btnCollapse.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCollapse" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCollapse", null));
 				expandCollapseTree();
 			}
 		});
@@ -381,8 +379,8 @@ public class WalletForm {
 				if (StringUtils.hasValue(fldIdleTimeout.getText())) {
 					try {
 						long l = Long.parseLong(fldIdleTimeout.getText());
-						if (l<5) //min 5
-							l =5;
+						if (l < 5) //min 5
+							l = 5;
 						WalletSettings.getInstance().setIdleTimeout(l);
 
 					} catch (NumberFormatException e1) {
@@ -429,10 +427,10 @@ public class WalletForm {
 					} else if (e.getSource() == btnMoveNode) {
 						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnMoveNode", null));
 						treeExploreView.moveItem();
-					}else if (e.getSource() == btnCollapse) {
+					} else if (e.getSource() == btnCollapse) {
 						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCollapse", null));
 						expandCollapseTree();
-					}else if (e.getSource() == btnLaunchURL) {
+					} else if (e.getSource() == btnLaunchURL) {
 						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLaunchURL", null));
 						if (StringUtils.hasValue(fldURL.getText())) {
 							FileUtils.launchURL(fldURL.getText().trim());
@@ -467,7 +465,7 @@ public class WalletForm {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "fldFilter" , null ));
+					EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "fldFilter", null));
 					doFilter();
 				}
 			}
@@ -479,7 +477,6 @@ public class WalletForm {
 		});
 
 		treeExpanded = WalletSettings.getInstance().isTreeExpanded();
-
 
 
 	} //end of form construstor
@@ -498,21 +495,19 @@ public class WalletForm {
 	}
 
 
-
 	private void switchMode(TreePanelMode mode) {
-		switch (mode)    {
+		switch (mode) {
 			case tree:
-				treeExploreView.setSelectionToCurrentNode() ;
+				treeExploreView.setSelectionToCurrentNode();
 
 				fldFilter.setText("");
 				itemListPanel.setVisible(false);
 				treePanel.setVisible(true);
 
 
-
 				treeListPanel.validate();
 
-				 //buttons
+				//buttons
 				btnDeleteNode.setEnabled(true);
 				btnMoveNode.setEnabled(true);
 				btnAddNode.setEnabled(true);
@@ -534,17 +529,16 @@ public class WalletForm {
 	}
 
 
-
 	public void doFilter() {
 		if (fldFilter.getText() != null && fldFilter.getText().trim().length() > 0) {
-			switchMode(TreePanelMode.filter) ;
+			switchMode(TreePanelMode.filter);
 
 			listExploreView.filterItems(fldFilter.getText());
 		}
 	}
 
 	public void clearFilter() {
-		switchMode(TreePanelMode.tree) ;
+		switchMode(TreePanelMode.tree);
 	}
 
 	public void resetHidePassword() {
@@ -557,8 +551,7 @@ public class WalletForm {
 			fldPassword.setEchoChar('*');
 			fldCVC.setEchoChar('*');
 			fldPin.setEchoChar('*');
-		}
-		else {
+		} else {
 			fldPassword.setEchoChar((char) 0);
 			fldCVC.setEchoChar((char) 0);
 			fldPin.setEchoChar((char) 0);
@@ -627,8 +620,6 @@ public class WalletForm {
 		resetForm();
 
 
-
-
 		//remove the X buttons
 		//frame.setUndecorated(true);
 
@@ -648,7 +639,6 @@ public class WalletForm {
 	}
 
 
-
 	private class ThumbnailAction extends AbstractAction {
 		/**
 		 * Shows the full image in the main area and sets the application title.
@@ -659,7 +649,6 @@ public class WalletForm {
 		}
 
 	}
-
 
 
 	public void jreDebug() {
@@ -680,7 +669,7 @@ public class WalletForm {
 	/**
 	 * OpenRecentFilesActionListener
 	 */
-	class  OpenRecentFilesActionListener implements ActionListener {
+	class OpenRecentFilesActionListener implements ActionListener {
 		private String fileName;
 
 		public OpenRecentFilesActionListener(String fn) {
@@ -689,7 +678,7 @@ public class WalletForm {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuOpenRecent" , null ));
+			EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuOpenRecent", null));
 
 			CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype
 					, CloseWalletAction.class);
@@ -699,9 +688,15 @@ public class WalletForm {
 				OpenWalletFileAction openWalletFileAction = ServiceRegistry.instance.getService(BeanType.singleton
 						, OpenWalletFileAction.class);
 				r = openWalletFileAction.execute(fileName);
+
+				//move this file to the first on the list
+				WalletSettings.getInstance().moveFront(fileName);
+
 			}
 		}
-	}   ;
+	}
+
+	;
 
 	protected void setupMenu() {
 
@@ -727,16 +722,10 @@ public class WalletForm {
 		menuOpen = new JMenuItem("Open", KeyEvent.VK_O);
 		menuFile.add(menuOpen);
 
-
-
 		menuOpenRecent = new JMenu("Open recent files");
 		menuFile.add(menuOpenRecent);
-		for (String rf : WalletSettings.getInstance().getRecentFiles()) {
-			JMenuItem m  = new JMenuItem(rf);
-			m.addActionListener(new  OpenRecentFilesActionListener(rf));
-			menuOpenRecent.add(m);
-			componentsList.add(m);
-		}
+		populateRecentFilesMenu();
+
 
 
 		menuNew = new JMenuItem("New Vault", KeyEvent.VK_N);
@@ -771,7 +760,7 @@ public class WalletForm {
 		menuOpen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuOpen" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuOpen", null));
 
 				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
 				ActionResult r = closeWalletAction.execute();
@@ -784,7 +773,7 @@ public class WalletForm {
 		menuChangePassword.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuChangePassword" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuChangePassword", null));
 
 
 				ChangePasswordAction action = ServiceRegistry.instance.getService(BeanType.prototype, ChangePasswordAction.class);
@@ -796,7 +785,7 @@ public class WalletForm {
 		menuImport.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuImport" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuImport", null));
 
 				ImportWalletAction importWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, ImportWalletAction.class);
 				importWalletAction.execute();
@@ -806,18 +795,18 @@ public class WalletForm {
 		menuBackup.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuBackup" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuBackup", null));
 
 				BackupAction backupAction = ServiceRegistry.instance.getService(BeanType.singleton, BackupAction.class);
 				backupAction.execute();
-			//
+				//
 			}
 		});
 
 		menuNew.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuNew" , null ));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuNew", null));
 
 				NewWalletAction action = ServiceRegistry.instance.getService(BeanType.singleton, NewWalletAction.class);
 				action.execute();
@@ -826,6 +815,26 @@ public class WalletForm {
 		});
 
 
+	}
+
+	public void refreshRecentFilesMenu() {
+		JMenu m = ((JMenu) menuOpenRecent) ;
+		for (Component component : m.getMenuComponents()) {
+			m.remove(component);
+			componentsList.remove(component) ;
+		}
+		populateRecentFilesMenu();
+
+	}
+
+	private void populateRecentFilesMenu() {
+
+		for (String rf : WalletSettings.getInstance().getRecentFiles()) {
+			JMenuItem m = new JMenuItem(rf);
+			m.addActionListener(new OpenRecentFilesActionListener(rf));
+			menuOpenRecent.add(m);
+			componentsList.add(m);
+		}
 	}
 
 	void loadInPreferences() {
@@ -838,9 +847,9 @@ public class WalletForm {
 		frame.dispose();
 	}
 
-	public void addRecentFile(final String rf)   {
-		JMenuItem m  = new JMenuItem(rf);
-		m.addActionListener(new  OpenRecentFilesActionListener(rf));
+	public void addRecentFile(final String rf) {
+		JMenuItem m = new JMenuItem(rf);
+		m.addActionListener(new OpenRecentFilesActionListener(rf));
 		menuOpenRecent.add(m);
 
 		//adjust the new item's font size.
@@ -863,16 +872,16 @@ public class WalletForm {
 				2); //step
 		fldFontSize.setModel(spinnerModel);
 		fldFontSize.addChangeListener(new ChangeListener() {
-			  @Override
-			  public void stateChanged(ChangeEvent e) {
-				  EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "fldFontSize" , null ));
+										  @Override
+										  public void stateChanged(ChangeEvent e) {
+											  EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "fldFontSize", null));
 
-				  SpinnerModel spinnerModel = fldFontSize.getModel();
-				  int newFontSize = (Integer) spinnerModel.getValue();
-				  ViewHelper.setFontSize(componentsList, newFontSize);
+											  SpinnerModel spinnerModel = fldFontSize.getModel();
+											  int newFontSize = (Integer) spinnerModel.getValue();
+											  ViewHelper.setFontSize(componentsList, newFontSize);
 
-			  }
-		  }
+										  }
+									  }
 		);
 
 
@@ -886,17 +895,14 @@ public class WalletForm {
 	}
 
 
-
-
 	public DisplayMode getDisplayMode() {
 		return itemDetailView.getDisplayMode();
 	}
 
 	//fires the ViewModeChangeEvent
 	public void setDisplayMode(final DisplayMode mode) {
-		 itemDetailView.setDisplayMode(mode);
+		itemDetailView.setDisplayMode(mode);
 	}
-
 
 
 	public void displayWalletItemDetails(final WalletItem item, final DisplayMode mode) {
@@ -956,21 +962,21 @@ public class WalletForm {
 
 	//called when node changes
 	public boolean saveCurrentEdit(boolean askToSave) {
-		return save(askToSave, false)  ;
+		return save(askToSave, false);
 	}
 
 
-	 //called from the save button click
+	//called from the save button click
 	private boolean saveButtonClicked() {
-		return save(false, true)  ;
+		return save(false, true);
 	}
 
 
 	private boolean save(boolean askToSave, boolean checkModelModified) {
 		boolean ret = false;
-		boolean modelModified = checkModelModified   && model.isModified() ;
+		boolean modelModified = checkModelModified && model.isModified();
 
-		if (isDetailModified() ||  modelModified) {
+		if (isDetailModified() || modelModified) {
 			// when model is modified, we want the save button to show up but  don't prompt user ask for save every time
 			//change nodes.
 			if (askToSave) {
@@ -978,24 +984,21 @@ public class WalletForm {
 						, "Save the changes?") == Confirmation.YES) {
 					_save();
 
-				}
-				else {
+				} else {
 					//not choose to save now, mark the model modified
-					model.setModified(true) ;
+					model.setModified(true);
 				}
 
-			}
-			else {
+			} else {
 				_save();
 			}
-		}
-		else {
+		} else {
 			if (!model.isModified())
-				setDisplayMode(DisplayMode.view) ;
+				setDisplayMode(DisplayMode.view);
 
 		}
 
-		return ret ;
+		return ret;
 
 	}
 
@@ -1008,7 +1011,7 @@ public class WalletForm {
 		//model.setModified(false);   save action does it.
 		getTreeExploreView().updateNameChange(model.getCurrentItem());
 		//
-		model.setModified(false) ;
+		model.setModified(false);
 	}
 
 
@@ -1021,11 +1024,12 @@ public class WalletForm {
 	}
 
 
-	Timer t=null;
+	Timer t = null;
+
 	private void clearMessageLater() {
 
 		try {
-			if (t!=null)
+			if (t != null)
 				t.cancel();
 		} catch (Exception e) {
 			//e.printStackTrace();
@@ -1039,7 +1043,7 @@ public class WalletForm {
 				labelLastMessage.setVisible(false);
 				labelLastMessage.setText("");
 			}
-		}, new Timestamp(System.currentTimeMillis()+10*1000));
+		}, new Timestamp(System.currentTimeMillis() + 10 * 1000));
 	}
 
 
@@ -1049,15 +1053,15 @@ public class WalletForm {
 	}
 
 
-
 	/**
 	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
+	 *
 	 * @param srcImg - source image to scale
-	 * @param w - desired width
-	 * @param h - desired height
+	 * @param w      - desired width
+	 * @param h      - desired height
 	 * @return - the new resized image
 	 */
-	private Image getScaledImage(Image srcImg, int w, int h){
+	private Image getScaledImage(Image srcImg, int w, int h) {
 		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = resizedImg.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -1069,29 +1073,49 @@ public class WalletForm {
 	/**
 	 * SwingWorker class that loads the images a background thread and calls publish
 	 * when a new one is ready to be displayed.
-	 *
+	 * <p>
 	 * We use Void as the first SwingWroker param as we do not need to return
 	 * anything from doInBackground().
 	 */
-	private SwingWorker<Void, ThumbnailAction> loadImageWorker = new SwingWorker<Void, ThumbnailAction>() {
+	//load image from model.getCurrentItem().getAttachmentEntry()
+
+
+	class LoadImageWorker extends SwingWorker<Void, ThumbnailAction> {
 
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			//todo
-			ImageIcon icon = new ImageIcon(model.getCurrentItem().getAttachmentEntry().getFileName());
-			int scaledHeight = icon.getIconHeight()   *  fldNotes.getWidth() / icon.getIconWidth() ;
-			ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
+			if (model.getCurrentItem().getAttachmentEntry().getFileName() != null) {
+
+				ImageIcon icon = new ImageIcon(model.getCurrentItem().getAttachmentEntry().getFileName());
+
+				//
+				//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();
+				//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
 
 
-			// = new JLabel("", image, JLabel.CENTER);
-			imageLabel.setIcon(thumbnailIcon);
-			imageLabel.setVisible(true);
+				imageLabel.setIcon(icon);
+				imageLabel.setVisible(true);
 
+
+			} else {
+				imageLabel.setIcon(null);
+			}
 			return null;
 		}
 
-	} ;
+	}
+
+
+	public void loadImage() {
+		LoadImageWorker loadImageWorker = new LoadImageWorker();
+		loadImageWorker.execute();
+	}
+
+
+
+
+
 
 
 }

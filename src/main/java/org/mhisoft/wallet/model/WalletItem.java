@@ -67,7 +67,8 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 	private transient WalletItem parent;
 	private transient List<WalletItem> children;
-	private transient FileAccessEntry attachmentEntry;
+	private transient FileAccessEntry attachmentEntry;    //the attachment entry.
+	private transient FileAccessEntry newAttachmentEntry; //not null when current one is replaced by a new one.
 
 	@Override
 	public boolean equals(Object o) {
@@ -457,13 +458,26 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	}
 
 	public FileAccessEntry getAttachmentEntry() {
-		if (attachmentEntry==null)
+		if (attachmentEntry==null) {
 			this.attachmentEntry =  new FileAccessEntry(this.sysGUID);
+		}
 		return attachmentEntry;
 	}
 
 	public void setAttachmentEntry(FileAccessEntry attachmentEntry) {
 		this.attachmentEntry = attachmentEntry;
+	}
+
+
+	public void addOrReplaceAttachment(String fname) {
+		FileAccessEntry attachmentEntry =  getAttachmentEntry();
+		if (attachmentEntry.getFileName()!=null) {
+			//had a attachment, replacing.
+			newAttachmentEntry =   new FileAccessEntry(this.sysGUID);
+			newAttachmentEntry.setFileName(fname);
+		}
+		else
+			attachmentEntry.setFileName(fname);
 	}
 
 }
