@@ -1,4 +1,5 @@
-#MHISoft eVault - A Secure Password Manager and  Vault
+MHISoft eVault - A Secure Password Manager and  Vault
+======================================================
 
 I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source.
 
@@ -6,10 +7,12 @@ It is a secure password vault which is best suitable for storing passwords and p
 
 The password once lost can't be recovered. This is by design. The author of this code can't even recover the lost password. And without the password and combination, the vault can't be opened, thus the data in the vault will be lost. 
 
-#Download
+Download
+========
 from the Releases tab above : https://github.com/mhisoft/eVault/releases
 
-#Features
+Features
+=========
 * Free. 
 * Runs offline.
 * Secure and fast. 
@@ -25,7 +28,8 @@ from the Releases tab above : https://github.com/mhisoft/eVault/releases
 ![Screenshot](dist/evault-screenshot-main.png "screenshot")
 
 
-# Some technical details
+Some technical details
+======================
 
 *  The JRE is bundled with the release. But if you use your own JRE or JDK , the  “Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy”  need to be installed. 
 
