@@ -47,9 +47,10 @@ The author is not responsible for loss of any kind incurred directly or indirect
 Apache License 2.0, January 2004 http://www.apache.org/licenses/
 
 
-## Please Donate
+## Donate if you feel like
 [![paypal](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/silver-pill-paypal-26px.png)](https://www.paypal.me/mhisoft)
-Any amount helps :)
+Help to improve the app.
+Any amount :)
 
 
 
