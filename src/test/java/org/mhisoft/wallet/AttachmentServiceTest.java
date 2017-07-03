@@ -29,6 +29,8 @@ import java.io.IOException;
 
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
+import org.mhisoft.wallet.model.PassCombinationVO;
+import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.AttachmentService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -58,8 +60,11 @@ public class AttachmentServiceTest {
 
 		Assert.assertEquals(t.getSize(), 2);
 
+		WalletModel model = new WalletModel();
+		model.initEncryptor(new PassCombinationVO("testPa!ss213%","112233"));
 
-		attachmentService.write("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat", t);
+
+		attachmentService.write("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat", t, model.getEncryptor());
 
 	}
 
@@ -68,17 +73,22 @@ public class AttachmentServiceTest {
 		try {
 
 			String dataFile = "./target/classes/AttachmentServiceTest_testFileAcccessTable.dat";
+			WalletModel model = new WalletModel();
+			model.initEncryptor(new PassCombinationVO("testPa!ss213%","112233"));
 
-			FileAccessTable t = attachmentService.read(dataFile ) ;
+			FileAccessTable t = attachmentService.read(dataFile,model.getEncryptor() ) ;
 			Assert.assertEquals( t.getSize(), 2);
 			Assert.assertEquals( t.getEntries().get(0).getSize(), 366 );
 			Assert.assertEquals( t.getEntries().get(1).getSize(), 412 );
 
 			int i=0;
-			for (FileAccessEntry item : t.getEntries()) {
+			for (FileAccessEntry fileAccessEntry : t.getEntries()) {
 				i++;
-				byte[] bytes = attachmentService.readFileContent(dataFile, item) ;
+				byte[] bytes = attachmentService.readFileContent(dataFile, fileAccessEntry, model.getEncryptor()) ;
 				//String[] parts = FileUtils.splitFileParts(item.getFile().getAbsolutePath())   ;
+
+				//todo compare with original file
+				//todo save the file name to the data file?
 
 				FileOutputStream out = new FileOutputStream(
 						//parts[0]+parts[1]     +"_test_rewritten." + parts[2]

@@ -18,6 +18,7 @@ import org.mhisoft.wallet.view.DialogUtils;
 public class WalletService {
 
 
+
 	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
 		FileContentHeader header = readHeader(filename, true);
 		DataService ds = DataServiceFactory.createDataService(header.getVersion());
@@ -28,6 +29,12 @@ public class WalletService {
 	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
 
 		DataServiceFactory.createDataService().saveToFile(filename, model, encryptor);
+
+		//save attachments.
+		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
+		attachmentService.addNewFileToDataStore(filename, model, encryptor);
+
+
 	}
 
 

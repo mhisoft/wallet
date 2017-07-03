@@ -24,24 +24,33 @@
 package org.mhisoft.wallet.model;
 
 import java.io.File;
+import java.security.AlgorithmParameters;
 
 import org.mhisoft.common.util.StringUtils;
 
 /**
- * Description:
+ * Description:    FileAccessEntry
  *
  * @author Tony Xue
  * @since Mar, 2017
  */
 public class FileAccessEntry {
 	String GUID;     //40
-	long position;   //8 bytes
-	long size;       //8 bytes
-	transient String accessFlag; //Add, Remove
-	transient String fileName;
-	transient File file;
+	long position;   // file entry start position.
 
-	public static  int getHeaderBytes() {
+	transient byte[] fileContent;    //store the file content after reading from data file.
+	long size;       //8 bytes file content size
+	String fileName;
+	File file;
+	FileAccessFlag accessFlag;
+
+	FileAccessEntry newEntry;
+	AlgorithmParameters algorithmParameters;
+	int posOfContent;
+	int encSize;
+
+
+	public static int getHeaderBytes() {
 		return 40 + 8 + 8;
 	}
 
@@ -92,6 +101,54 @@ public class FileAccessEntry {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
-		setFile(new File(fileName)) ;
+		setFile(new File(fileName));
+	}
+
+	public FileAccessFlag getAccessFlag() {
+		return accessFlag;
+	}
+
+	public void setAccessFlag(FileAccessFlag accessFlag) {
+		this.accessFlag = accessFlag;
+	}
+
+	public FileAccessEntry getNewEntry() {
+		return newEntry;
+	}
+
+	public void setNewEntry(FileAccessEntry newEntry) {
+		this.newEntry = newEntry;
+	}
+
+	public byte[] getFileContent() {
+		return fileContent;
+	}
+
+	public void setFileContent(byte[] fileContent) {
+		this.fileContent = fileContent;
+	}
+
+	public int getPosOfContent() {
+		return posOfContent;
+	}
+
+	public void setPosOfContent(int posOfContent) {
+		this.posOfContent = posOfContent;
+	}
+
+	public int getEncSize() {
+		return encSize;
+	}
+
+	public void setEncSize(int encSize) {
+		this.encSize = encSize;
+	}
+
+	public AlgorithmParameters getAlgorithmParameters() {
+		return algorithmParameters;
+	}
+
+	public void setAlgorithmParameters(AlgorithmParameters algorithmParameters) {
+		this.algorithmParameters = algorithmParameters;
 	}
 }

@@ -30,11 +30,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.security.AlgorithmParameters;
 
+import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
+import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.view.DialogUtils;
 
 /**
  * Description:
@@ -47,14 +51,19 @@ public class AttachmentService {
 	private static final Logger logger = Logger.getLogger(AttachmentService.class.getName());
 
 
-
-
 	public void createNewDataStore(final String outoutFIleName, final FileAccessTable t) {
 
 	}
 
 
-	public void addNewFileToDataStore(DataOutputStream dataOut, FileAccessEntry item ) {
+	public void addNewFileToDataStore(final String filename, final WalletModel model, final Encryptor encryptor) {
+
+		FileAccessTable t = new FileAccessTable();
+		for (WalletItem item : model.getItemsFlatList()) {
+			t.addEntry(item.getAttachmentEntry());
+		}
+
+		write(filename, t, encryptor);
 
 	}
 
@@ -66,22 +75,39 @@ public class AttachmentService {
 	}
 
 
-
-
-
 	/**
-	 *
 	 * @param outoutFIleName
 	 * @param t
 	 */
-	public void write(final String outoutFIleName, final FileAccessTable t) {
 
-		int itemStartPos = 0;
-		int uuidSize = -1, entrySize, headerSize, posStart;
 
-		File out = null;
-		//FileOutputStream fileOut = null;
-		DataOutputStream dataOut=null;
+
+	/*
+	     total numbers of entries (int)
+	     entry[0] :
+
+			 1. UUID: 40          --------> start pos here
+			 2 position (long) : 8
+
+			 3. cipherParam size : int, 4 bytes
+			 4. cipherParameters body : var size
+
+			 5. size of the content: int, 4 bytes
+			 6.encrypted contents: var size
+
+			   			--------> next entry start pos here
+
+
+
+	 */
+
+
+
+	public void write(final String outoutFIleName, final FileAccessTable t, final Encryptor  encryptor) {
+
+		int itemStartPos = 0, pos;
+
+		DataOutputStream dataOut = null;
 		try {
 			//write it out
 			dataOut = new DataOutputStream(new FileOutputStream(new File(outoutFIleName)));
@@ -89,42 +115,70 @@ public class AttachmentService {
 			//write the total number of entries first
 		   	/*#0*/
 			dataOut.writeInt(t.getEntries().size());
-			itemStartPos = 4 ;
+			itemStartPos = 4;
+			pos = itemStartPos;
 
 
-			//write the FAT
+			//todo handle CREATE, UPDATE and DELETE.
+
+			//write each entry
 			for (int i = 0; i < t.getEntries().size(); i++) {
-				FileAccessEntry item = t.getEntries().get(i);
-
-				itemStartPos += FileAccessEntry.getHeaderBytes();
-				item.setPosition(itemStartPos);
 
 
-				/*#1 UUID*/
-				uuidSize = FileUtils.writeString(dataOut, item.getGUID());
+				FileAccessEntry fileAccessEntry = t.getEntries().get(i);
+				logger.fine("Write entry " + fileAccessEntry.getGUID() +"-" + fileAccessEntry.getFileName() );
+				logger.fine("\t start pos:"+ pos);
+
+				fileAccessEntry.setPosition(pos);
+
+				/* #1  UUID*/
+				int uuidSize = FileUtils.writeString(dataOut, fileAccessEntry.getGUID());
+				pos +=40;
 
 
-				/*#2 pos of the attachment content*/
-				dataOut.writeLong(item.getPosition());
+				/* #2 header:pos of the attachment content*/
+				dataOut.writeLong(fileAccessEntry.getPosition());
+				pos +=8;
 
 
-				/*#3 size of the attachment content*/
-				dataOut.writeLong(item.getSize());
+				byte[] fileContent = FileUtils.readFile(fileAccessEntry.getFile());
+				Encryptor.EncryptionResult ret = encryptor.encrypt(fileContent);
+				byte[] encrypted = ret.getEncryptedData();
+
+				/*#3: cipherParameters size 4 bytes*/
+				//have to write for each encryption because a random salt is used.
+				byte[] cipherParameters = ret.getCipherParameters();
+				//byte[] _intToBytes =  ByteArrayHelper.intToBytes(cipherParameters.length);
+				dataOut.writeInt(cipherParameters.length);
+				pos+= 4;
+
+				/*#4: cipherParameters body*/
+				dataOut.write(cipherParameters);
+				pos+= cipherParameters.length;
 
 
-				/* write the file data */
-				writeFileData (item, dataOut);
+				/* #5 header:size of the attachment content*/
+				//_intToBytes = ByteArrayHelper.intToBytes(encrypted.length);
+				dataOut.writeInt(encrypted.length);
+				pos+= 4;
 
-				//advance pos
-				itemStartPos += item.getSize();
+
+				/* content */
+				dataOut.write(encrypted);
+				pos+=encrypted.length;
+
+				logger.fine("\t start pos:"+ pos);
+
+
 			}
-			dataOut.flush();
-			dataOut.close();
 
+
+			dataOut.flush();
 
 
 		} catch (IOException e) {
 			e.printStackTrace();
+			DialogUtils.getInstance().error("Error writing attachment entries.", e.getMessage());
 		} finally {
 			if (dataOut != null)
 				try {
@@ -135,32 +189,6 @@ public class AttachmentService {
 		}
 
 	}
-
-
-	private int writeFileData(FileAccessEntry item, DataOutputStream dataOut) throws IOException {
-		byte[] bytes = new byte[4096];
-
-		int nRead, totalwrite = 0;
-
-		FileInputStream fin = new FileInputStream(item.getFile());
-
-		while ((nRead = fin.read(bytes, 0, bytes.length)) != -1) {
-			dataOut.write(bytes, 0, nRead);
-			totalwrite += nRead;
-		}
-
-
-		logger.info("wrote total " + totalwrite + " bytes for file:" + item.getFile().getName());
-		if (totalwrite != item.getSize())
-			throw new RuntimeException("Didn't write the full content, size expected to write " + item.getSize()
-					+ "actual write bytes:" + totalwrite);
-
-		return totalwrite;
-
-
-
-	}
-
 
 
 	private void writeFileContents(final String outoutFIleName, final FileAccessTable t) throws IOException {
@@ -198,55 +226,93 @@ public class AttachmentService {
 	}
 
 
-
-	public FileAccessTable read(String dataFile) {
-		FileAccessTable t =null;
+	public FileAccessTable read(String dataFile, final Encryptor  encryptor) {
+		FileAccessTable t = null;
 		try {
 			File fIn = new File(dataFile);
 			//FileInputStream fileIn = new FileInputStream(fIn);
 			//DataInputStream dataIn = new DataInputStream(fileIn);
 
-			RandomAccessFile raFile = new RandomAccessFile(dataFile, "rw");
+			RandomAccessFile fileIn = new RandomAccessFile(dataFile, "rw");
 
 
-			int size = raFile.readInt();
+			int numberOfEntries = fileIn.readInt();
 
 			t = new FileAccessTable();
 
 			int pos = 4;
 
-			for (int i = 0; i < size; i++) {
+			int readBytes = 0;
+			for (int i = 0; i < numberOfEntries; i++) {
 
-				raFile.seek(pos);
+				fileIn.seek(pos);
 
-				String UUID = FileUtils.readString(raFile);
-				FileAccessEntry item = new FileAccessEntry(UUID);
-				item.setPosition(raFile.readLong());
-				item.setSize(raFile.readLong());
+				/* UUIID and position */
+				String UUID = FileUtils.readString(fileIn);
+				FileAccessEntry fileAccessEntry = new FileAccessEntry(UUID);
+				fileAccessEntry.setPosition(fileIn.readLong());
+				pos += 40+8;
 
-				t.addEntry(item);
+				/*#3: ciperParameters size 4 bytes*/
+				int cipherParametersLength  = fileIn.readInt();
+				pos += 4;
 
-				//byte[] bytes =readFileContent(dataFile, item) ;
+			    /*#4: cipherParameters body*/
+				byte[] _byteCiper = new byte[cipherParametersLength];
+				readBytes = fileIn.read(_byteCiper);
+				if (readBytes!=cipherParametersLength)
+					throw new RuntimeException("read " + readBytes +" bytes only, expected to read:"+ _byteCiper);
+				pos += _byteCiper.length;
 
-				//advance to the next item pos , header start
-				pos+= FileAccessEntry.getHeaderBytes() + item.getSize();
+				AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance(Encryptor.ALGORITHM);
+				algorithmParameters.init(_byteCiper);
+				fileAccessEntry.setAlgorithmParameters(algorithmParameters);
 
+				/*#5  size of the content (int): 4 bytes */
+				int encSize =fileIn.readInt();
+				pos +=4;
+				fileAccessEntry.setPosOfContent(pos);
+				fileAccessEntry.setEncSize(encSize);
+
+				t.addEntry(fileAccessEntry);
+
+				/* #6 file content */
+				pos +=  encSize;
+
+
+				/* delay read it on demand
+				byte[] _encBytes =readFileContent(dataFile, pos, encSize ) ;
+				byte[] fileContent = encryptor.decrypt(_encBytes, algorithmParameters);
+				pos +=  fileContent.length;
+
+				fileAccessEntry.setFileContent(fileContent);
+				fileAccessEntry.setSize(fileContent.length); //decrypted size.
+				*/
 
 			}
-		} catch (IOException e) {
+
+			fileIn.close();
+
+		} catch (Exception e) {
 			e.printStackTrace();
+			DialogUtils.getInstance().error("Error occurred in reading attachments.", e.getMessage());
 		}
+
+
+
 		return t;
 	}
 
-	public byte[] readFileContent(String fileStoreDataFile, FileAccessEntry item) {
+	public  byte[] readFileContent(String fileStoreDataFile, FileAccessEntry fileAccessEntry, Encryptor encryptor) {
 		try {
 			RandomAccessFile fileStore = new RandomAccessFile(fileStoreDataFile, "rw");
-			fileStore.seek(item.getPosition());
-			byte[] bytes = new byte[Long.valueOf(item.getSize()).intValue()];
-			fileStore.readFully(bytes);
-			return bytes;
+			fileStore.seek(fileAccessEntry.getPosOfContent());
+			byte[] _encedBytes = new byte[fileAccessEntry.getEncSize()];
+			fileStore.readFully(_encedBytes);
+			byte[] fileContent = encryptor.decrypt(_encedBytes, fileAccessEntry.getAlgorithmParameters());
 
+			fileStore.close();
+			return fileContent;
 
 		} catch (IOException e) {
 			e.printStackTrace();

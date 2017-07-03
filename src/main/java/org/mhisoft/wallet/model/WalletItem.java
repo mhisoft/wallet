@@ -457,7 +457,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 				;
 	}
 
-	public FileAccessEntry getAttachmentEntry() {
+	public FileAccessEntry getOrCreateAttachmentEntry() {
 		if (attachmentEntry==null) {
 			this.attachmentEntry =  new FileAccessEntry(this.sysGUID);
 		}
@@ -470,14 +470,30 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 
 	public void addOrReplaceAttachment(String fname) {
-		FileAccessEntry attachmentEntry =  getAttachmentEntry();
+		FileAccessEntry attachmentEntry =  getOrCreateAttachmentEntry();
 		if (attachmentEntry.getFileName()!=null) {
 			//had a attachment, replacing.
 			newAttachmentEntry =   new FileAccessEntry(this.sysGUID);
 			newAttachmentEntry.setFileName(fname);
+			attachmentEntry.setNewEntry(newAttachmentEntry);
+			attachmentEntry.setAccessFlag(FileAccessFlag.Update);
 		}
-		else
+		else {
 			attachmentEntry.setFileName(fname);
+			attachmentEntry.setAccessFlag(FileAccessFlag.Create);
+		}
 	}
+
+	public void removeAttachment()  {
+	   if (this.attachmentEntry!=null)
+		 attachmentEntry.setAccessFlag(FileAccessFlag.Delete);
+	}
+
+
+	public FileAccessEntry getAttachmentEntry() {
+		return attachmentEntry;
+	}
+
+
 
 }

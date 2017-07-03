@@ -1085,9 +1085,9 @@ public class WalletForm {
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			if (model.getCurrentItem().getAttachmentEntry().getFileName() != null) {
+			if (model.getCurrentItem().getOrCreateAttachmentEntry().getFileName() != null) {
 
-				ImageIcon icon = new ImageIcon(model.getCurrentItem().getAttachmentEntry().getFileName());
+				ImageIcon icon = new ImageIcon(model.getCurrentItem().getOrCreateAttachmentEntry().getFileName());
 
 				//
 				//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();

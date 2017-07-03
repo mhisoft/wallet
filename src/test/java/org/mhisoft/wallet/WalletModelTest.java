@@ -23,14 +23,12 @@
 
 package org.mhisoft.wallet;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
-
-import junit.framework.Assert;
 
 /**
  * Description: WalletModelTest
@@ -49,12 +47,11 @@ public class WalletModelTest {
 	WalletItem hNode;
 
 
-
 	@Before
-	public  void setup() {
+	public void setup() {
 
 		/*
-		     root
+			 root
 		        --b
 		        --c --d
 		            --e
@@ -68,11 +65,11 @@ public class WalletModelTest {
 		root = new WalletItem(ItemType.category, "root");
 		model.getItemsFlatList().add(root);
 		model.getItemsFlatList().add(new WalletItem(ItemType.category, "b"));
-		 cNode = new WalletItem(ItemType.category, "c");
+		cNode = new WalletItem(ItemType.category, "c");
 		model.getItemsFlatList().add(cNode);
 		dNode = new WalletItem(ItemType.item, "d");
 		model.getItemsFlatList().add(dNode);
-		 eNode = new WalletItem(ItemType.item, "e");
+		eNode = new WalletItem(ItemType.item, "e");
 		model.getItemsFlatList().add(eNode);
 		fNode = new WalletItem(ItemType.category, "f");
 		model.getItemsFlatList().add(fNode);
@@ -92,7 +89,7 @@ public class WalletModelTest {
 	@Test
 	public void testAddItem() {
 		try {
-			model.addItem( root, new WalletItem(ItemType.item,  "root-child-item-1"));
+			model.addItem(root, new WalletItem(ItemType.item, "root-child-item-1"));
 			Assert.fail("should not be able to add item to the root");
 		} catch (Exception e) {
 			//good
@@ -101,12 +98,12 @@ public class WalletModelTest {
 		model.addItem(root, rootChild1);
 
 
-		model.addItem( dNode.getParent(),new WalletItem(ItemType.item, "c-child-1"));
+		model.addItem(dNode.getParent(), new WalletItem(ItemType.item, "c-child-1"));
 		WalletItem fChild1 = new WalletItem(ItemType.item, "f-child-1");
-		model.addItem( gNode.getParent(), fChild1);
+		model.addItem(gNode.getParent(), fChild1);
 
 		WalletItem hChild = new WalletItem(ItemType.item, "hChild");
-		model.addItem( hNode, hChild);
+		model.addItem(hNode, hChild);
 
 		Assert.assertEquals(5, root.getChildren().size());
 		Assert.assertEquals(3, dNode.getParent().getChildren().size());
@@ -118,9 +115,9 @@ public class WalletModelTest {
 
 		model.buildFlatListFromTree();
 		//last node now is root child 1
-		Assert.assertEquals(rootChild1, model.getItemsFlatList().get(model.getItemsFlatList().size()-1));
+		Assert.assertEquals(rootChild1, model.getItemsFlatList().get(model.getItemsFlatList().size() - 1));
 		//fNode's last children is the  fChild1.
-		Assert.assertEquals(fChild1, fNode.getChildren().get(fNode.getChildren().size()-1));
+		Assert.assertEquals(fChild1, fNode.getChildren().get(fNode.getChildren().size() - 1));
 	}
 
 	@Test
@@ -138,12 +135,11 @@ public class WalletModelTest {
 	public void testWalkTree() {
 
 
-		WalletItem root =model.getItemsFlatList().get(0);
+		WalletItem root = model.getItemsFlatList().get(0);
 		Assert.assertEquals(4, root.getChildren().size());
 		WalletItem cNode = model.getNodeByGUID(model.getItemsFlatList().get(2).getSysGUID());
 		Assert.assertEquals(2, cNode.getChildren().size());
 		Assert.assertEquals(cNode.getParent(), root);
-
 
 
 		//to flat list again.
@@ -165,7 +161,7 @@ public class WalletModelTest {
 
 		//to flat list again.
 		model.buildFlatListFromTree();
-		WalletItem root =model.getItemsFlatList().get(0);
+		WalletItem root = model.getItemsFlatList().get(0);
 
 
 		root.addChild(new WalletItem(ItemType.item, "h"));
@@ -200,7 +196,6 @@ public class WalletModelTest {
 		Assert.assertEquals(model.getItemsFlatList().get(7).getName(), "g");
 		Assert.assertEquals(model.getItemsFlatList().get(8).getName(), "h-empty parent node");
 	}
-
 
 
 }

@@ -175,8 +175,10 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 				//have to write for each encryption because a random salt is used.
 				cipherParameters = ret.getCipherParameters();
-								/*#3: cipherParameters size 4 bytes*/
+
+				/*#3: cipherParameters size 4 bytes*/
 				dataOut.write(ByteArrayHelper.intToBytes(cipherParameters.length));
+
 				/*#4: cipherParameters body*/
 				dataOut.write(cipherParameters);
 
