@@ -15,7 +15,7 @@ Features
 =========
 * Free. 
 * Runs offline.
-* Secure and fast. 
+* Secure and fast.  AES 256-bit key encryption.
 * Platform: Windows and Mac OS X...etc where Java  is supported. 
 * Organize  passwords with categories.  
 * Search the entire wallet and locate the item you need instantly. 
