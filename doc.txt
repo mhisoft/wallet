@@ -1,13 +1,26 @@
-* import and merge file.
-* back up current file
-* open a new file and save the last opened to the settings.
-* random access the file to allow save the item when the item SAVE button is clicked. (deferred)
+BIs:
+==============
+* random access the file to allow save the item when the item SAVE button is clicked.
+* import and merge file.  (done)
+* back up current file (done)
+* open a new file and save the last opened to the settings. (done)
 * when add a new item, make it edit mode by default (done)
 * add close button /menu; prevent the X close window button (done)
 * remember the last location  (done)
+* keylistener to all the buttons       (done)
 
 
-keylistener to all the buttons       (done)
+
+Notes:
+=============
+
+To make logger work
+
+-ea -Djava.util.logging.config.file="./target/classes/logging.properties"
+set working directory: $MODULE_DIR$, which is the default.
+
+
+
 
 
     @Override

@@ -51,7 +51,15 @@ public class AttachmentService {
 	private static final Logger logger = Logger.getLogger(AttachmentService.class.getName());
 
 
-	public void createNewDataStore(final String outoutFIleName, final FileAccessTable t) {
+
+	public void saveAttachments(final String filename, final WalletModel model, final Encryptor encryptor) {
+		//iterate the model item's FileAccessEntry
+		File f = new File(filename);
+		if (!f.exists()) {
+			addNewFileToDataStore(filename, model, encryptor);
+		}
+		else
+			updateFileToDataStore(filename, model, encryptor);
 
 	}
 
@@ -68,17 +76,11 @@ public class AttachmentService {
 	}
 
 
-	public void saveAttachments(WalletModel model) {
-		//iterate the model item's FileAccessEntry
 
-
+	public void updateFileToDataStore(final String filename, final WalletModel model, final Encryptor encryptor) {
+	   //todo
 	}
 
-
-	/**
-	 * @param outoutFIleName
-	 * @param t
-	 */
 
 
 
@@ -144,12 +146,14 @@ public class AttachmentService {
 				byte[] fileContent = FileUtils.readFile(fileAccessEntry.getFile());
 				Encryptor.EncryptionResult ret = encryptor.encrypt(fileContent);
 				byte[] encrypted = ret.getEncryptedData();
+				logger.fine("\t fileContent size:"+ fileContent.length);
+				logger.fine("\t encrypted size:"+ encrypted.length);
 
 				/*#3: cipherParameters size 4 bytes*/
 				//have to write for each encryption because a random salt is used.
 				byte[] cipherParameters = ret.getCipherParameters();
 				//byte[] _intToBytes =  ByteArrayHelper.intToBytes(cipherParameters.length);
-				dataOut.writeInt(cipherParameters.length);
+				dataOut.writeInt(cipherParameters.length); //length is 100 bytes
 				pos+= 4;
 
 				/*#4: cipherParameters body*/
@@ -167,7 +171,7 @@ public class AttachmentService {
 				dataOut.write(encrypted);
 				pos+=encrypted.length;
 
-				logger.fine("\t start pos:"+ pos);
+
 
 
 			}
@@ -303,13 +307,25 @@ public class AttachmentService {
 		return t;
 	}
 
-	public  byte[] readFileContent(String fileStoreDataFile, FileAccessEntry fileAccessEntry, Encryptor encryptor) {
+	/**
+	 * Read and decrypt the file content based on the mark oin the entry.
+	 * The fileAccessEntry file content and size will be set.
+	 * @param fileStoreDataFile
+	 * @param entry
+	 * @param encryptor
+	 * @return
+	 */
+	public  byte[] readFileContent(String fileStoreDataFile, FileAccessEntry entry, Encryptor encryptor) {
 		try {
 			RandomAccessFile fileStore = new RandomAccessFile(fileStoreDataFile, "rw");
-			fileStore.seek(fileAccessEntry.getPosOfContent());
-			byte[] _encedBytes = new byte[fileAccessEntry.getEncSize()];
+			fileStore.seek(entry.getPosOfContent());
+			byte[] _encedBytes = new byte[entry.getEncSize()];
 			fileStore.readFully(_encedBytes);
-			byte[] fileContent = encryptor.decrypt(_encedBytes, fileAccessEntry.getAlgorithmParameters());
+			byte[] fileContent = encryptor.decrypt(_encedBytes, entry.getAlgorithmParameters());
+
+			entry.setFileContent(fileContent);
+			entry.setSize(fileContent.length); //decrypted size.
+
 
 			fileStore.close();
 			return fileContent;

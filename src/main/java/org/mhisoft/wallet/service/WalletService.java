@@ -3,6 +3,7 @@ package org.mhisoft.wallet.service;
 import java.io.IOException;
 
 import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.model.WalletItem;
@@ -32,7 +33,12 @@ public class WalletService {
 
 		//save attachments.
 		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
-		attachmentService.addNewFileToDataStore(filename, model, encryptor);
+
+
+		String[] parts=  FileUtils.splitFileParts(filename);
+		String attachmentFileName =  parts[0]+parts[1] +"_attachment" + parts[2];
+
+		attachmentService.saveAttachments(attachmentFileName, model, encryptor);
 
 
 	}
