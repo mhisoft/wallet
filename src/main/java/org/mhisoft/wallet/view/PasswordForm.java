@@ -43,6 +43,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
+import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.CreateWalletAction;
 import org.mhisoft.wallet.action.LoadWalletAction;
@@ -342,14 +343,16 @@ public class PasswordForm implements ActionListener {
 	//set the user entered pass and combination to the PassCombinationVO
 	public PassCombinationVO getUserEnteredPassForVerification() {
 
+		if (!SystemSettings.isDevMode) {
 
-		if (!passwordValidator.validate(fldPassword.getText())) {
-			DialogUtils.getInstance().info("Please use a password following the above rules.");
-			return null;
-		}
-		if (spinner1.getValue() == spinner2.getValue() && spinner2.getValue() == spinner3.getValue()) {
-			DialogUtils.getInstance().info("Cant' use the same nubmers for the combinations.");
-			return null;
+			if (!passwordValidator.validate(fldPassword.getText())) {
+				DialogUtils.getInstance().info("Please use a password following the above rules.");
+				return null;
+			}
+			if (spinner1.getValue() == spinner2.getValue() && spinner2.getValue() == spinner3.getValue()) {
+				DialogUtils.getInstance().info("Cant' use the same nubmers for the combinations.");
+				return null;
+			}
 		}
 		//
 
@@ -357,8 +360,14 @@ public class PasswordForm implements ActionListener {
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		//set the raw data only, do not add logic here. or later we can't get the raw pass
 		//	if (model.getDataFileVersion() == 13) {
-		passVO.setPass(fldPassword.getText());
-		passVO.setCombination(spinner1.getValue().toString(), spinner2.getValue().toString(), spinner3.getValue().toString());
+		if (SystemSettings.isDevMode) {
+			passVO.setPass("Test123!");
+			passVO.setCombination("1", "2", "3");
+		}
+		else {
+			passVO.setPass(fldPassword.getText());
+			passVO.setCombination(spinner1.getValue().toString(), spinner2.getValue().toString(), spinner3.getValue().toString());
+		}
 //		} else {
 //			ret.setPass(spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString());
 //			//read old file, set the combination as well so the encryptor can be initialized for write later

@@ -89,7 +89,7 @@ public class WalletService {
 			throw new RuntimeException("Can't read file  header" + filename) ;
 		}
 
-		if (SystemSettings.debug && DialogUtils.getInstance() != null)
+		if (SystemSettings.isDevMode && DialogUtils.getInstance() != null)
 			DialogUtils.getInstance().info("file version:" + header.getVersion());
 		return header;
 

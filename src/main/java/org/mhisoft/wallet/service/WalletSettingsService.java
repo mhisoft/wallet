@@ -54,7 +54,7 @@ public class WalletSettingsService {
 		ObjectOutputStream outputStream = null;
 		try {
 
-			if (SystemSettings.debug)
+			if (SystemSettings.isDevMode)
 				settings.setIdleTimeout(-1);
 
 			outputStream = new ObjectOutputStream(new FileOutputStream(WalletSettings.settingsFile));

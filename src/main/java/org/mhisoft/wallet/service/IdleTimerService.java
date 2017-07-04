@@ -20,7 +20,7 @@ import org.mhisoft.wallet.view.DialogUtils;
 public class IdleTimerService {
 
 	protected Timer t;
-	protected long checkPeriod = SystemSettings.debug ? 15000 : 60000;
+	protected long checkPeriod = SystemSettings.isDevMode ? 15000 : 60000;
 
 	protected long startTime;
 
