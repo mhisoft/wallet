@@ -23,6 +23,15 @@ import org.mhisoft.wallet.view.WalletForm;
  * @author Tony Xue
  * @since Apr, 2016
  */
+
+
+
+// see SystemSettings
+// -Djava.util.logging.config.file="./target/classes/logging.properties"
+// -DenvMode=dev
+// -Ddebug=true
+
+
 public class WalletMain {
 
 	 //three places to update the version number,
