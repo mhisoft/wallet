@@ -116,6 +116,13 @@ public class WalletSettings implements Serializable {
 		this.lastFile = lastFile;
 	}
 
+
+	public String getLastAttachemntFile() {
+		if (lastFile!=null)
+			return ServiceRegistry.instance.getAttachmentService().getAttachmentFileName(lastFile);
+		return null;
+	}
+
 	public long getIdleTimeout() {  //in seconds
 		if (SystemSettings.debug)
 			return 3;

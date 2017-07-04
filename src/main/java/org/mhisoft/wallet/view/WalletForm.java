@@ -85,6 +85,7 @@ import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
+import org.mhisoft.wallet.service.AttachmentService;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
@@ -125,6 +126,7 @@ public class WalletForm {
 	public JButton btnSaveForm;
 	public JButton btnCancelEdit;
 	public JButton btnClose;
+	public JButton btnLoadImage;
 
 	JLabel labelName;
 	JLabel labelURL;
@@ -173,7 +175,8 @@ public class WalletForm {
 	JButton btnCollapse;
 	JLabel imageLabel;
 	JButton btnLaunchURL;
-	private JButton btnLoadImage;
+	private JScrollPane imageScrollPane;
+
 	private JPanel imagePanel;
 
 	private JScrollPane rightScrollPane;
@@ -265,7 +268,7 @@ public class WalletForm {
 				//if (f.get)
 
 				model.getCurrentItem().addOrReplaceAttachment(imageFile);
-				LoadImageWorker loadImageWorker = new LoadImageWorker();
+				LoadImageWorker loadImageWorker = new LoadImageWorker(model.getCurrentItem());
 				loadImageWorker.execute();
 
 				ServiceRegistry.instance.getWalletModel().setModified(true);
@@ -727,7 +730,6 @@ public class WalletForm {
 		populateRecentFilesMenu();
 
 
-
 		menuNew = new JMenuItem("New Vault", KeyEvent.VK_N);
 		menuFile.add(menuNew);
 
@@ -818,10 +820,10 @@ public class WalletForm {
 	}
 
 	public void refreshRecentFilesMenu() {
-		JMenu m = ((JMenu) menuOpenRecent) ;
+		JMenu m = ((JMenu) menuOpenRecent);
 		for (Component component : m.getMenuComponents()) {
 			m.remove(component);
-			componentsList.remove(component) ;
+			componentsList.remove(component);
 		}
 		populateRecentFilesMenu();
 
@@ -1052,6 +1054,14 @@ public class WalletForm {
 		fldIdleTimeout.setText(Long.valueOf(WalletSettings.getInstance().getIdleTimeout()).toString());
 	}
 
+	public void closeView() {
+		btnSaveForm.setVisible(false);
+		btnClose.setVisible(true);
+		btnCancelEdit.setVisible(false);
+		btnEditForm.setVisible(false);
+		btnLoadImage.setVisible(false);
+	}
+
 
 	/**
 	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
@@ -1074,6 +1084,7 @@ public class WalletForm {
 	 * SwingWorker class that loads the images a background thread and calls publish
 	 * when a new one is ready to be displayed.
 	 * <p>
+	 * <p>
 	 * We use Void as the first SwingWroker param as we do not need to return
 	 * anything from doInBackground().
 	 */
@@ -1082,25 +1093,50 @@ public class WalletForm {
 
 	class LoadImageWorker extends SwingWorker<Void, ThumbnailAction> {
 
+		WalletItem item;
+
+		public LoadImageWorker() {
+		}
+
+		public LoadImageWorker(WalletItem item) {
+			this.item = item;
+		}
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			if (model.getCurrentItem().getOrCreateAttachmentEntry().getFileName() != null) {
 
-				ImageIcon icon = new ImageIcon(model.getCurrentItem().getOrCreateAttachmentEntry().getFileName());
+			if (item == null)
+				item = model.getCurrentItem();
 
-				//
+			ImageIcon icon = null;
+
+			AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton
+					, AttachmentService.class);
+
+			if (item.hasAttachmentToRead()) {
+				byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getLastAttachemntFile()
+						, item.getAttachmentEntry(), model.getEncryptor());
+
+				icon = new ImageIcon(fileContent);
+			} else if (item.hasAttachmentToLoadFromFile()) {
+				icon = new ImageIcon(item.getAttachmentEntry().getFileName());
+				// scale it.
 				//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();
 				//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
 
-
+			}
+			if (icon != null) {
 				imageLabel.setIcon(icon);
 				imageLabel.setVisible(true);
-
-
 			} else {
 				imageLabel.setIcon(null);
 			}
+
+
+			imageScrollPane.setPreferredSize(   new Dimension(icon.getIconWidth(), icon.getIconHeight()));
+			imageScrollPane.repaint();
+
+
 			return null;
 		}
 
@@ -1111,11 +1147,6 @@ public class WalletForm {
 		LoadImageWorker loadImageWorker = new LoadImageWorker();
 		loadImageWorker.execute();
 	}
-
-
-
-
-
 
 
 }

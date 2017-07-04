@@ -494,6 +494,22 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		return attachmentEntry;
 	}
 
+	public boolean hasAttachmentToLoadFromFile() {
+		return attachmentEntry!=null && attachmentEntry.getFileName()!=null;
+	}
+
+	/**
+	 * Has attachment to be red from the store.
+	 * @return
+	 */
+	public boolean hasAttachmentToRead() {
+	     return attachmentEntry!=null && attachmentEntry.encSize>0;
+	}
+
+
+	public boolean hasAttachmentToSave() {
+		return attachmentEntry.getAccessFlag()!=null; //create, update, delete
+	}
 
 
 }

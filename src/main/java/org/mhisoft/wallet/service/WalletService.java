@@ -3,9 +3,10 @@ package org.mhisoft.wallet.service;
 import java.io.IOException;
 
 import org.mhisoft.common.util.Encryptor;
-import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.wallet.SystemSettings;
+import org.mhisoft.wallet.model.FileAccessEntry;
+import org.mhisoft.wallet.model.FileAccessTable;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.view.DialogUtils;
@@ -23,7 +24,23 @@ public class WalletService {
 	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
 		FileContentHeader header = readHeader(filename, true);
 		DataService ds = DataServiceFactory.createDataService(header.getVersion());
-		return ds.readFromFile(filename, encryptor);
+		FileContent ret =  ds.readFromFile(filename, encryptor);
+		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
+		String attFileName = attachmentService.getAttachmentFileName(filename);
+		FileAccessTable t = attachmentService.read(attFileName, encryptor);
+
+		//set the  FileAccessEntry to the wallet item.
+		if (t!=null) {
+			for (FileAccessEntry entry : t.getEntries()) {
+				WalletItem item = ret.getWalletItem(entry.getGUID());
+				item.setAttachmentEntry(entry);
+			}
+
+		}
+
+		return ret;
+
+
 	}
 
 
@@ -33,13 +50,7 @@ public class WalletService {
 
 		//save attachments.
 		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
-
-
-		String[] parts=  FileUtils.splitFileParts(filename);
-		String attachmentFileName =  parts[0]+parts[1] +"_attachment" + parts[2];
-
-		attachmentService.saveAttachments(attachmentFileName, model, encryptor);
-
+		attachmentService.saveAttachments(attachmentService.getAttachmentFileName(filename), model, encryptor);
 
 	}
 

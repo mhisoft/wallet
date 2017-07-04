@@ -116,10 +116,8 @@ public class ItemDetailView {
 
 
 		}
-		form.btnSaveForm.setVisible(false);
-		form.btnClose.setVisible(true);
-		form.btnCancelEdit.setVisible(false);
-		form.btnEditForm.setVisible(false);
+
+		form.closeView();
 
 	}
 
@@ -142,8 +140,7 @@ public class ItemDetailView {
 
 
 
-		 /*set model value to fileds and set visibility*/
-
+		/*set model value to fileds and set visibility*/
 		try {
 			for (Map.Entry<String, FiledObject> entry : fields.entrySet()) {
 				if (entry.getValue().fld instanceof JTextComponent) {

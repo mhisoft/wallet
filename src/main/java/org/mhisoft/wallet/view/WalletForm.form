@@ -147,7 +147,7 @@
                               </component>
                               <scrollpane id="27f93">
                                 <constraints>
-                                  <grid row="13" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                  <grid row="12" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties/>
                                 <border type="none"/>
@@ -197,7 +197,7 @@
                               </component>
                               <component id="f511b" class="javax.swing.JLabel" binding="labelNotes">
                                 <constraints>
-                                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                                  <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
                                 </constraints>
                                 <properties>
                                   <font/>
@@ -453,9 +453,9 @@
                                   <text value="URL"/>
                                 </properties>
                               </component>
-                              <scrollpane id="e5e7d">
+                              <scrollpane id="e5e7d" binding="imageScrollPane">
                                 <constraints>
-                                  <grid row="12" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                  <grid row="13" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                                 </constraints>
                                 <properties/>
                                 <border type="none"/>
@@ -468,6 +468,14 @@
                                   </component>
                                 </children>
                               </scrollpane>
+                              <component id="cf5bb" class="javax.swing.JLabel">
+                                <constraints>
+                                  <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+                                </constraints>
+                                <properties>
+                                  <text value="Image"/>
+                                </properties>
+                              </component>
                             </children>
                           </grid>
                         </children>
@@ -482,6 +490,7 @@
                           <component id="bdf9" class="javax.swing.JButton" binding="btnLoadImage">
                             <constraints/>
                             <properties>
+                              <icon value="attachment.png"/>
                               <text value="Image"/>
                             </properties>
                           </component>

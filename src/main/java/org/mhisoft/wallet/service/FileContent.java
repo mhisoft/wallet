@@ -57,4 +57,14 @@ public class FileContent {
 	public void setHeader(FileContentHeader header) {
 		this.header = header;
 	}
+
+	public WalletItem getWalletItem(String sysGUID) {
+		for (WalletItem walletItem : walletItems) {
+			if (walletItem.getSysGUID().equals(sysGUID))  {
+				return walletItem;
+			}
+		}
+		return null;
+	}
+
 }

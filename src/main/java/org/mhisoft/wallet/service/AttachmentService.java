@@ -51,6 +51,13 @@ public class AttachmentService {
 	private static final Logger logger = Logger.getLogger(AttachmentService.class.getName());
 
 
+	public String getAttachmentFileName(String walletFileName) {
+		String[] parts=  FileUtils.splitFileParts(walletFileName);
+		String attachmentFileName =  parts[0]+ File.separator+parts[1] +"_attachments." + parts[2];
+		return  attachmentFileName;
+	}
+
+
 
 	public void saveAttachments(final String filename, final WalletModel model, final Encryptor encryptor) {
 		//iterate the model item's FileAccessEntry
@@ -68,10 +75,12 @@ public class AttachmentService {
 
 		FileAccessTable t = new FileAccessTable();
 		for (WalletItem item : model.getItemsFlatList()) {
-			t.addEntry(item.getAttachmentEntry());
+			if (item.getAttachmentEntry()!=null && item.getAttachmentEntry().getFileName()!=null)
+				t.addEntry(item.getAttachmentEntry());
 		}
 
-		write(filename, t, encryptor);
+		if (t.getSize()>0)
+			write(filename, t, encryptor);
 
 	}
 
@@ -234,18 +243,14 @@ public class AttachmentService {
 		FileAccessTable t = null;
 		try {
 			File fIn = new File(dataFile);
-			//FileInputStream fileIn = new FileInputStream(fIn);
-			//DataInputStream dataIn = new DataInputStream(fileIn);
+			if (!fIn.exists()) {
+				return t;
+			}
 
 			RandomAccessFile fileIn = new RandomAccessFile(dataFile, "rw");
-
-
 			int numberOfEntries = fileIn.readInt();
-
 			t = new FileAccessTable();
-
 			int pos = 4;
-
 			int readBytes = 0;
 			for (int i = 0; i < numberOfEntries; i++) {
 
