@@ -29,7 +29,9 @@ import java.io.IOException;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
+import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
+import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.AttachmentService;
 import org.testng.Assert;
@@ -61,20 +63,28 @@ public class AttachmentServiceTest {
 
 		FileAccessTable t = new FileAccessTable();
 		FileAccessEntry fileEntry = t.addEntry();
-		fileEntry.setFile(new File("./target/classes/1463467646_61.png"));
+		fileEntry.setFileName("./target/classes/1463467646_61.png");
 		guid1 = fileEntry.getGUID();
 
 		FileAccessEntry fileEntry2 = t.addEntry();
-		fileEntry2.setFile(new File("./target/classes/1463467888_13.png"));
+		fileEntry2.setFileName("./target/classes/1463467888_13.png");
 		guid2 = fileEntry2.getGUID();
 
 		Assert.assertEquals(t.getSize(), 2);
 
 		WalletModel model = new WalletModel();
 		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+		WalletItem item1 = new WalletItem(ItemType.item, "item1");
+		item1.setSysGUID(guid1);
+		item1.setAttachmentEntry(fileEntry);
+		model.getItemsFlatList().add(item1);
+		WalletItem item2 = new WalletItem(ItemType.item, "item2");
+		item2.setSysGUID(guid2);
+		item2.setAttachmentEntry(fileEntry2);
+		model.getItemsFlatList().add(item2);
 
 
-		attachmentService.write("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat", t, model.getEncryptor());
+		attachmentService.newAttachmentStore("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat", model, model.getEncryptor());
 
 	}
 
