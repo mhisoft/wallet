@@ -110,8 +110,73 @@ public class AttachmentService {
 
 
 	public void updateAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
-		//todo
-		//if delete and updated entries in the store is more than 30%, compact the store.
+
+
+		FileAccessTable t = new FileAccessTable();
+		for (WalletItem item : model.getItemsFlatList()) {
+			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
+					&& item.getAttachmentEntry().getAccessFlag()!=null ) { //The old entry if not changed, access flag would be null.
+				t.addEntry(item.getAttachmentEntry());
+
+			}
+		}
+
+		RandomAccessFile attachmentFileStore = null;
+		if (t.getSize() > 0) {
+			try {
+				attachmentFileStore= new RandomAccessFile(filename, "rw");
+
+				//write the total number of entries first
+				int existingNumEntries = attachmentFileStore.readInt();
+
+				//add to be appended ones
+				existingNumEntries += t.getSize();
+				attachmentFileStore.seek(0);
+                attachmentFileStore.writeInt(existingNumEntries);
+
+				//seek to the end
+				long itemStartPos =  attachmentFileStore.length();
+				attachmentFileStore.seek(itemStartPos);
+
+				//append new entries to the end of the store.
+				writeNewEntries(itemStartPos, attachmentFileStore, t, encryptor);
+
+				//mark the deleted entries in the data store
+				//todo DELETE access flag
+
+
+
+
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				DialogUtils.getInstance().error("Error writing attachment entries.", e.getMessage());
+			} finally {
+				if (attachmentFileStore != null)
+					try {
+						attachmentFileStore.close();
+					} catch (IOException e) {
+						//e.printStackTrace();
+					}
+			}
+		}
+
+		//now clear the access flag on the item
+		for (WalletItem item : model.getItemsFlatList()) {
+			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
+					&& item.getAttachmentEntry().getAccessFlag()!=null ) {
+				item.getAttachmentEntry().setAccessFlag(null);
+			}
+		}
+
+
+
+
+	}
+
+
+	public void compactAttachmentStore(final String filename) {
+		//todo if delete and updated entries in the store is more than 30%, compact the store.
 	}
 
 
@@ -136,9 +201,9 @@ public class AttachmentService {
 	 */
 
 
-	public void writeNewEntries(final int itemStartPos, DataOutput dataOut, final FileAccessTable t, final Encryptor encryptor) throws IOException {
+	public void writeNewEntries(final long itemStartPos, DataOutput dataOut, final FileAccessTable t, final Encryptor encryptor) throws IOException {
 
-		int pos = itemStartPos;
+		long pos = itemStartPos;
 
 
 		//write it out
