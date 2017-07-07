@@ -453,21 +453,6 @@
                                   <text value="URL"/>
                                 </properties>
                               </component>
-                              <scrollpane id="e5e7d" binding="imageScrollPane">
-                                <constraints>
-                                  <grid row="13" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                                </constraints>
-                                <properties/>
-                                <border type="none"/>
-                                <children>
-                                  <component id="f438c" class="javax.swing.JLabel" binding="imageLabel">
-                                    <constraints/>
-                                    <properties>
-                                      <text value=""/>
-                                    </properties>
-                                  </component>
-                                </children>
-                              </scrollpane>
                               <component id="cf5bb" class="javax.swing.JLabel">
                                 <constraints>
                                   <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
@@ -476,6 +461,14 @@
                                   <text value="Image"/>
                                 </properties>
                               </component>
+                              <grid id="9960a" binding="imagePanel" layout-manager="FlowLayout" hgap="0" vgap="0" flow-align="0">
+                                <constraints>
+                                  <grid row="13" column="1" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                                </constraints>
+                                <properties/>
+                                <border type="none"/>
+                                <children/>
+                              </grid>
                             </children>
                           </grid>
                         </children>

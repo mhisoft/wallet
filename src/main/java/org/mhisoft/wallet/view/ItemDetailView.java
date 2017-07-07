@@ -100,7 +100,7 @@ public class ItemDetailView {
 		fields.put("detail2", new FiledObject(ItemType.item, form.labelDetail2, form.fldDetail2));
 		fields.put("detail3", new FiledObject(ItemType.item, form.labelDetail3, form.fldDetail3));
 		fields.put("cvc", new FiledObject(ItemType.item, form.labelCVC, form.fldCVC));
-		fields.put("imageLabel", new FiledObject(ItemType.item, form.imageLabel, form.imageLabel));
+		//fields.put("imageLabel", new FiledObject(ItemType.item, form.imageLabel, form.imageLabel));
 
 
 	}

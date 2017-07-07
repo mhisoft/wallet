@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.Serializer;
-import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
 import org.mhisoft.wallet.model.WalletItem;
@@ -89,8 +88,8 @@ public class WalletService {
 			throw new RuntimeException("Can't read file  header" + filename) ;
 		}
 
-		if (SystemSettings.isDevMode && DialogUtils.getInstance() != null)
-			DialogUtils.getInstance().info("file version:" + header.getVersion());
+//		if (SystemSettings.isDevMode && DialogUtils.getInstance() != null)
+//			DialogUtils.getInstance().info("file version:" + header.getVersion());
 		return header;
 
 

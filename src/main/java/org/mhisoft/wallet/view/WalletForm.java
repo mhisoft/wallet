@@ -41,9 +41,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -88,6 +90,8 @@ import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.AttachmentService;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
+
+import hu.kazocsaba.imageviewer.ImageViewer;
 
 /**
  * Description: The Wallet Form UI
@@ -173,9 +177,9 @@ public class WalletForm {
 	private JTextArea textAreaDebug;
 	private JLabel labelLastMessage;
 	JButton btnCollapse;
-	JLabel imageLabel;
+	//JLabel imageLabel;
 	JButton btnLaunchURL;
-	private JScrollPane imageScrollPane;
+	//private JScrollPane imageScrollPane;
 
 	private JPanel imagePanel;
 
@@ -193,6 +197,9 @@ public class WalletForm {
 	TreeExploreView treeExploreView;
 	ListExplorerView listExploreView;
 	ItemDetailView itemDetailView;
+
+	ImageViewer imageViewer ;
+	BufferedImage bufferedImage=null;
 
 
 	boolean hidePassword = true;
@@ -216,6 +223,10 @@ public class WalletForm {
 		treeExploreView = new TreeExploreView(frame, model, tree, this);
 		listExploreView = new ListExplorerView(frame, model, itemList, this);
 		itemDetailView = new ItemDetailView(model, this);
+
+
+//
+
 
 		ServiceRegistry.instance.registerSingletonService(this);
 
@@ -589,6 +600,14 @@ public class WalletForm {
 
 		frame.setDefaultCloseOperation(frame.DO_NOTHING_ON_CLOSE);
 
+
+		//add the image viewer
+		//bufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+		imageViewer = new ImageViewer(bufferedImage, true );
+		imagePanel.add(imageViewer.getComponent());
+
+
+
 		frame.pack();
 
 		DialogUtils.create(frame);
@@ -618,6 +637,8 @@ public class WalletForm {
 
 		jreDebug();
 		tree.setModel(null);
+
+
 
 
 		resetForm();
@@ -1108,7 +1129,8 @@ public class WalletForm {
 			if (item == null)
 				item = model.getCurrentItem();
 
-			ImageIcon icon = null;
+			//ImageIcon icon = null;
+			//BufferedImage bufferedImage=null ;
 
 			AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton
 					, AttachmentService.class);
@@ -1117,24 +1139,41 @@ public class WalletForm {
 				byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getLastAttachemntFile()
 						, item.getAttachmentEntry(), model.getEncryptor());
 
-				icon = new ImageIcon(fileContent);
+				//icon = new ImageIcon(fileContent);
+				ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContent);
+				bufferedImage = ImageIO.read(inputStream);
+				imageViewer.setImage(bufferedImage);
 			} else if (item.hasAttachmentToLoadFromFile()) {
-				icon = new ImageIcon(item.getAttachmentEntry().getFileName());
+				//icon = new ImageIcon(item.getAttachmentEntry().getFileName());
+				bufferedImage = ImageIO.read(new File(item.getAttachmentEntry().getFileName()));
 				// scale it.
 				//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();
 				//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
+				imageViewer.setImage(bufferedImage);
 
 			}
-			if (icon != null) {
-				imageLabel.setIcon(icon);
-				imageLabel.setVisible(true);
-			} else {
-				imageLabel.setIcon(null);
-			}
+
+			else
+				imageViewer.setImage(null);
+
+//			if (bufferedImage != null) {
+//				imageLabel.setIcon(icon);
+//				imageLabel.setVisible(true);
+//				imageViewer.setImage(bufferedImage);
+//			} else {
+//				//imageLabel.setIcon(null);
+//				imageViewer.setImage(null);
+
+//			}
+
+//			imageViewer.setResizeStrategy(ResizeStrategy.CUSTOM_ZOOM);
+//			imageViewer.setZoomFactor(1);
+//			imageViewer.setResizeStrategy(ResizeStrategy.RESIZE_TO_FIT);
 
 
-			imageScrollPane.setPreferredSize(   new Dimension(icon.getIconWidth(), icon.getIconHeight()));
-			imageScrollPane.repaint();
+
+//			imageScrollPane.setPreferredSize(   new Dimension(icon.getIconWidth(), icon.getIconHeight()));
+//			imageScrollPane.repaint();
 
 
 			return null;

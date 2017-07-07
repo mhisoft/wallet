@@ -13,6 +13,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="common-utils" />
     <orderEntry type="library" name="Maven: com.fifesoft:rsyntaxtextarea:2.5.8" level="project" />
+    <orderEntry type="library" name="Maven: hu.kazocsaba:image-viewer:1.2.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testng:testng:6.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.beanshell:bsh:2.0b4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.beust:jcommander:1.12" level="project" />
