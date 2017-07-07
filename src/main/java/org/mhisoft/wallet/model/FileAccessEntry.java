@@ -56,6 +56,8 @@ public class FileAccessEntry {
 
 
 	public FileAccessEntry(String GUID) {
+		this.accessFlag=FileAccessFlag.None;
+
 		if (GUID == null)
 			this.GUID = StringUtils.getGUID();
 		else

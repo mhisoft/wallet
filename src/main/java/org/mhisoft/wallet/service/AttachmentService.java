@@ -65,13 +65,43 @@ public class AttachmentService {
 		File f = new File(filename);
 		if (!f.exists()) {
 			newAttachmentStore(filename, model, encryptor);
-		} else
-			updateAttachmentStore(filename, model, encryptor);
+		} else {
+
+			FileAccessTable t = new FileAccessTable();
+			double deleteCount = 0, totalCount = 0;
+			for (WalletItem item : model.getItemsFlatList()) {
+				if (item.getAttachmentEntry() != null) {
+					switch (item.getAttachmentEntry().getAccessFlag()) {
+						case Delete:
+							deleteCount++;
+							break;
+						case Update:
+							deleteCount++;
+							totalCount++;
+							break;
+						case Create:
+							totalCount++;
+							break;
+						default:
+							totalCount++;//no change
+
+					}
+				}
+			}
+
+			if (deleteCount / totalCount > 0.33) {
+				compactAttachmentStore(filename, model, encryptor);
+			} else {
+				appendAttachmentStore(filename, model, encryptor);
+			}
+
+
+		}
 
 	}
 
 
-	public  void newAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
+	public void newAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
 
 		FileAccessTable t = new FileAccessTable();
 		for (WalletItem item : model.getItemsFlatList()) {
@@ -91,7 +121,7 @@ public class AttachmentService {
 				dataOut.writeInt(t.getEntries().size());
 				//itemStartPos = 4;
 
-				writeNewEntries(4, dataOut, t, encryptor);
+				writeFileEntries(filename, 4, dataOut, t, encryptor);
 
 				dataOut.flush();
 			} catch (IOException e) {
@@ -109,48 +139,44 @@ public class AttachmentService {
 	}
 
 
-	public void updateAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
-
+	public void appendAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
 
 		FileAccessTable t = new FileAccessTable();
 		for (WalletItem item : model.getItemsFlatList()) {
+			if (item.getAttachmentEntry()==null)
+				continue;
+			if (FileAccessFlag.Create == item.getAttachmentEntry().getAccessFlag()
+					|| FileAccessFlag.Update == item.getAttachmentEntry().getAccessFlag()) {
 
-			if (item.getAttachmentEntry() != null &&
-					(item.getAttachmentEntry().getAccessFlag()==FileAccessFlag.Create
-							|| item.getAttachmentEntry().getAccessFlag()==FileAccessFlag.Update) )  {
-
-			if ( item.getNewAttachmentEntry()!=null && item.getNewAttachmentEntry().getFile() != null )
-				  t.addEntry(item.getNewAttachmentEntry());
-			else if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null )
-				t.addEntry(item.getAttachmentEntry());
+				if (item.getNewAttachmentEntry() != null && item.getNewAttachmentEntry().getFile() != null)
+					t.addEntry(item.getNewAttachmentEntry());
+				else if ( item.getAttachmentEntry().getFile() != null)
+					t.addEntry(item.getAttachmentEntry());
 			}
 		}
 
 		RandomAccessFile attachmentFileStore = null;
 		if (t.getSize() > 0) {
 			try {
-				attachmentFileStore= new RandomAccessFile(filename, "rw");
+				attachmentFileStore = new RandomAccessFile(filename, "rw");
 
 				//write the total number of entries first
-				int existingNumEntries = attachmentFileStore.readInt();
+				int entriesCount = attachmentFileStore.readInt();
 
 				//add to be appended ones
-				existingNumEntries += t.getSize();
+				entriesCount += t.getSize();
 				attachmentFileStore.seek(0);
-                attachmentFileStore.writeInt(existingNumEntries);
+				attachmentFileStore.writeInt(entriesCount);
 
 				//seek to the end
-				long itemStartPos =  attachmentFileStore.length();
+				long itemStartPos = attachmentFileStore.length();
 				attachmentFileStore.seek(itemStartPos);
 
 				//append new entries to the end of the store.
-				writeNewEntries(itemStartPos, attachmentFileStore, t, encryptor);
+				writeFileEntries(filename, itemStartPos, attachmentFileStore, t, encryptor);
 
 				//mark the deleted entries in the data store
 				//todo DELETE access flag
-
-
-
 
 
 			} catch (IOException e) {
@@ -169,19 +195,47 @@ public class AttachmentService {
 		//now clear the access flag on the item
 		for (WalletItem item : model.getItemsFlatList()) {
 			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
-					&& item.getAttachmentEntry().getAccessFlag()!=null ) {
+					&& item.getAttachmentEntry().getAccessFlag() != null) {
 				item.getAttachmentEntry().setAccessFlag(null);
 			}
 		}
 
 
-
-
 	}
 
 
-	public void compactAttachmentStore(final String filename) {
+	public void compactAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
 		//todo if delete and updated entries in the store is more than 30%, compact the store.
+		String[] parts= FileUtils.splitFileParts(filename);
+		String newStoreName = filename+".tmp";
+		File newFile =  new File(newStoreName);
+		if (newFile.exists()) {
+			if (!newFile.delete()) {
+				DialogUtils.getInstance().error("Can't delete the tmp file:" + newStoreName);
+			}
+		}
+
+		FileAccessTable t = new FileAccessTable();
+		for (WalletItem item : model.getItemsFlatList()) {
+			if (item.getAttachmentEntry()==null)
+				continue;
+
+			if (item.getAttachmentEntry().getAccessFlag()==null) {
+				//no change
+				t.addEntry(item.getAttachmentEntry());
+			}
+			else if (FileAccessFlag.Create == item.getAttachmentEntry().getAccessFlag()
+					|| FileAccessFlag.Update == item.getAttachmentEntry().getAccessFlag()) {
+
+				if (item.getNewAttachmentEntry() != null && item.getNewAttachmentEntry().getFile() != null)
+					t.addEntry(item.getNewAttachmentEntry());
+				else if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null)
+					t.addEntry(item.getAttachmentEntry());
+			}
+		}
+
+
+
 	}
 
 
@@ -206,7 +260,8 @@ public class AttachmentService {
 	 */
 
 
-	public void writeNewEntries(final long itemStartPos, DataOutput dataOut, final FileAccessTable t, final Encryptor encryptor) throws IOException {
+	public void writeFileEntries(String fileStoreDataFile,
+			final long itemStartPos, DataOutput dataOut, final FileAccessTable t, final Encryptor encryptor) throws IOException {
 
 		long pos = itemStartPos;
 
@@ -231,7 +286,11 @@ public class AttachmentService {
 			//todo the one is to be deleted. we are appending the new and updated entries to the end.
 			//deletion needs compact the store.
 
-			if (fileAccessEntry.getAccessFlag()== FileAccessFlag.Delete) {
+			if (fileAccessEntry.getAccessFlag()==null && fileAccessEntry.getEncSize()>0) {
+				//no change, this is an transfer to the new store. need to read the filecontent from the old store.
+			}
+
+			else if (fileAccessEntry.getAccessFlag() == FileAccessFlag.Delete) {
 				/*todo save the  accessflag, mark for deletion later*/
 
 
@@ -250,7 +309,7 @@ public class AttachmentService {
 
 		    /* #1a  accessflag */
 			dataOut.writeInt(0);
-			pos+=4;
+			pos += 4;
 
 
 			/* #2 header:pos of the attachment content*/
@@ -350,12 +409,12 @@ public class AttachmentService {
 				pos += 40;
 
 				/* #1a  accessflag */
-				fileAccessEntry.setAccessFlag(  FileAccessFlag.values[fileIn.readInt()] );
+				fileAccessEntry.setAccessFlag(FileAccessFlag.values[fileIn.readInt()]);
 				pos += 4;
 
 				/* #2 pos */
 				fileAccessEntry.setPosition(fileIn.readLong());
-				pos +=  8;
+				pos += 8;
 
 				/*#3: ciperParameters size 4 bytes*/
 				int cipherParametersLength = fileIn.readInt();
