@@ -84,6 +84,7 @@ import org.mhisoft.wallet.action.ImportWalletAction;
 import org.mhisoft.wallet.action.NewWalletAction;
 import org.mhisoft.wallet.action.OpenWalletFileAction;
 import org.mhisoft.wallet.action.SaveWalletAction;
+import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
@@ -614,6 +615,7 @@ public class WalletForm {
 
 		componentsList = ViewHelper.getAllComponents(frame);
 		componentsList.add(itemList);
+		componentsList.add(imageViewer.getComponent());
 
 		setupMenu();
 
@@ -970,6 +972,8 @@ public class WalletForm {
 
 		labelLastMessage.setVisible(false);
 
+		imageViewer.setImage(null);
+
 
 	}
 
@@ -1135,22 +1139,38 @@ public class WalletForm {
 			AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton
 					, AttachmentService.class);
 
-			if (item.hasAttachmentToRead()) {
-				byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getLastAttachemntFile()
-						, item.getAttachmentEntry(), model.getEncryptor());
+			//return the new entry if it has been updated , which will be a file at this point.
+			FileAccessEntry fileAccessEntry = item.getFileAccessEntryForDisplay();
 
-				//icon = new ImageIcon(fileContent);
-				ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContent);
-				bufferedImage = ImageIO.read(inputStream);
-				imageViewer.setImage(bufferedImage);
-			} else if (item.hasAttachmentToLoadFromFile()) {
-				//icon = new ImageIcon(item.getAttachmentEntry().getFileName());
-				bufferedImage = ImageIO.read(new File(item.getAttachmentEntry().getFileName()));
-				// scale it.
-				//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();
-				//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
-				imageViewer.setImage(bufferedImage);
 
+			if (fileAccessEntry!=null) {
+
+				if (item.getNewAttachmentEntry()!=null || item.getAttachmentEntry().getFileName()!=null) {
+					/*new entry is from file*/
+					//icon = new ImageIcon(item.getAttachmentEntry().getFileName());
+					bufferedImage = ImageIO.read(new File(fileAccessEntry.getFileName()));
+					// scale it.
+					//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();
+					//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
+					imageViewer.setImage(bufferedImage);
+
+
+
+				}
+				else if (fileAccessEntry.getEncSize()>0) {
+
+					byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getLastAttachemntFile()
+							, fileAccessEntry, model.getEncryptor());
+
+					//icon = new ImageIcon(fileContent);
+					ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContent);
+					bufferedImage = ImageIO.read(inputStream);
+					imageViewer.setImage(bufferedImage);
+				}
+				else {
+					//no content to load?
+					DialogUtils.getInstance().error("No image content to load for entry :" + fileAccessEntry );
+				}
 			}
 
 			else

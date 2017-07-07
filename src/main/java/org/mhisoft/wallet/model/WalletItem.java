@@ -471,7 +471,11 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 	public void addOrReplaceAttachment(String fname) {
 		FileAccessEntry attachmentEntry =  getOrCreateAttachmentEntry();
-		if (attachmentEntry.getFileName()!=null) {
+
+		//file to updated file is still creating new.
+		// encContent means loaded from store, will be update if user attach a new image.
+
+		if ( attachmentEntry.getEncSize()>0) { //
 			//had a attachment, replacing.
 			newAttachmentEntry =   new FileAccessEntry(this.sysGUID);
 			newAttachmentEntry.setFileName(fname);
@@ -494,16 +498,50 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		return attachmentEntry;
 	}
 
+	public FileAccessEntry getNewAttachmentEntry() {
+		return newAttachmentEntry;
+	}
+
+	/**
+	 * Has file to load into the viewer.
+	 * @return
+	 */
 	public boolean hasAttachmentToLoadFromFile() {
-		return attachmentEntry!=null && attachmentEntry.getFileName()!=null;
+		if (attachmentEntry!=null) {
+			return attachmentEntry.getAccessFlag()== FileAccessFlag.Update?  newAttachmentEntry!=null && newAttachmentEntry.getFileName()!=null //
+					: attachmentEntry.getFileName()!=null;
+		}
+		else
+		return false;
+	}
+
+
+	/**
+	 * return either the entry or the updated one
+	 * @return
+	 */
+	public FileAccessEntry getFileAccessEntryToLoadFromFile() {
+ 		return FileAccessFlag.Update==attachmentEntry.getAccessFlag() ?  newAttachmentEntry : attachmentEntry;
 	}
 
 	/**
 	 * Has attachment to be red from the store.
 	 * @return
 	 */
-	public boolean hasAttachmentToRead() {
-	     return attachmentEntry!=null && attachmentEntry.encSize>0;
+	public boolean hasAttachmentToReadFromStore() {
+		return attachmentEntry!=null && attachmentEntry.encSize>0;
+	}
+
+
+	/**
+	 * return either the entry or the updated one
+	 * @return
+	 */
+	public FileAccessEntry getFileAccessEntryForDisplay() {
+		if (attachmentEntry==null || attachmentEntry.getAccessFlag()==null)
+			return attachmentEntry;
+
+		return FileAccessFlag.Update==attachmentEntry.getAccessFlag() ?  newAttachmentEntry : attachmentEntry;
 	}
 
 

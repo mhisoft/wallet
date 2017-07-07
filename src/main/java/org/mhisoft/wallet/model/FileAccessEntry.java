@@ -151,4 +151,18 @@ public class FileAccessEntry {
 	public void setAlgorithmParameters(AlgorithmParameters algorithmParameters) {
 		this.algorithmParameters = algorithmParameters;
 	}
+
+
+	@Override
+	public String toString() {
+		return "FileAccessEntry{" +
+				"GUID='" + GUID + '\'' +
+				", position=" + position +
+				", size=" + size +
+				", fileName='" + fileName + '\'' +
+				", accessFlag=" + accessFlag +
+				", posOfContent=" + posOfContent +
+				", encSize=" + encSize +
+				'}';
+	}
 }

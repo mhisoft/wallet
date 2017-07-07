@@ -114,10 +114,15 @@ public class AttachmentService {
 
 		FileAccessTable t = new FileAccessTable();
 		for (WalletItem item : model.getItemsFlatList()) {
-			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
-					&& item.getAttachmentEntry().getAccessFlag()!=null ) { //The old entry if not changed, access flag would be null.
-				t.addEntry(item.getAttachmentEntry());
 
+			if (item.getAttachmentEntry() != null &&
+					(item.getAttachmentEntry().getAccessFlag()==FileAccessFlag.Create
+							|| item.getAttachmentEntry().getAccessFlag()==FileAccessFlag.Update) )  {
+
+			if ( item.getNewAttachmentEntry()!=null && item.getNewAttachmentEntry().getFile() != null )
+				  t.addEntry(item.getNewAttachmentEntry());
+			else if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null )
+				t.addEntry(item.getAttachmentEntry());
 			}
 		}
 
