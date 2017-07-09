@@ -387,6 +387,15 @@ public class WalletModel {
 
 	}
 
+	public WalletItem getWalletItem(String sysGUID) {
+		for (WalletItem walletItem : itemsFlatList) {
+			if (walletItem.getSysGUID().equals(sysGUID))  {
+				return walletItem;
+			}
+		}
+		return null;
+	}
+
 
 	/**
 	 *

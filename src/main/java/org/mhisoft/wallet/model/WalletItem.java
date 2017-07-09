@@ -468,6 +468,9 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		this.attachmentEntry = attachmentEntry;
 	}
 
+	public void setNewAttachmentEntry(FileAccessEntry newAttachmentEntry) {
+		this.newAttachmentEntry = newAttachmentEntry;
+	}
 
 	public void addOrReplaceAttachment(String fname) {
 		FileAccessEntry attachmentEntry =  getOrCreateAttachmentEntry();
@@ -481,6 +484,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 			newAttachmentEntry.setFileName(fname);
 			attachmentEntry.setNewEntry(newAttachmentEntry);
 			attachmentEntry.setAccessFlag(FileAccessFlag.Update);
+			newAttachmentEntry.setAccessFlag(FileAccessFlag.Update);
 		}
 		else {
 			attachmentEntry.setFileName(fname);

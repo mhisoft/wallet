@@ -28,13 +28,13 @@ public class WalletService {
 		String attFileName = attachmentService.getAttachmentFileName(filename);
 		FileAccessTable t = attachmentService.read(attFileName, encryptor);
 
-		//set the  FileAccessEntry to the wallet item.
+
 		if (t!=null) {
 			for (FileAccessEntry entry : t.getEntries()) {
 				WalletItem item = ret.getWalletItem(entry.getGUID());
 				item.setAttachmentEntry(entry);
+				item.setNewAttachmentEntry(null);
 			}
-
 		}
 
 		return ret;

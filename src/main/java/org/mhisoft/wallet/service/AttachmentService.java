@@ -71,31 +71,31 @@ public class AttachmentService {
 			double deleteCount = 0, totalCount = 0;
 			for (WalletItem item : model.getItemsFlatList()) {
 				if (item.getAttachmentEntry() != null) {
-					switch (item.getAttachmentEntry().getAccessFlag()) {
-						case Delete:
-							deleteCount++;
-							break;
-						case Update:
-							deleteCount++;
-							totalCount++;
-							break;
-						case Create:
-							totalCount++;
-							break;
-						default:
-							totalCount++;//no change
+					totalCount++;
 
-					}
+					if (item.getAttachmentEntry().getAccessFlag()==FileAccessFlag.Delete
+						 || item.getAttachmentEntry().getAccessFlag()==FileAccessFlag.Update )
+						deleteCount++;
+
 				}
 			}
 
-			if (deleteCount / totalCount > 0.33) {
+			if (deleteCount / totalCount > 0.3) {
 				compactAttachmentStore(filename, model, encryptor);
 			} else {
 				appendAttachmentStore(filename, model, encryptor);
+				//todo deleted entries needs to be marked
+
 			}
+		}
 
+		//Refresh / Reload the wallet item file access entries after save.
+		FileAccessTable t = read(filename, encryptor);
 
+		//drive from item.
+		for (WalletItem item : model.getItemsFlatList()) {
+			item.setAttachmentEntry(t==null? null: t.getEntry(item.getSysGUID()));
+			item.setNewAttachmentEntry(null);
 		}
 
 	}
@@ -121,7 +121,7 @@ public class AttachmentService {
 				dataOut.writeInt(t.getEntries().size());
 				//itemStartPos = 4;
 
-				writeFileEntries(filename, 4, dataOut, t, encryptor);
+				writeFileEntries(false, null, 4, dataOut, t, encryptor);
 
 				dataOut.flush();
 			} catch (IOException e) {
@@ -135,6 +135,16 @@ public class AttachmentService {
 						//e.printStackTrace();
 					}
 			}
+
+
+			//now clear the access flag on the item
+			for (WalletItem item : model.getItemsFlatList()) {
+				if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
+						&& item.getAttachmentEntry().getAccessFlag() != null) {
+					item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
+				}
+			}
+
 		}
 	}
 
@@ -173,7 +183,7 @@ public class AttachmentService {
 				attachmentFileStore.seek(itemStartPos);
 
 				//append new entries to the end of the store.
-				writeFileEntries(filename, itemStartPos, attachmentFileStore, t, encryptor);
+				writeFileEntries(false, filename, itemStartPos, attachmentFileStore, t, encryptor);
 
 				//mark the deleted entries in the data store
 				//todo DELETE access flag
@@ -190,24 +200,14 @@ public class AttachmentService {
 						//e.printStackTrace();
 					}
 			}
-		}
 
-		//now clear the access flag on the item
-		for (WalletItem item : model.getItemsFlatList()) {
-			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
-					&& item.getAttachmentEntry().getAccessFlag() != null) {
-				item.getAttachmentEntry().setAccessFlag(null);
-			}
 		}
-
 
 	}
 
 
-	public void compactAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
-		//todo if delete and updated entries in the store is more than 30%, compact the store.
-		String[] parts= FileUtils.splitFileParts(filename);
-		String newStoreName = filename+".tmp";
+	public void compactAttachmentStore(final String oldStorefName, final WalletModel model, final Encryptor encryptor) {
+		String newStoreName = oldStorefName+".tmp";
 		File newFile =  new File(newStoreName);
 		if (newFile.exists()) {
 			if (!newFile.delete()) {
@@ -220,20 +220,54 @@ public class AttachmentService {
 			if (item.getAttachmentEntry()==null)
 				continue;
 
-			if (item.getAttachmentEntry().getAccessFlag()==null) {
-				//no change
+			if (item.getAttachmentEntry().getAccessFlag()==FileAccessFlag.None) {
+				//no change , need to transfer to the new file.
 				t.addEntry(item.getAttachmentEntry());
 			}
 			else if (FileAccessFlag.Create == item.getAttachmentEntry().getAccessFlag()
 					|| FileAccessFlag.Update == item.getAttachmentEntry().getAccessFlag()) {
-
-				if (item.getNewAttachmentEntry() != null && item.getNewAttachmentEntry().getFile() != null)
-					t.addEntry(item.getNewAttachmentEntry());
-				else if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null)
-					t.addEntry(item.getAttachmentEntry());
+				if (item.getAttachmentEntry() != null ) {
+					if (item.getAttachmentEntry().getNewEntry()!=null)
+						t.addEntry(item.getNewAttachmentEntry());
+					else
+						item.getAttachmentEntry();
+				}
 			}
 		}
 
+
+		RandomAccessFile attachmentFileStore = null;
+		if (t.getSize() > 0) {
+			try {
+				attachmentFileStore = new RandomAccessFile(newStoreName, "rw");
+				attachmentFileStore.seek(0);
+				attachmentFileStore.writeInt(t.getSize());
+
+				writeFileEntries(true, oldStorefName, 4, attachmentFileStore, t, encryptor);
+
+
+				attachmentFileStore.close();
+				attachmentFileStore=null;
+
+
+				//now do the swap of the store to the new one.
+				new File(oldStorefName).delete();
+				newFile.renameTo(new File(oldStorefName));
+
+
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				DialogUtils.getInstance().error("compactAttachmentStore() failed", e.getMessage());
+			} finally {
+				if (attachmentFileStore != null)
+					try {
+						attachmentFileStore.close();
+					} catch (IOException e) {
+						//e.printStackTrace();
+					}
+			}
+		}
 
 
 	}
@@ -260,7 +294,18 @@ public class AttachmentService {
 	 */
 
 
-	public void writeFileEntries(String fileStoreDataFile,
+	/**
+	 *
+	 * @param transferStoreMode  a new store will be created becaue the old one has t
+	 * @param oldStoreFileName provide along with the transferStoreMode. for read the contents to be transfered to the new store  when doing compacting.
+	 * @param itemStartPos   start position for the data output file.
+	 * @param dataOut     data output file/stream
+	 * @param t the  FileAccessTable contains the entries to write.
+	 * @param encryptor The encryptor
+	 * @throws IOException
+	 */
+	public void writeFileEntries(boolean transferStoreMode
+			,String oldStoreFileName,
 			final long itemStartPos, DataOutput dataOut, final FileAccessTable t, final Encryptor encryptor) throws IOException {
 
 		long pos = itemStartPos;
@@ -270,7 +315,7 @@ public class AttachmentService {
 		//dataOut = new DataOutputStream(new FileOutputStream(new File(outoutFIleName)));
 
 		//write the total number of entries first
-		   	/*#0*/
+		/*#0*/
 		//dataOut.writeInt(t.getEntries().size());
 		//itemStartPos = 4;
 
@@ -283,22 +328,14 @@ public class AttachmentService {
 
 			FileAccessEntry fileAccessEntry = t.getEntries().get(i);
 
-			//todo the one is to be deleted. we are appending the new and updated entries to the end.
-			//deletion needs compact the store.
 
-			if (fileAccessEntry.getAccessFlag()==null && fileAccessEntry.getEncSize()>0) {
-				//no change, this is an transfer to the new store. need to read the filecontent from the old store.
-			}
-
-			else if (fileAccessEntry.getAccessFlag() == FileAccessFlag.Delete) {
+			if (fileAccessEntry.getAccessFlag() == FileAccessFlag.Delete) {
 				/*todo save the  accessflag, mark for deletion later*/
-
-
 				continue;
 			}
 
 			logger.fine("Write entry " + fileAccessEntry.getGUID() + "-" + fileAccessEntry.getFileName());
-			logger.fine("\t " + fileAccessEntry.getAccessFlag());
+			logger.fine("\t access flag" + fileAccessEntry.getAccessFlag());
 			logger.fine("\t start pos:" + pos);
 
 			fileAccessEntry.setPosition(pos);
@@ -317,7 +354,18 @@ public class AttachmentService {
 			pos += 8;
 
 
-			byte[] fileContent = FileUtils.readFile(fileAccessEntry.getFile());
+
+			byte[] fileContent;
+
+			if ( transferStoreMode && fileAccessEntry.getAccessFlag() == FileAccessFlag.None && fileAccessEntry.getEncSize()>0) {
+				//no change, this is an transfer to the new store. need to read the filecontent from the old store.
+				 fileContent =readFileContent(oldStoreFileName, fileAccessEntry, encryptor);
+			}
+			else
+				 fileContent = FileUtils.readFile(fileAccessEntry.getFile());
+
+
+
 			Encryptor.EncryptionResult ret = encryptor.encrypt(fileContent);
 			byte[] encrypted = ret.getEncryptedData();
 			logger.fine("\t fileContent size:" + fileContent.length);
@@ -437,7 +485,9 @@ public class AttachmentService {
 				fileAccessEntry.setPosOfContent(pos);
 				fileAccessEntry.setEncSize(encSize);
 
-				t.addEntry(fileAccessEntry);
+				//todo if it is a DELETE marked entry, do not add.
+				if (fileAccessEntry.getAccessFlag()!=FileAccessFlag.Delete)
+					t.addEntry(fileAccessEntry);
 
 				/* #6 file content */
 				pos += encSize;
