@@ -91,7 +91,6 @@ public class AttachmentService {
 
 		//Refresh / Reload the wallet item file access entries after save.
 		FileAccessTable t = read(filename, encryptor);
-
 		//drive from item.
 		for (WalletItem item : model.getItemsFlatList()) {
 			item.setAttachmentEntry(t==null? null: t.getEntry(item.getSysGUID()));
@@ -267,6 +266,11 @@ public class AttachmentService {
 						//e.printStackTrace();
 					}
 			}
+		}
+		else {
+			//need to handle all images are deleted
+			//just remove the old store.
+			new File(oldStorefName).delete();
 		}
 
 

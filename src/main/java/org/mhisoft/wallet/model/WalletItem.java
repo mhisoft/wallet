@@ -493,8 +493,10 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	}
 
 	public void removeAttachment()  {
-	   if (this.attachmentEntry!=null)
-		 attachmentEntry.setAccessFlag(FileAccessFlag.Delete);
+	   if (this.attachmentEntry!=null) {
+		   attachmentEntry.setAccessFlag(FileAccessFlag.Delete);
+		   newAttachmentEntry = null;
+	   }
 	}
 
 

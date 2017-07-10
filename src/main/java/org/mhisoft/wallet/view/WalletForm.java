@@ -85,6 +85,7 @@ import org.mhisoft.wallet.action.NewWalletAction;
 import org.mhisoft.wallet.action.OpenWalletFileAction;
 import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.FileAccessEntry;
+import org.mhisoft.wallet.model.FileAccessFlag;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
@@ -183,6 +184,7 @@ public class WalletForm {
 	//private JScrollPane imageScrollPane;
 
 	private JPanel imagePanel;
+	private JButton btnImageClear;
 
 	private JScrollPane rightScrollPane;
 
@@ -290,6 +292,18 @@ public class WalletForm {
 		};
 
 		btnLoadImage.addActionListener(uploadImageListener);
+
+		btnImageClear.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.getCurrentItem().removeAttachment();
+
+				LoadImageWorker loadImageWorker = new LoadImageWorker(model.getCurrentItem());
+				loadImageWorker.execute();
+
+				ServiceRegistry.instance.getWalletModel().setModified(true);
+			}
+		});
 
 
 		btnTogglePasswordView.addActionListener(new ActionListener() {
@@ -492,6 +506,7 @@ public class WalletForm {
 		});
 
 		treeExpanded = WalletSettings.getInstance().isTreeExpanded();
+
 
 
 	} //end of form construstor
@@ -1084,7 +1099,8 @@ public class WalletForm {
 		btnClose.setVisible(true);
 		btnCancelEdit.setVisible(false);
 		btnEditForm.setVisible(false);
-		btnLoadImage.setVisible(false);
+		//btnLoadImage.setVisible(false);
+		btnImageClear.setVisible(false);
 	}
 
 
@@ -1143,7 +1159,7 @@ public class WalletForm {
 			FileAccessEntry fileAccessEntry = item.getFileAccessEntryForDisplay();
 
 
-			if (fileAccessEntry!=null) {
+			if (fileAccessEntry!=null && fileAccessEntry.getAccessFlag()!= FileAccessFlag.Delete) {
 
 				if (item.getNewAttachmentEntry()!=null || item.getAttachmentEntry().getFileName()!=null) {
 					/*new entry is from file*/
@@ -1171,10 +1187,14 @@ public class WalletForm {
 					//no content to load?
 					DialogUtils.getInstance().error("No image content to load for entry :" + fileAccessEntry );
 				}
+
+				btnImageClear.setVisible(true);
 			}
 
-			else
+			else {
 				imageViewer.setImage(null);
+				btnImageClear.setVisible(false);
+			}
 
 //			if (bufferedImage != null) {
 //				imageLabel.setIcon(icon);
