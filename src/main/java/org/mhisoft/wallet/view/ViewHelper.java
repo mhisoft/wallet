@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
 
@@ -118,6 +119,7 @@ public class ViewHelper {
 		if (extensions==null)
 			extensions = new String[] {"dat"} ;
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Wallet data files", extensions));
+		chooser.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX()/2, WalletSettings.getInstance().getDimensionX()/3));
 
 		//set font
 		setFileChooserFont(chooser.getComponents(), WalletSettings.getInstance().getFontSize());

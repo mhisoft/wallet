@@ -277,16 +277,17 @@ public class WalletForm {
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAttach", null));
 				String imageFile = ViewHelper.chooseFile(null, "png", "gif", "jpg", "jpeg");
+				if (imageFile!=null) {
+					//todo validate size.
+					//File f = new File(imageFile) ;
+					//if (f.get)
 
-				//todo validate size.
-				//File f = new File(imageFile) ;
-				//if (f.get)
+					model.getCurrentItem().addOrReplaceAttachment(imageFile);
+					LoadImageWorker loadImageWorker = new LoadImageWorker(model.getCurrentItem());
+					loadImageWorker.execute();
 
-				model.getCurrentItem().addOrReplaceAttachment(imageFile);
-				LoadImageWorker loadImageWorker = new LoadImageWorker(model.getCurrentItem());
-				loadImageWorker.execute();
-
-				ServiceRegistry.instance.getWalletModel().setModified(true);
+					ServiceRegistry.instance.getWalletModel().setModified(true);
+				}
 
 
 			}

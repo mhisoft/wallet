@@ -71,7 +71,7 @@ public class LoadWalletAction implements Action {
 			model.setCombinationHash(fileContent.getHeader().getCombinationHash());
 			model.setDeletedEntriesInStore(fileContent.getDeletedEntriesInStore());
 			//opened a old version file, need to save to v13 version on close. .
-			if (model.getDataFileVersion()<=13)
+			if (model.getDataFileVersion()<13)
 				ServiceRegistry.instance.getWalletModel().setModified(true);
 
 
