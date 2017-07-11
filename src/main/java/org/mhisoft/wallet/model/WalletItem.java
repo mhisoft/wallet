@@ -480,7 +480,8 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 		if ( attachmentEntry.getEncSize()>0) { //
 			//had a attachment, replacing.
-			newAttachmentEntry =   new FileAccessEntry(this.sysGUID);
+			if (newAttachmentEntry==null)
+				newAttachmentEntry =   new FileAccessEntry(this.sysGUID);
 			newAttachmentEntry.setFileName(fname);
 			attachmentEntry.setNewEntry(newAttachmentEntry);
 			attachmentEntry.setAccessFlag(FileAccessFlag.Update);
@@ -506,36 +507,6 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 	public FileAccessEntry getNewAttachmentEntry() {
 		return newAttachmentEntry;
-	}
-
-	/**
-	 * Has file to load into the viewer.
-	 * @return
-	 */
-	public boolean hasAttachmentToLoadFromFile() {
-		if (attachmentEntry!=null) {
-			return attachmentEntry.getAccessFlag()== FileAccessFlag.Update?  newAttachmentEntry!=null && newAttachmentEntry.getFileName()!=null //
-					: attachmentEntry.getFileName()!=null;
-		}
-		else
-		return false;
-	}
-
-
-	/**
-	 * return either the entry or the updated one
-	 * @return
-	 */
-	public FileAccessEntry getFileAccessEntryToLoadFromFile() {
- 		return FileAccessFlag.Update==attachmentEntry.getAccessFlag() ?  newAttachmentEntry : attachmentEntry;
-	}
-
-	/**
-	 * Has attachment to be red from the store.
-	 * @return
-	 */
-	public boolean hasAttachmentToReadFromStore() {
-		return attachmentEntry!=null && attachmentEntry.encSize>0;
 	}
 
 

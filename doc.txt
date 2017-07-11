@@ -1,5 +1,8 @@
 BIs:
 ==============
+* import  need to import file attachments too. combine two stores.
+        ** multiple attachments?
+* attachment feature
 * random access the file to allow save the item when the item SAVE button is clicked.
 * import and merge file.  (done)
 * back up current file (done)

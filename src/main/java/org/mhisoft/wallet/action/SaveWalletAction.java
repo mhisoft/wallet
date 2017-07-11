@@ -40,7 +40,7 @@ import org.mhisoft.wallet.view.WalletForm;
 public class SaveWalletAction implements Action {
 
 
-	protected void saveVault(String fileName) {
+	protected boolean saveVault(String fileName) {
 		//save the wallet
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		model.buildFlatListFromTree();
@@ -71,15 +71,20 @@ public class SaveWalletAction implements Action {
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
 		form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
 
+		return true;
+
 	}
 
 
 	@Override
 	public ActionResult execute(Object... params) {
 		String fileName = WalletSettings.getInstance().getLastFile();
-		saveVault(fileName);
-		ServiceRegistry.instance.getWalletSettingsService().updateAndSavePreferences();
-		return new ActionResult(true);
+		if (saveVault(fileName)) {
+			ServiceRegistry.instance.getWalletSettingsService().updateAndSavePreferences();
+			return new ActionResult(true);
+		}
+		else
+			return new ActionResult(false);
 
 
 	}

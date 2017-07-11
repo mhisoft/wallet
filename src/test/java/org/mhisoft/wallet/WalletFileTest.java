@@ -142,8 +142,8 @@ public class WalletFileTest {
 			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptor());
 
 			FileContent fileContent = walletService.readFromFile("test_v12.dat" , model.getEncryptor());
-
 			model.setItemsFlatList(fileContent.getWalletItems());
+			model.setDeletedEntriesInStore(fileContent.getDeletedEntriesInStore());
 			assertEquals(7, model.getItemsFlatList().size());
 			assertEquals(hash, fileContent.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {

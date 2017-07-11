@@ -103,7 +103,10 @@ public class FileAccessEntry {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
-		setFile(new File(fileName));
+		if (fileName!=null)
+			setFile(new File(fileName));
+		else
+			setFile(null);
 	}
 
 	public FileAccessFlag getAccessFlag() {

@@ -56,7 +56,7 @@ public class WalletModel {
 	private boolean importing=false;
 
 	private transient PassCombinationVO passPlain;     //todo move to model?
-
+	private int deletedEntriesInStore;
 
 
 	public WalletModel() {
@@ -74,6 +74,7 @@ public class WalletModel {
 		this.importing=false;
 		this.dataFileVersion=LATEST_DATA_VERSION;
 		this.passPlain=null;
+		this.deletedEntriesInStore=0;
 	}
 
 	public Encryptor createNewEncryptor(final PassCombinationVO newPass)   {
@@ -418,7 +419,11 @@ public class WalletModel {
 	}
 
 
+	public int getDeletedEntriesInStore() {
+		return deletedEntriesInStore;
+	}
 
-
-
+	public void setDeletedEntriesInStore(int deletedEntriesInStore) {
+		this.deletedEntriesInStore = deletedEntriesInStore;
+	}
 }

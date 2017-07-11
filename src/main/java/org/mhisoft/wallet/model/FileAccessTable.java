@@ -34,6 +34,7 @@ import java.util.List;
  */
 public class FileAccessTable {
 	List<FileAccessEntry> entries = new ArrayList<>();
+	public  int deletedEntries=0;
 
 	/**
 	 * add entry and return the GUID is the newly created entry.
@@ -68,5 +69,11 @@ public class FileAccessTable {
 		return entries;
 	}
 
+	public int getDeletedEntries() {
+		return deletedEntries;
+	}
 
+	public void setDeletedEntries(int deletedEntries) {
+		this.deletedEntries = deletedEntries;
+	}
 }

@@ -36,7 +36,8 @@ import org.mhisoft.wallet.model.WalletItem;
 public class FileContent {
 
 	private FileContentHeader header;
-	private  List<WalletItem> walletItems;
+	private List<WalletItem> walletItems;
+	private int deletedEntriesInStore;
 
 	public FileContent() {
 		header = new FileContentHeader();
@@ -56,6 +57,14 @@ public class FileContent {
 
 	public void setHeader(FileContentHeader header) {
 		this.header = header;
+	}
+
+	public int getDeletedEntriesInStore() {
+		return deletedEntriesInStore;
+	}
+
+	public void setDeletedEntriesInStore(int deletedEntriesInStore) {
+		this.deletedEntriesInStore = deletedEntriesInStore;
 	}
 
 	public WalletItem getWalletItem(String sysGUID) {

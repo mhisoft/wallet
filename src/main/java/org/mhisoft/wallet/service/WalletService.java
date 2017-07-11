@@ -35,6 +35,7 @@ public class WalletService {
 				item.setAttachmentEntry(entry);
 				item.setNewAttachmentEntry(null);
 			}
+			ret.setDeletedEntriesInStore(t.getDeletedEntries());
 		}
 
 		return ret;

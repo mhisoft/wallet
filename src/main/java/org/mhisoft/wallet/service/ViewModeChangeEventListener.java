@@ -32,14 +32,14 @@ public class ViewModeChangeEventListener implements EventListener {
 				form.btnSaveForm.setVisible(true);
 				form.btnClose.setVisible(false);
 				form.menuClose.setVisible(false);
-				//form.btnLoadImage.setVisible(true);
+				//form.btnAttach.setVisible(true);
 			} else if (displayMode == DisplayMode.view) {
 				form.btnEditForm.setVisible(true);
 				form.btnCancelEdit.setVisible(false);
 				form.btnSaveForm.setVisible(false);
 				form.btnClose.setVisible(true);
 				form.menuClose.setVisible(true);
-				//form.btnLoadImage.setVisible(false);
+				//form.btnAttach.setVisible(false);
 			}
 		}
 

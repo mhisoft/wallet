@@ -132,7 +132,8 @@ public class WalletForm {
 	public JButton btnSaveForm;
 	public JButton btnCancelEdit;
 	public JButton btnClose;
-	public JButton btnLoadImage;
+	public JButton btnAttach;
+	private JButton btnRemoveAttachment;
 
 	JLabel labelName;
 	JLabel labelURL;
@@ -184,7 +185,7 @@ public class WalletForm {
 	//private JScrollPane imageScrollPane;
 
 	private JPanel imagePanel;
-	private JButton btnImageClear;
+
 
 	private JScrollPane rightScrollPane;
 
@@ -274,7 +275,7 @@ public class WalletForm {
 		ActionListener uploadImageListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnLoadImage", null));
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAttach", null));
 				String imageFile = ViewHelper.chooseFile(null, "png", "gif", "jpg", "jpeg");
 
 				//todo validate size.
@@ -291,9 +292,9 @@ public class WalletForm {
 			}
 		};
 
-		btnLoadImage.addActionListener(uploadImageListener);
+		btnAttach.addActionListener(uploadImageListener);
 
-		btnImageClear.addActionListener(new ActionListener() {
+		btnRemoveAttachment.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				model.getCurrentItem().removeAttachment();
@@ -1099,8 +1100,8 @@ public class WalletForm {
 		btnClose.setVisible(true);
 		btnCancelEdit.setVisible(false);
 		btnEditForm.setVisible(false);
-		//btnLoadImage.setVisible(false);
-		btnImageClear.setVisible(false);
+		//btnAttach.setVisible(false);
+		btnRemoveAttachment.setVisible(false);
 	}
 
 
@@ -1188,12 +1189,12 @@ public class WalletForm {
 					DialogUtils.getInstance().error("No image content to load for entry :" + fileAccessEntry );
 				}
 
-				btnImageClear.setVisible(true);
+				btnRemoveAttachment.setVisible(true);
 			}
 
 			else {
 				imageViewer.setImage(null);
-				btnImageClear.setVisible(false);
+				btnRemoveAttachment.setVisible(false);
 			}
 
 //			if (bufferedImage != null) {
