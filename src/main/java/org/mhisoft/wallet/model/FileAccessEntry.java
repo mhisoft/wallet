@@ -45,8 +45,8 @@ public class FileAccessEntry {
 	FileAccessFlag accessFlag;
 
 	FileAccessEntry newEntry;
-	AlgorithmParameters algorithmParameters;
-	int posOfContent;
+	AlgorithmParameters algorithmParameters;   //for the content.
+	long posOfContent;
 	int encSize;
 
 
@@ -133,11 +133,11 @@ public class FileAccessEntry {
 		this.fileContent = fileContent;
 	}
 
-	public int getPosOfContent() {
+	public long getPosOfContent() {
 		return posOfContent;
 	}
 
-	public void setPosOfContent(int posOfContent) {
+	public void setPosOfContent(long posOfContent) {
 		this.posOfContent = posOfContent;
 	}
 

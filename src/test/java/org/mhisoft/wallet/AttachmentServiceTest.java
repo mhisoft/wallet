@@ -63,11 +63,11 @@ public class AttachmentServiceTest {
 
 		FileAccessTable t = new FileAccessTable();
 		FileAccessEntry fileEntry = t.addEntry();
-		fileEntry.setFileName("./target/classes/1463467646_61.png");
+		fileEntry.setFileName("."+ File.separator +"target"+ File.separator +"classes"+ File.separator +"1463467646_61.png");
 		guid1 = fileEntry.getGUID();
 
 		FileAccessEntry fileEntry2 = t.addEntry();
-		fileEntry2.setFileName("./target/classes/1463467888_13.png");
+		fileEntry2.setFileName("."+ File.separator +"target"+ File.separator +"classes" + File.separator +"1463467888_13.png");
 		guid2 = fileEntry2.getGUID();
 
 		Assert.assertEquals(t.getSize(), 2);

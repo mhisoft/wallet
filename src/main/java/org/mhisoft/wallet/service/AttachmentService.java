@@ -27,15 +27,16 @@ import java.util.logging.Logger;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.security.AlgorithmParameters;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.FileUtils;
+import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessFlag;
 import org.mhisoft.wallet.model.FileAccessTable;
@@ -381,96 +382,97 @@ public class AttachmentService {
 
 			fileAccessEntry.setPosition(pos);
 
-			/* #1  UUID*/
+			/*  UUID*/
 			int uuidSize = FileUtils.writeString(dataOut, fileAccessEntry.getGUID());
 			pos += 40;
 
-		    /* #1a  accessflag */
+		    /*  accessflag */
 			dataOut.writeInt(0);
 			pos += 4;
 
 
-			/* #2 header:pos of the attachment content*/
+			/* position */
 			dataOut.writeLong(fileAccessEntry.getPosition());
 			pos += 8;
 
 
-			byte[] fileContent;
 
+			/* write filename encrypted */
+			String strFName = FileUtils.getFileNameWithoutPath(fileAccessEntry.getFileName());
+			byte[] _byteFileName = StringUtils.getBytes(strFName);
+			pos = writeEncryptedContent(_byteFileName, encryptor, dataOut, pos );
+
+
+			/* Attachment body */
+			byte[] fileContent;
 			if (transferStoreMode && fileAccessEntry.getAccessFlag() == FileAccessFlag.None && fileAccessEntry.getEncSize() > 0) {
 				//no change, this is an transfer to the new store. need to read the filecontent from the old store.
 				fileContent = readFileContent(oldStoreFileName, fileAccessEntry, encryptor);
 			} else
 				fileContent = FileUtils.readFile(fileAccessEntry.getFile());
 
-
-			Encryptor.EncryptionResult ret = encryptor.encrypt(fileContent);
-			byte[] encrypted = ret.getEncryptedData();
-			logger.fine("\t fileContent size:" + fileContent.length);
-			logger.fine("\t encrypted size:" + encrypted.length);
-
-			/*#3: cipherParameters size 4 bytes*/
-			//have to write for each encryption because a random salt is used.
-			byte[] cipherParameters = ret.getCipherParameters();
-			//byte[] _intToBytes =  ByteArrayHelper.intToBytes(cipherParameters.length);
-			dataOut.writeInt(cipherParameters.length); //length is 100 bytes
-			pos += 4;
-
-			/*#4: cipherParameters body*/
-			dataOut.write(cipherParameters);
-			pos += cipherParameters.length;
-
-
-			/* #5 header:size of the attachment content*/
-			//_intToBytes = ByteArrayHelper.intToBytes(encrypted.length);
-			dataOut.writeInt(encrypted.length);
-			pos += 4;
-
-
-			/* content */
-			dataOut.write(encrypted);
-			pos += encrypted.length;
+			pos = writeEncryptedContent(fileContent, encryptor, dataOut, pos );
 
 		}
 
 
 	}
 
+	//return pos
+	private long writeEncryptedContent(byte[] content, final Encryptor encryptor, DataOutput dataOut, long pos) throws IOException {
 
-	private void writeFileContents(final String outoutFIleName, final FileAccessTable t) throws IOException {
-		//now write the file contents
+		Encryptor.EncryptionResult ret = encryptor.encrypt(content);
+		byte[] _byteEncrypted = ret.getEncryptedData();
 
-		RandomAccessFile fileStore = new RandomAccessFile(outoutFIleName, "rw");
-		//FileOutputStream fileStore = new FileOutputStream(outoutFIleName);
+		/*  cipherParameters size 4 bytes*/
+		byte[] cipherParameters = ret.getCipherParameters();
+		dataOut.writeInt(cipherParameters.length); //length is 100 bytes
+		pos += 4;
 
-		for (int i = 0; i < t.getEntries().size(); i++) {
-			FileAccessEntry item = t.getEntries().get(i);
-			FileInputStream fin = new FileInputStream(item.getFile());
+		/* cipherParameters body*/
+		dataOut.write(cipherParameters);
+		pos += cipherParameters.length;
 
-			// moves file pointer to position specified
-			fileStore.seek(item.getPosition());
-			// writing String to RandomAccessFile
-			byte[] bytes = new byte[4096];
+		/*  size of the  content*/
+		dataOut.writeInt(_byteEncrypted.length);
+		pos += 4;
 
-			int nRead, totalwrite = 0;
+		/*   content */
+		dataOut.write(_byteEncrypted);
+		pos += _byteEncrypted.length;
 
-			while ((nRead = fin.read(bytes, 0, bytes.length)) != -1) {
-				fileStore.write(bytes);
-				totalwrite += nRead;
-			}
+		return pos;
 
-
-			logger.info("wrote total " + totalwrite + " bytes for file:" + item.getFile().getName());
-			if (totalwrite != item.getSize())
-				throw new RuntimeException("Didn't write the full content, size expected to write " + item.getSize()
-						+ "actual write bytes:" + totalwrite);
-
-
-		}
-
-		fileStore.close();
 	}
 
+
+	class ReadContentVO {
+		long pos;
+		AlgorithmParameters algorithmParameters  ;
+
+	}
+
+	private ReadContentVO  readCipherParameter(RandomAccessFile fileIn, long pos) throws IOException, NoSuchAlgorithmException {
+		ReadContentVO ret = new ReadContentVO();
+		ret.pos =pos;
+
+		/*#3: ciperParameters size 4 bytes*/
+		int cipherParametersLength = fileIn.readInt();
+		ret.pos += 4;
+
+		/*#4: cipherParameters body*/
+		byte[] _byteCiper = new byte[cipherParametersLength];
+		int readBytes = fileIn.read(_byteCiper);
+		if (readBytes != cipherParametersLength)
+			throw new RuntimeException("read " + readBytes + " bytes only, expected to read:" + _byteCiper);
+		ret.pos += _byteCiper.length;
+
+		ret.algorithmParameters = AlgorithmParameters.getInstance(Encryptor.ALGORITHM);
+		ret.algorithmParameters.init(_byteCiper);
+
+		return ret;
+
+	}
 
 	public FileAccessTable read(String dataFile, final Encryptor encryptor) {
 		FileAccessTable t = null;
@@ -483,7 +485,7 @@ public class AttachmentService {
 			RandomAccessFile fileIn = new RandomAccessFile(dataFile, "rw");
 			int numberOfEntries = fileIn.readInt();
 			t = new FileAccessTable();
-			int pos = 4;
+			long pos = 4;
 			int readBytes = 0;
 			for (int i = 0; i < numberOfEntries; i++) {
 
@@ -495,34 +497,39 @@ public class AttachmentService {
 				pos += 40;
 				logger.fine("Read entry, UUID:" + UUID);
 
-				/* #1a  accessflag */
+				/*  accessflag */
 				fileAccessEntry.setAccessFlag(FileAccessFlag.values[fileIn.readInt()]);
 				pos += 4;
 				logger.fine("\t access flag:" + fileAccessEntry.getAccessFlag());
 
-				/* #2 pos */
+				/*  pos */
 				fileAccessEntry.setPosition(fileIn.readLong());
 				pos += 8;
 				logger.fine("\t position:" + fileAccessEntry.getPosition());
 
-				/*#3: ciperParameters size 4 bytes*/
-				int cipherParametersLength = fileIn.readInt();
+
+
+				/* read filename */
+				ReadContentVO vo = readCipherParameter(fileIn, pos);
+				pos= vo.pos;
+				int encSize_FileName = fileIn.readInt();
 				pos += 4;
+				byte[] _encedBytes = new byte[encSize_FileName];
+				fileIn.readFully(_encedBytes);
+				pos += encSize_FileName;
+				byte[] byte_filename = encryptor.decrypt(_encedBytes, vo.algorithmParameters);
+				fileAccessEntry.setFileName(StringUtils.bytesToString(byte_filename));
+				logger.fine("\t file name:" + fileAccessEntry.getFileName());
 
-			    /*#4: cipherParameters body*/
-				byte[] _byteCiper = new byte[cipherParametersLength];
-				readBytes = fileIn.read(_byteCiper);
-				if (readBytes != cipherParametersLength)
-					throw new RuntimeException("read " + readBytes + " bytes only, expected to read:" + _byteCiper);
-				pos += _byteCiper.length;
-
-				AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance(Encryptor.ALGORITHM);
-				algorithmParameters.init(_byteCiper);
-				fileAccessEntry.setAlgorithmParameters(algorithmParameters);
+				/* attachment content */
+				vo = readCipherParameter(fileIn, pos);
+				pos= vo.pos;
+				fileAccessEntry.setAlgorithmParameters(vo.algorithmParameters);
 
 				/*#5  size of the content (int): 4 bytes */
 				int encSize = fileIn.readInt();
 				pos += 4;
+
 				fileAccessEntry.setPosOfContent(pos);
 				fileAccessEntry.setEncSize(encSize);
 
