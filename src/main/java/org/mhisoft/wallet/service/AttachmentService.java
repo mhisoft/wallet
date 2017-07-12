@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.security.AlgorithmParameters;
+import java.text.DecimalFormat;
 
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.FileUtils;
@@ -51,6 +52,8 @@ import org.mhisoft.wallet.view.DialogUtils;
 public class AttachmentService {
 
 	private static final Logger logger = Logger.getLogger(AttachmentService.class.getName());
+
+	static DecimalFormat intDF = new DecimalFormat("###,###");
 
 
 	public String getAttachmentFileName(String walletFileName) {
@@ -83,22 +86,34 @@ public class AttachmentService {
 			}
 
 			//delete count need to add the orphan records (marked as DELETE) in the attachment store.
-			deleteCount +=model.getDeletedEntriesInStore();
+			deleteCount += model.getDeletedEntriesInStore();
 
 			if (deleteCount / totalCount > 0.3) {
 				/* transfer to a new store */
+				logger.fine("\n");
+				logger.fine("compactAttachmentStore");
 				compactAttachmentStore(filename, model, encryptor);
 			} else {
 				/* append to existing store */
+				logger.fine("\n");
+				logger.fine("appendAttachmentStore");
 				appendAttachmentStore(filename, model, encryptor);
 			}
 		}
 
+
+
+		logger.fine("file size: " + intDF.format(new File(filename).length()));
+
+
 		//Refresh / Reload the wallet item file access entries after save.
 		FileAccessTable t = read(filename, encryptor);
+		model.setDeletedEntriesInStore(t.getDeletedEntries());
 		//drive from item.
 		for (WalletItem item : model.getItemsFlatList()) {
 			item.setAttachmentEntry(t == null ? null : t.getEntry(item.getSysGUID()));
+			if (item.getAttachmentEntry() != null)
+				item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
 			item.setNewAttachmentEntry(null);
 		}
 
@@ -170,7 +185,7 @@ public class AttachmentService {
 		}
 
 
-		RandomAccessFile attachmentFileStore =null;
+		RandomAccessFile attachmentFileStore = null;
 		try {
 			attachmentFileStore = new RandomAccessFile(filename, "rw");
 
@@ -203,18 +218,17 @@ public class AttachmentService {
 				if (FileAccessFlag.Delete == item.getAttachmentEntry().getAccessFlag() //the attachment is deleted
 						//the entry had the content saved in the store, now it is replaced. the new content is appended to the end of the file.
 						// the file entry at the old position needs to be marked as DELETE.
-					   ||  (FileAccessFlag.Update == item.getAttachmentEntry().getAccessFlag()
-						&&   item.getAttachmentEntry().getEncSize()>0)
-						&& item.getAttachmentEntry().getPosition()>0)
-				{
+						|| (FileAccessFlag.Update == item.getAttachmentEntry().getAccessFlag()
+						&& item.getAttachmentEntry().getEncSize() > 0)
+						&& item.getAttachmentEntry().getPosition() > 0) {
 
 					attachmentFileStore.seek(item.getAttachmentEntry().getPosition() + 40);
-					attachmentFileStore.writeInt(item.getAttachmentEntry().getAccessFlag().ordinal());
+					attachmentFileStore.writeInt(FileAccessFlag.Delete.ordinal());
 				}
 			}
 
 			attachmentFileStore.close();
-			attachmentFileStore=null;
+			attachmentFileStore = null;
 
 
 		} catch (IOException e) {
@@ -231,6 +245,8 @@ public class AttachmentService {
 
 
 	} //appendAttachmentStore
+
+
 
 
 	protected void compactAttachmentStore(final String oldStorefName, final WalletModel model, final Encryptor encryptor) {
