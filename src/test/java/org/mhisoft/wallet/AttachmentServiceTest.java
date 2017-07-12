@@ -120,6 +120,9 @@ public class AttachmentServiceTest {
 			Assert.assertEquals(t.getEntries().get(0).getSize(), 366);
 			Assert.assertEquals(t.getEntries().get(1).getSize(), 412);
 
+			Assert.assertEquals(t.getEntries().get(0).getFileName(), "1463467646_61.png");
+			Assert.assertEquals(t.getEntries().get(1).getFileName(), "1463467888_13.png");
+
 //
 //			FileOutputStream out = new FileOutputStream(
 //					//parts[0]+parts[1]     +"_test_rewritten." + parts[2]
