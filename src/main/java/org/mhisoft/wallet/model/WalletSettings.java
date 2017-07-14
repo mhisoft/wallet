@@ -117,7 +117,8 @@ public class WalletSettings implements Serializable {
 	}
 
 
-	public String getLastAttachemntFile() {
+
+	public String getAttachmentStoreFileName() {
 		if (lastFile!=null)
 			return ServiceRegistry.instance.getAttachmentService().getAttachmentFileName(lastFile);
 		return null;

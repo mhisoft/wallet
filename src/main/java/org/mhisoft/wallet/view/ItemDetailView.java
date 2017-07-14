@@ -162,8 +162,8 @@ public class ItemDetailView {
 
 		}
 
-		/* load image*/
-		form.loadImage();
+
+		form.displayAttachment();
 
 
 		form.btnTogglePasswordView.setVisible(item.getType() == ItemType.item);

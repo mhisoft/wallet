@@ -43,6 +43,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -92,6 +93,8 @@ import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.AttachmentService;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
+
+import com.googlecode.vfsjfilechooser2.VFSJFileChooser;
 
 import hu.kazocsaba.imageviewer.ImageViewer;
 
@@ -185,6 +188,8 @@ public class WalletForm {
 	//private JScrollPane imageScrollPane;
 
 	private JPanel imagePanel;
+	private JButton btnDownloadAttachment;
+	private JLabel labelAttachmentFileName;
 
 
 	private JScrollPane rightScrollPane;
@@ -202,8 +207,8 @@ public class WalletForm {
 	ListExplorerView listExploreView;
 	ItemDetailView itemDetailView;
 
-	ImageViewer imageViewer ;
-	BufferedImage bufferedImage=null;
+	ImageViewer imageViewer;
+	BufferedImage bufferedImage = null;
 
 
 	boolean hidePassword = true;
@@ -220,6 +225,11 @@ public class WalletForm {
 	public TreeExploreView getTreeExploreView() {
 		return treeExploreView;
 	}
+
+
+	AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton
+			, AttachmentService.class);
+
 
 	public WalletForm() {
 
@@ -276,8 +286,8 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAttach", null));
-				String imageFile = ViewHelper.chooseFile(null, "png", "gif", "jpg", "jpeg");
-				if (imageFile!=null) {
+				String imageFile = ViewHelper.chooseFile(null, "png", "gif", "jpg", "jpeg", "doc", "txt", "pdf", "csv", "xls");
+				if (imageFile != null) {
 					//todo validate size.
 					//File f = new File(imageFile) ;
 					//if (f.get)
@@ -304,6 +314,16 @@ public class WalletForm {
 				loadImageWorker.execute();
 
 				ServiceRegistry.instance.getWalletModel().setModified(true);
+			}
+		});
+
+		btnDownloadAttachment.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnDownloadAttachment", null));
+				downloadAttachment();
+
+
 			}
 		});
 
@@ -510,7 +530,6 @@ public class WalletForm {
 		treeExpanded = WalletSettings.getInstance().isTreeExpanded();
 
 
-
 	} //end of form construstor
 
 	public enum TreePanelMode {
@@ -621,9 +640,8 @@ public class WalletForm {
 
 		//add the image viewer
 		//bufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
-		imageViewer = new ImageViewer(bufferedImage, true );
+		imageViewer = new ImageViewer(bufferedImage, true);
 		imagePanel.add(imageViewer.getComponent());
-
 
 
 		frame.pack();
@@ -656,8 +674,6 @@ public class WalletForm {
 
 		jreDebug();
 		tree.setModel(null);
-
-
 
 
 		resetForm();
@@ -1103,6 +1119,7 @@ public class WalletForm {
 		btnEditForm.setVisible(false);
 		//btnAttach.setVisible(false);
 		btnRemoveAttachment.setVisible(false);
+		btnDownloadAttachment.setVisible(false);
 	}
 
 
@@ -1151,72 +1168,15 @@ public class WalletForm {
 			if (item == null)
 				item = model.getCurrentItem();
 
-			//ImageIcon icon = null;
-			//BufferedImage bufferedImage=null ;
-
-			AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton
-					, AttachmentService.class);
-
 			//return the new entry if it has been updated , which will be a file at this point.
+
 			FileAccessEntry fileAccessEntry = item.getFileAccessEntryForDisplay();
+			if (fileAccessEntry != null && fileAccessEntry.getAccessFlag() != FileAccessFlag.Delete) {
+				displayAttachment(fileAccessEntry);
 
-
-			if (fileAccessEntry!=null && fileAccessEntry.getAccessFlag()!= FileAccessFlag.Delete) {
-
-				if (item.getNewAttachmentEntry()!=null || item.getAttachmentEntry().getFileName()!=null) {
-					/*new entry is from file*/
-					//icon = new ImageIcon(item.getAttachmentEntry().getFileName());
-					bufferedImage = ImageIO.read(new File(fileAccessEntry.getFileName()));
-					// scale it.
-					//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();
-					//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
-					imageViewer.setImage(bufferedImage);
-
-
-
-				}
-				else if (fileAccessEntry.getEncSize()>0) {
-
-					byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getLastAttachemntFile()
-							, fileAccessEntry, model.getEncryptor());
-
-					//icon = new ImageIcon(fileContent);
-					ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContent);
-					bufferedImage = ImageIO.read(inputStream);
-					imageViewer.setImage(bufferedImage);
-				}
-				else {
-					//no content to load?
-					DialogUtils.getInstance().error("No image content to load for entry :" + fileAccessEntry );
-				}
-
-				btnRemoveAttachment.setVisible(true);
+			} else {
+				clearAttachmentDisplay();
 			}
-
-			else {
-				imageViewer.setImage(null);
-				btnRemoveAttachment.setVisible(false);
-			}
-
-//			if (bufferedImage != null) {
-//				imageLabel.setIcon(icon);
-//				imageLabel.setVisible(true);
-//				imageViewer.setImage(bufferedImage);
-//			} else {
-//				//imageLabel.setIcon(null);
-//				imageViewer.setImage(null);
-
-//			}
-
-//			imageViewer.setResizeStrategy(ResizeStrategy.CUSTOM_ZOOM);
-//			imageViewer.setZoomFactor(1);
-//			imageViewer.setResizeStrategy(ResizeStrategy.RESIZE_TO_FIT);
-
-
-
-//			imageScrollPane.setPreferredSize(   new Dimension(icon.getIconWidth(), icon.getIconHeight()));
-//			imageScrollPane.repaint();
-
 
 			return null;
 		}
@@ -1224,9 +1184,95 @@ public class WalletForm {
 	}
 
 
-	public void loadImage() {
+	//fileAccessEntry is not null
+	private void displayAttachment(FileAccessEntry fileAccessEntry) throws IOException {
+
+		boolean loadFromFileStoreContent = (fileAccessEntry.getEncSize() > 0);
+
+
+		//use file
+		if (FileUtils.isImageFile(fileAccessEntry.getFileName())) {
+
+			if (loadFromFileStoreContent) {
+
+				//use content
+				byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
+						, fileAccessEntry, model.getEncryptor());
+
+				ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContent);
+				bufferedImage = ImageIO.read(inputStream);
+				imageViewer.setImage(bufferedImage);
+
+			} else {
+				/*new entry is from file*/
+				//icon = new ImageIcon(item.getAttachmentEntry().getFileName());
+				bufferedImage = ImageIO.read(new File(fileAccessEntry.getFileName()));
+				// scale it.
+				//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();
+				//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
+				imageViewer.setImage(bufferedImage);
+			}
+		} else {
+			imageViewer.setImage(null);
+
+			//display filename only
+			labelAttachmentFileName.setText(FileUtils.getFileNameWithoutPath(fileAccessEntry.getFileName()));
+		}
+
+		btnRemoveAttachment.setVisible(true);
+		btnDownloadAttachment.setVisible(true);
+
+
+	}
+
+	public void clearAttachmentDisplay() {
+		imageViewer.setImage(null);
+		btnRemoveAttachment.setVisible(false);
+		btnDownloadAttachment.setVisible(false);
+		labelAttachmentFileName.setText("");
+
+	}
+
+
+	public void displayAttachment() {
 		LoadImageWorker loadImageWorker = new LoadImageWorker();
 		loadImageWorker.execute();
+	}
+
+
+	public void downloadAttachment() {
+
+		FileAccessEntry fileAccessEntry = model.getCurrentItem().getAttachmentEntry();
+		if (fileAccessEntry != null) {
+
+
+			try {
+				File[] files = FileUtils.chooseFiles(null, VFSJFileChooser.SELECTION_MODE.FILES_AND_DIRECTORIES, true, false);
+				if (files != null && files.length > 0) {
+					if (files[0].exists()) {
+						//todo ask to override?
+					} else {
+
+						String path = files[0].getAbsolutePath();
+						FileUtils.getFileNameWithoutPath()
+
+						String fname = path + fileAccessEntry.getFileName();
+
+						//use content
+						byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
+								, fileAccessEntry, model.getEncryptor());
+
+						FileUtils.writeFile(fileContent,  fname );
+
+					}
+
+					setMessage("Downloaded the attachment and saved to file:" + files[0].getAbsolutePath() );
+
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 
