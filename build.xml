@@ -22,6 +22,24 @@
   ~
   -->
 
+
+<!--adding a new jar to dist/lib
+also add the entry to the MANIFEST.MF
+        Class-Path:
+        lib/forms_rt.jar
+        lib/images.jar lib/common-utils-1.0.jar
+        lib/jasypt-1.9.2.jar
+        lib/rsyntaxtextarea-2.5.8.jar
+        lib/vfsjfilechooser2-0.2.7.jar
+        lib/image-viewer-1.2.4.jar
+        lib/commons-vfs2-2.0.jar
+        lib/commons-io-2.1.jar
+        lib/commons-logging-api-1.1.jar
+
+        -->
+
+
+
 <project name="eWallet build" default="dist" >
 
     <property environment="env"/>
@@ -39,7 +57,7 @@
     <property name="src.dir" value="src"/>
 
     <property name="application.title" value="MHISoft eVault"/>
-    <property name="launch4j.tmp.make,dir" value="dist/tmp_make_exe"/>
+    <property name="launch4j.tmp.make.dir" value="dist/tmp_make_exe"/>
     <!--<property name="launch4j.home.dir" location="/Users/i831964/bin/launch4j" />-->
 
     <property name="MAC_JRE_BUNDLE_DIR" value="dist/MAC/jdk1.8.0_51.jdk/Contents/Home"/>
@@ -172,8 +190,8 @@
            <outfile>S:\projects\mhisoft\apps\wallet\dist\evault-1.1.2.exe</outfile>
 
          -->
-        <property name="version.match3" value="evault-(.*)\.exe" />
-        <property name="version.replace3" value="evault-${version}.exe" />
+        <property name="version.match3" value="dist/evault-(.*)\.exe" />
+        <property name="version.replace3" value="dist/evault-${version}.exe" />
         <replaceregexp encoding="UTF-8" flags="g" match="${version.match3}" replace="${version.replace3}">
             <fileset dir="./dist">
                 <include name="evault-launch4j-config.xml" />
@@ -254,6 +272,7 @@
         <!--<delete dir="${launch4j.dir}" failonerror="false"/>-->
 
         <!--make the Windows OS zip -->
+        <delete file="dist\MHISoft-eVault-${version}-bin-for-WindowsOS.zip"/>
         <echo message="  --> package MHISoft-eVault-${version}-bin-for-WindowsOS.zip"/>
         <zip destfile="dist\MHISoft-eVault-${version}-bin-for-WindowsOS.zip">
             <zipfileset dir="dist/jre" prefix="jre"/>
@@ -267,20 +286,20 @@
 
 
     <target name="_make-one-jar" description="make the Win Exe Bundle" >
-        <property name="launch4j.jar" value="${launch4j.tmp.make,dir}/${launch4jFinalJar}"/>
+        <property name="launch4j.jar" value="${launch4j.tmp.make.dir}/${launch4jFinalJar}"/>
 
 
 
         <echo message="  --> Packaging ${application.title} into a single JAR at ${launch4j.jar}"/>
-        <delete dir="${launch4j.tmp.make,dir}" failonerror="false"/>
-        <mkdir dir="${launch4j.tmp.make,dir}"/>
+        <delete dir="${launch4j.tmp.make.dir}" failonerror="false"/>
+        <mkdir dir="${launch4j.tmp.make.dir}"/>
 
         <!--make the temp_final.jar-->
 
         <if>
             <equals arg1="${sourceJar}" arg2="${ARTIFACT_NAME}.jar"/>
             <then>
-                <jar destfile="${launch4j.tmp.make,dir}/temp_final.jar" filesetmanifest="skip">
+                <jar destfile="${launch4j.tmp.make.dir}/temp_final.jar" filesetmanifest="skip">
                     <zipgroupfileset dir="dist" includes="${sourceJar}"/>
                     <zipgroupfileset dir="dist/lib" includes="*.jar"/>
                     <manifest>
@@ -290,7 +309,7 @@
             </then>
             <else>
                 <echo message="  -->use source jar: ${sourceJar}"/>
-                <jar destfile="${launch4j.tmp.make,dir}/temp_final.jar" filesetmanifest="skip">
+                <jar destfile="${launch4j.tmp.make.dir}/temp_final.jar" filesetmanifest="skip">
                     <zipgroupfileset dir="dist" includes="${sourceJar}"/>
                     <manifest>
                         <attribute name="Main-Class" value="${AppMainClass}"/>
@@ -303,7 +322,7 @@
         <!--make the combined jar-->
         <echo message="  --> make the ${launch4j.jar}}"/>
         <zip destfile="${launch4j.jar}">
-            <zipfileset src="${launch4j.tmp.make,dir}/temp_final.jar"
+            <zipfileset src="${launch4j.tmp.make.dir}/temp_final.jar"
                         excludes="META-INF/*.SF, META-INF/*.DSA, META-INF/*.RSA, META-INF/maven/*, META-INF/jb/*"/>
         </zip>
 
