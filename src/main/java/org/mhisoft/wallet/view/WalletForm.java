@@ -92,6 +92,7 @@ import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.AttachmentService;
 import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.service.DebugUtil;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 import com.googlecode.vfsjfilechooser2.VFSJFileChooser;
@@ -180,7 +181,7 @@ public class WalletForm {
 	public JLabel labelCurrentOpenFile;
 	private JTextField fldIdleTimeout;
 	private JLabel labelIdleTimeOut;
-	private JTextArea textAreaDebug;
+	public JTextArea textAreaDebug;
 	private JLabel labelLastMessage;
 	JButton btnCollapse;
 	//JLabel imageLabel;
@@ -672,7 +673,7 @@ public class WalletForm {
 		itemListPanel.setVisible(false);
 		frame.setVisible(true);
 
-		jreDebug();
+		DebugUtil.jreDebug();
 		tree.setModel(null);
 
 
@@ -710,19 +711,7 @@ public class WalletForm {
 	}
 
 
-	public void jreDebug() {
-		textAreaDebug.setText("");
-		//if (WalletModel.debug) {
-		textAreaDebug.append("\n");
-		textAreaDebug.append(WalletMain.BUILD_DETAIL + "\n");
-		textAreaDebug.append("\n");
-		textAreaDebug.append("java.home=" + System.getProperty("java.home") + "\n");
-		textAreaDebug.append("java.specification.version=" + System.getProperty("java.specification.version") + "\n");
-		textAreaDebug.append("java.vendor=" + System.getProperty("java.vendor") + "\n");
-		textAreaDebug.append("java.vendor.url=" + System.getProperty("java.vendor.url") + "\n");
-		textAreaDebug.append("java.version=" + System.getProperty("java.version") + "\n");
-		textAreaDebug.append("user.home=" + System.getProperty("user.home") + "\n");
-	}
+
 
 
 	/**
@@ -1249,27 +1238,40 @@ public class WalletForm {
 			try {
 				File[] files = FileUtils.chooseFiles(null, VFSJFileChooser.SELECTION_MODE.FILES_AND_DIRECTORIES, true, false);
 				if (files != null && files.length > 0) {
-					if (files[0].exists()) {
-						//todo ask to override?
-					} else {
 
-						String path = files[0].getAbsolutePath();
-						String saveToFile;
-						if (FileUtils.getFileNameWithoutPath(path) != null)
-							saveToFile = path;
-						else
 
-							saveToFile = path + fileAccessEntry.getFileName();
+					String path = files[0].getAbsolutePath();
+					String saveToFile;
+					if (FileUtils.getFileNameWithoutPath(path) != null)
+						saveToFile = path;
+					else
+						saveToFile = path + File.separator+ fileAccessEntry.getFileName();
 
+					boolean doIt = true;
+					if (new File(saveToFile).exists()) {
+						Confirmation confirmRet = DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+								, "File exists. Override the file " + saveToFile + "?");
+
+						if (confirmRet == Confirmation.QUIT) {
+							doIt = false;
+							;
+						} else if (confirmRet != Confirmation.YES) {
+							doIt = false;
+						}
+					}
+					//else
+					   //do it is true;
+
+
+					if (doIt) {
 						//use content
 						byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
 								, fileAccessEntry, model.getEncryptor());
 
 						FileUtils.writeFile(fileContent, saveToFile);
 
+						setMessage("Downloaded the attachment and saved to file:" + saveToFile);
 					}
-
-					setMessage("Downloaded the attachment and saved to file:" + files[0].getAbsolutePath());
 
 				}
 			} catch (IOException e) {

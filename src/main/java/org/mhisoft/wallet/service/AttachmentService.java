@@ -563,6 +563,11 @@ public class AttachmentService {
 		}
 
 
+		DebugUtil.append("Attachment Store total entries:" + t.getSize()
+				+"\n" + "Orphan records :" + t.deletedEntries
+		);
+
+
 		return t;
 	}
 
