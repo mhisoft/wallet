@@ -253,6 +253,16 @@
         <!--clean up-->
         <!--<delete dir="${launch4j.dir}" failonerror="false"/>-->
 
+        <!--make the Windows OS zip -->
+        <echo message="  --> package MHISoft-eVault-${version}-bin-for-WindowsOS.zip"/>
+        <zip destfile="dist\MHISoft-eVault-${version}-bin-for-WindowsOS.zip">
+            <zipfileset dir="dist/jre" prefix="jre"/>
+            <fileset dir="dist" includes="evault-${version}.exe" />
+            <fileset dir="dist" includes="wallet-2-128.ico"/>
+        </zip>
+
+
+
     </target>
 
 
