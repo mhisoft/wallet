@@ -1254,19 +1254,22 @@ public class WalletForm {
 					} else {
 
 						String path = files[0].getAbsolutePath();
-						FileUtils.getFileNameWithoutPath()
+						String saveToFile;
+						if (FileUtils.getFileNameWithoutPath(path) != null)
+							saveToFile = path;
+						else
 
-						String fname = path + fileAccessEntry.getFileName();
+							saveToFile = path + fileAccessEntry.getFileName();
 
 						//use content
 						byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
 								, fileAccessEntry, model.getEncryptor());
 
-						FileUtils.writeFile(fileContent,  fname );
+						FileUtils.writeFile(fileContent, saveToFile);
 
 					}
 
-					setMessage("Downloaded the attachment and saved to file:" + files[0].getAbsolutePath() );
+					setMessage("Downloaded the attachment and saved to file:" + files[0].getAbsolutePath());
 
 				}
 			} catch (IOException e) {
