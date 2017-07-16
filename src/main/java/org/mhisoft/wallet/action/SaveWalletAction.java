@@ -46,7 +46,7 @@ public class SaveWalletAction implements Action {
 		model.buildFlatListFromTree();
 
 		try {
-			if (model.getDataFileVersion()<13)  {
+			if (model.getDataFileVersion() < 13) {
 				//data conversion.
 				//to be saved to the latest v13 version , prepare the new hashes.
 				// and need the combination hash set
@@ -82,8 +82,7 @@ public class SaveWalletAction implements Action {
 		if (saveVault(fileName)) {
 			ServiceRegistry.instance.getWalletSettingsService().updateAndSavePreferences();
 			return new ActionResult(true);
-		}
-		else
+		} else
 			return new ActionResult(false);
 
 

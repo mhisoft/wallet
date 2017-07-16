@@ -76,6 +76,12 @@ public class CloseWalletAction extends SaveWalletAction {
 
 	@Override
 	public ActionResult execute(Object... params) {
+
+		WalletModel model = ServiceRegistry.instance.getWalletForm().getModel();
+		if (!model.isWalletOpen())
+			return new ActionResult(true);
+
+
 		if (params.length>0)
 			quiet = (Boolean) params[0];
 

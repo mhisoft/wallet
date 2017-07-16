@@ -808,12 +808,17 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuOpen", null));
+				OpenWalletFileAction openWalletFileAction = ServiceRegistry.instance.getService(BeanType.singleton, OpenWalletFileAction.class);
 
-				CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
-				ActionResult r = closeWalletAction.execute();
-				if (r.isSuccess()) {
-					OpenWalletFileAction openWalletFileAction = ServiceRegistry.instance.getService(BeanType.singleton, OpenWalletFileAction.class);
-					r = openWalletFileAction.execute();
+				if (model.isWalletOpen()) {
+					CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
+					ActionResult r = closeWalletAction.execute();
+					if (r.isSuccess()) {
+						openWalletFileAction.execute();
+					}
+				}
+				else {
+					openWalletFileAction.execute();
 				}
 			}
 		});

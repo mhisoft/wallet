@@ -116,7 +116,7 @@ public class ViewHelper {
 		if (defaultDir == null)
 			defaultDir = WalletSettings.userHome;
 		chooser.setCurrentDirectory(new File(defaultDir));
-		if (extensions==null)
+		if (extensions==null || extensions.length==0)
 			extensions = new String[] {"dat"} ;
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Wallet data files", extensions));
 		chooser.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX()/2, WalletSettings.getInstance().getDimensionX()/3));

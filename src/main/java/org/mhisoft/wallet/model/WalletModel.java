@@ -63,6 +63,10 @@ public class WalletModel {
 
 	}
 
+	public boolean isWalletOpen() {
+		return this.passHash!=null;
+	}
+
 	public void reset() {
 		this.itemsFlatList = new ArrayList<>();
 		this.currentItem=null;
