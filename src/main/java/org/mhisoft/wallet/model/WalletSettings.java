@@ -72,6 +72,8 @@ public class WalletSettings implements Serializable {
 	private LinkedList<String> recentFiles ;
 	private boolean treeExpanded;
 
+	private String recentOpenDir; //remember the recent open dir so file choose can default to it.
+
 
 	public int getFontSize() {
 		return fontSize == 0 ? 20 : fontSize;
@@ -185,6 +187,18 @@ public class WalletSettings implements Serializable {
 
 	}
 
+	public String getRecentOpenDir() {
+		return recentOpenDir==null?userHome:recentOpenDir;
+	}
+
+	public File getRecentOpenDirFile() {
+		return recentOpenDir==null?new File(userHome):new File(recentOpenDir);
+	}
+
+	public void setRecentOpenDir(String recentOpenDir) {
+		this.recentOpenDir = recentOpenDir;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("WalletSettings{");
@@ -196,6 +210,7 @@ public class WalletSettings implements Serializable {
 		sb.append(", idleTimeout=").append(idleTimeout);
 		sb.append(", recentFiles=").append(recentFiles);
 		sb.append(", treeExpanded=").append(treeExpanded);
+		sb.append(", recentOpenDir=").append(recentOpenDir);
 		sb.append('}');
 		return sb.toString();
 	}

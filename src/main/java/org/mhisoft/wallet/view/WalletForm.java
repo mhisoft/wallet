@@ -287,7 +287,9 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAttach", null));
-				String imageFile = ViewHelper.chooseFile(null, "png", "gif", "jpg", "jpeg", "doc", "txt", "pdf", "csv", "xls");
+//				String imageFile = ViewHelper.chooseFile(VFSJFileChooser.SELECTION_MODE.FILES_ONLY
+//						,"png", "gif", "jpg", "jpeg", "doc", "docx", "txt", "pdf", "csv", "xls");
+				String imageFile = ViewHelper.chooseFilev1("png", "gif", "jpg", "jpeg", "doc", "docx", "txt", "pdf", "csv", "xls");
 				if (imageFile != null) {
 					//todo validate size.
 					//File f = new File(imageFile) ;
@@ -711,9 +713,6 @@ public class WalletForm {
 	}
 
 
-
-
-
 	/**
 	 * OpenRecentFilesActionListener
 	 */
@@ -816,8 +815,7 @@ public class WalletForm {
 					if (r.isSuccess()) {
 						openWalletFileAction.execute();
 					}
-				}
-				else {
+				} else {
 					openWalletFileAction.execute();
 				}
 			}
@@ -1241,46 +1239,44 @@ public class WalletForm {
 
 
 			try {
-				File[] files = FileUtils.chooseFiles(null, VFSJFileChooser.SELECTION_MODE.FILES_AND_DIRECTORIES, true, false);
-				if (files != null && files.length > 0) {
+				String path = ViewHelper.chooseFile(VFSJFileChooser.SELECTION_MODE.FILES_AND_DIRECTORIES);
 
+				String saveToFile;
+				if (FileUtils.getFileNameWithoutPath(path) != null)
+					saveToFile = path;
+				else
+					saveToFile = path + File.separator + FileUtils.getFileNameWithoutPath(fileAccessEntry.getFileName());
 
-					String path = files[0].getAbsolutePath();
-					String saveToFile;
-					if (FileUtils.getFileNameWithoutPath(path) != null)
-						saveToFile = path;
-					else
-						saveToFile = path + File.separator+ fileAccessEntry.getFileName();
+				boolean doIt = true;
+				if (new File(saveToFile).exists()) {
+					Confirmation confirmRet = DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+							, "File exists. Override the file " + saveToFile + "?");
 
-					boolean doIt = true;
-					if (new File(saveToFile).exists()) {
-						Confirmation confirmRet = DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
-								, "File exists. Override the file " + saveToFile + "?");
-
-						if (confirmRet == Confirmation.QUIT) {
-							doIt = false;
-							;
-						} else if (confirmRet != Confirmation.YES) {
-							doIt = false;
-						}
+					if (confirmRet == Confirmation.QUIT) {
+						doIt = false;
+						;
+					} else if (confirmRet != Confirmation.YES) {
+						doIt = false;
 					}
-					//else
-					   //do it is true;
-
-
-					if (doIt) {
-						//use content
-						byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
-								, fileAccessEntry, model.getEncryptor());
-
-						FileUtils.writeFile(fileContent, saveToFile);
-
-						setMessage("Downloaded the attachment and saved to file:" + saveToFile);
-					}
-
 				}
+				//else
+				//do it is true;
+
+
+				if (doIt) {
+					//use content
+					byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
+							, fileAccessEntry, model.getEncryptor());
+
+					FileUtils.writeFile(fileContent, saveToFile);
+
+					setMessage("Downloaded the attachment and saved to file:" + saveToFile);
+				}
+
 			} catch (IOException e) {
 				e.printStackTrace();
+				DialogUtils.getInstance().error("downloadAttachment filed", e.getMessage());
+
 			}
 		}
 	}

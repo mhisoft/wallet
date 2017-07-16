@@ -53,7 +53,7 @@ public class ImportWalletAction implements Action {
 	@Override
 	public ActionResult execute(Object... params) {
 
-		String importFile = ViewHelper.chooseFile(null);
+		String importFile = ViewHelper.chooseFilev1(null);
 		if (importFile != null) {
 
 			if (new File(importFile).isFile()) {

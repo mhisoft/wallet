@@ -51,7 +51,7 @@ public class OpenWalletFileAction implements Action {
 			fileName = (String)params[0];
 		else {
 			String[] parts = FileUtils.splitFileParts(WalletSettings.getInstance().getLastFile());
-			fileName = ViewHelper.chooseFile(parts[0]);  //last file's directory.
+			fileName = ViewHelper.chooseFilev1(parts[0]);  //last file's directory.
 		}
 
 

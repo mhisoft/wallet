@@ -32,11 +32,18 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
 
+import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.WalletSettings;
+import org.mhisoft.wallet.service.ServiceRegistry;
+
+import com.googlecode.vfsjfilechooser2.VFSJFileChooser;
+import com.googlecode.vfsjfilechooser2.accessories.DefaultAccessoriesPanel;
+import com.googlecode.vfsjfilechooser2.filepane.VFSFilePane;
 
 /**
  * Description:
@@ -45,6 +52,10 @@ import org.mhisoft.wallet.model.WalletSettings;
  * @since May, 2016
  */
 public class ViewHelper {
+
+	public static Font getDefaultFont() {
+		return ServiceRegistry.instance.getWalletForm().tree.getFont();   //Arial, regular, font size 20.
+	}
 
 	public static void setFontSize(List<Component> componetsList, int newFontSize) {
 		WalletSettings.getInstance().setFontSize(newFontSize);
@@ -55,6 +66,7 @@ public class ViewHelper {
 
 		}
 	}
+
 
 	public static void setFontSize(Component[] componetsList, int newFontSize) {
 		if (componetsList != null)
@@ -86,6 +98,8 @@ public class ViewHelper {
 		}
 	}
 
+
+
 	/**
 	 * Resgier allthe components in the jFrame.
 	 *
@@ -109,26 +123,116 @@ public class ViewHelper {
 	}
 
 
-	public static String chooseFile(String defaultDir, String... extensions) {
+	/* use java swing JFileChooser. */
+	public static String chooseFilev1(String... extensions) {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
-		if (defaultDir == null)
-			defaultDir = WalletSettings.userHome;
+		String defaultDir = WalletSettings.getInstance().getRecentOpenDir();
 		chooser.setCurrentDirectory(new File(defaultDir));
 		if (extensions==null || extensions.length==0)
 			extensions = new String[] {"dat"} ;
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Wallet data files", extensions));
 		chooser.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX()/2, WalletSettings.getInstance().getDimensionX()/3));
+		//start with detailed view.
+		Action details = chooser.getActionMap().get("viewTypeDetails");
+		details.actionPerformed(null);
 
 		//set font
 		setFileChooserFont(chooser.getComponents(), WalletSettings.getInstance().getFontSize());
 
 		int returnValue = chooser.showOpenDialog(null);
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			return chooser.getSelectedFile().getAbsolutePath();
+			String path = chooser.getSelectedFile().getAbsolutePath();
+			WalletSettings.getInstance().setRecentOpenDir(FileUtils.gerFileDir(path));
+			return path;
 		}
 		return null;
+	}
+
+
+	/**
+	 * @param defaultDir
+	 * @param selectionMode
+	 * @param fileHidingEnabled     If true, hidden files are not shown in the file chooser.
+	 * @param MultiSelectionEnabled
+	 * @return
+	 */
+	public static File[] chooseFiles(final File defaultDir, VFSJFileChooser.SELECTION_MODE selectionMode,
+			FileUtils.FilesTypeFilter filesTypeFilter,
+			boolean fileHidingEnabled,
+			boolean MultiSelectionEnabled
+			,Dimension preferredSize
+			, Font newFont
+	) {
+		// create a file chooser
+		final MyVFSJFileChooser fileChooser = new MyVFSJFileChooser();
+
+		// configure the file dialog
+		fileChooser.setAccessory(new DefaultAccessoriesPanel(fileChooser));
+		fileChooser.setFileHidingEnabled(fileHidingEnabled);
+		fileChooser.setMultiSelectionEnabled(MultiSelectionEnabled);
+		fileChooser.setFileSelectionMode(selectionMode);
+		fileChooser.setPreferredSize(preferredSize);
+		//font size
+		//fileChooser.setFont(newFont);
+
+
+		if (defaultDir != null)
+			fileChooser.setCurrentDirectory(defaultDir);
+		if (filesTypeFilter!=null)
+			fileChooser.setFileFilter(filesTypeFilter);
+
+
+		fileChooser.firePropertyChange("viewType", VFSFilePane.VIEWTYPE_LIST, VFSFilePane.VIEWTYPE_DETAILS);
+
+
+		// show the file dialog
+		VFSJFileChooser.RETURN_TYPE answer = fileChooser.showOpenDialog(ServiceRegistry.instance.getWalletForm().getFrame());
+
+
+		// check if a file was selected
+		if (answer == VFSJFileChooser.RETURN_TYPE.APPROVE) {
+			File[] files;
+			if (MultiSelectionEnabled)
+				files = fileChooser.getSelectedFiles();
+			else {
+				files = new File[1];
+				files[0] = fileChooser.getSelectedFile();
+			}
+
+//			// remove authentication credentials from the file path
+//			final String safeName = VFSUtils.getFriendlyName(aFileObject.toString());
+//
+//			System.out.printf("%s %s", "You selected:", safeName);
+			return files;
+		}
+		return null;
+	}
+
+
+
+
+
+	public static String chooseFile(VFSJFileChooser.SELECTION_MODE selectionMode, String... extensions) {
+
+		File[] files = chooseFiles(WalletSettings.getInstance().getRecentOpenDirFile()
+				, selectionMode//VFSJFileChooser.SELECTION_MODE.FILES_ONLY
+				, new FileUtils.FilesTypeFilter(extensions)
+				, true, false
+				, new Dimension(WalletSettings.getInstance().getDimensionX()*3/5, WalletSettings.getInstance().getDimensionX()/3)
+				, getDefaultFont()
+		);
+		if (files != null && files.length > 0) {
+
+			String path = files[0].getAbsolutePath();
+			WalletSettings.getInstance().setRecentOpenDir(FileUtils.gerFileDir(path));
+			return path;
+		}
+		return null;
+
+
+
 	}
 
 

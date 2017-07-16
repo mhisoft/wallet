@@ -32,8 +32,10 @@ public class WalletService {
 		if (t!=null) {
 			for (FileAccessEntry entry : t.getEntries()) {
 				WalletItem item = ret.getWalletItem(entry.getGUID());
-				item.setAttachmentEntry(entry);
-				item.setNewAttachmentEntry(null);
+				if (item!=null) {
+					item.setAttachmentEntry(entry);
+					item.setNewAttachmentEntry(null);
+				}
 			}
 			ret.setDeletedEntriesInStore(t.getDeletedEntries());
 		}
