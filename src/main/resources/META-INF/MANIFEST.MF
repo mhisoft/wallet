@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Class-Path: lib/forms_rt.jar lib/images.jar lib/common-utils-1.0.jar lib/jasypt-1.9.2.jar lib/rsyntaxtextarea-2.5.8.jar lib/vfsjfilechooser2-0.2.7.jar lib/image-viewer-1.2.4.jar lib/commons-vfs2-2.0.jar lib/commons-io-2.1.jar lib/commons-logging-api-1.1.jar
+Class-Path: lib/forms_rt.jar lib/images.jar lib/common-utils-1.0.jar lib/jasypt-1.9.2.jar lib/rsyntaxtextarea-2.5.8.jar lib/vfsjfilechooser2-0.2.9-p1.jar lib/image-viewer-1.2.4-p1.jar lib/commons-vfs2-2.0.jar lib/commons-io-2.1.jar lib/commons-logging-api-1.1.jar
 Build-Jdk: 1.7.0_55
 Built-By: mhisoft
 Created-By: IntelliJ IDEA
