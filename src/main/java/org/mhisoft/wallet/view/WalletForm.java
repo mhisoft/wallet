@@ -998,6 +998,8 @@ public class WalletForm {
 		labelLastMessage.setVisible(false);
 
 		imageViewer.setImage(null);
+		imageViewer.getComponent().setVisible(false);
+		labelAttachmentFileName.setVisible(false);
 
 
 	}
@@ -1184,6 +1186,7 @@ public class WalletForm {
 
 		//use file
 		if (FileUtils.isImageFile(fileAccessEntry.getFileName())) {
+			imageViewer.getComponent().setVisible(true);
 
 			if (loadFromFileStoreContent) {
 
@@ -1204,10 +1207,16 @@ public class WalletForm {
 				//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
 				imageViewer.setImage(bufferedImage);
 			}
+
+			labelAttachmentFileName.setVisible(false);
+
+
 		} else {
 			imageViewer.setImage(null);
+			imageViewer.getComponent().setVisible(false);
 
 			//display filename only
+			labelAttachmentFileName.setVisible(true);
 			labelAttachmentFileName.setText(FileUtils.getFileNameWithoutPath(fileAccessEntry.getFileName()));
 		}
 
@@ -1219,9 +1228,10 @@ public class WalletForm {
 
 	public void clearAttachmentDisplay() {
 		imageViewer.setImage(null);
+		imageViewer.getComponent().setVisible(false);
 		btnRemoveAttachment.setVisible(false);
 		btnDownloadAttachment.setVisible(false);
-		labelAttachmentFileName.setText("");
+		labelAttachmentFileName.setVisible(false);
 
 	}
 

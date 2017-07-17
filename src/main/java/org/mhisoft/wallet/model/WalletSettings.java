@@ -127,9 +127,9 @@ public class WalletSettings implements Serializable {
 	}
 
 	public long getIdleTimeout() {  //in seconds
-		if (SystemSettings.isDevMode)
-			return 3;
-		else
+//		if (SystemSettings.isDevMode)
+//			return 3;
+//		else
 			return idleTimeout <= 0 ? DEFAULT_IDLE_TIMEOUT : idleTimeout;
 
 	}
