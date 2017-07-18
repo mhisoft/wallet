@@ -191,6 +191,7 @@ public class WalletForm {
 	private JPanel imagePanel;
 	private JButton btnDownloadAttachment;
 	private JLabel labelAttachmentFileName;
+	private JButton btnViewDocument;
 
 
 	private JScrollPane rightScrollPane;
@@ -325,6 +326,15 @@ public class WalletForm {
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnDownloadAttachment", null));
 				downloadAttachment();
+
+
+			}
+		});
+		btnViewDocument.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnViewDocument", null));
+				viewDocument();
 
 
 			}
@@ -1114,6 +1124,7 @@ public class WalletForm {
 		//btnAttach.setVisible(false);
 		btnRemoveAttachment.setVisible(false);
 		btnDownloadAttachment.setVisible(false);
+		btnViewDocument.setVisible(false);
 	}
 
 
@@ -1222,6 +1233,7 @@ public class WalletForm {
 
 		btnRemoveAttachment.setVisible(true);
 		btnDownloadAttachment.setVisible(true);
+		btnViewDocument.setVisible(true);
 
 
 	}
@@ -1231,6 +1243,7 @@ public class WalletForm {
 		imageViewer.getComponent().setVisible(false);
 		btnRemoveAttachment.setVisible(false);
 		btnDownloadAttachment.setVisible(false);
+		btnViewDocument.setVisible(false);
 		labelAttachmentFileName.setVisible(false);
 
 	}
@@ -1289,6 +1302,50 @@ public class WalletForm {
 
 			}
 		}
+	}
+
+
+	public void viewDocument() {
+		FileAccessEntry fileAccessEntry = model.getCurrentItem().getAttachmentEntry();
+		if (fileAccessEntry != null) {
+
+			try {
+
+				if (fileAccessEntry.getEncSize()>0) {
+
+					String tmpFile = WalletSettings.userHome + fileAccessEntry.getGUID() + "_" + fileAccessEntry.getFileName();
+
+
+					//use content
+					byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
+							, fileAccessEntry, model.getEncryptor());
+
+					FileUtils.writeFile(fileContent, tmpFile);
+
+					FileUtils.launchFile(tmpFile);
+
+					DialogUtils.getInstance().showMessageModelDialog("Close the viewer and continue.");
+
+					while (!new File(tmpFile).delete()) {
+						DialogUtils.getInstance().showMessageModelDialog("Close the viewer and continue.");
+					}
+
+				}
+				else if (fileAccessEntry.getFile()!=null){
+					FileUtils.launchFile( fileAccessEntry.getFile().getAbsolutePath() );
+				}
+
+
+
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				DialogUtils.getInstance().error("downloadAttachment filed", e.getMessage());
+
+			}
+		}
+
+
 	}
 
 

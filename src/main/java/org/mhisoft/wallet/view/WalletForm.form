@@ -483,6 +483,13 @@
                                       <text value="Download"/>
                                     </properties>
                                   </component>
+                                  <component id="10c40" class="javax.swing.JButton" binding="btnViewDocument">
+                                    <constraints/>
+                                    <properties>
+                                      <icon value="document_view.png"/>
+                                      <text value="View"/>
+                                    </properties>
+                                  </component>
                                 </children>
                               </grid>
                               <grid id="9960a" binding="imagePanel" layout-manager="FlowLayout" hgap="0" vgap="0" flow-align="0">

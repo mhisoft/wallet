@@ -52,7 +52,6 @@ public class DialogUtils {
 	}
 
 
-
 	public static Confirmation getConfirmation(final JFrame frame, final String question, final Confirmation... options) {
 		ViewHelper.setUIManagerFontSize();
 		int dialogResult = JOptionPane.showConfirmDialog(frame, question, "Please confirm", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -70,10 +69,11 @@ public class DialogUtils {
 
 	/**
 	 * Display warning
+	 *
 	 * @param title
 	 * @param message
 	 */
-	public void warn(  final String title, final String message ) {
+	public void warn(final String title, final String message) {
 
 		SwingUtilities.invokeLater(new Runnable() {
 
@@ -93,10 +93,11 @@ public class DialogUtils {
 
 	/**
 	 * Display error
+	 *
 	 * @param title
 	 * @param error
 	 */
-	public void error(  final String title, final String error ) {
+	public void error(final String title, final String error) {
 
 		SwingUtilities.invokeLater(new Runnable() {
 
@@ -117,9 +118,10 @@ public class DialogUtils {
 
 	/**
 	 * System error message
+	 *
 	 * @param error
 	 */
-	public void error(  final String error ) {
+	public void error(final String error) {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
@@ -134,14 +136,14 @@ public class DialogUtils {
 		});
 
 
-
 	}
 
 	/**
 	 * Display message
+	 *
 	 * @param message
 	 */
-	public void info(  final String message ) {
+	public void info(final String message) {
 
 		SwingUtilities.invokeLater(new Runnable() {
 
@@ -156,6 +158,13 @@ public class DialogUtils {
 		});
 
 
+	}
+
+	public void showMessageModelDialog(final String message) {
+
+		//custom title, warning icon
+		ViewHelper.setUIManagerFontSize();
+		JOptionPane.showMessageDialog(frame, message);
 
 	}
 
