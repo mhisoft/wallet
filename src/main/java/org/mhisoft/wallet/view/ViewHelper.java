@@ -34,6 +34,7 @@ import java.io.File;
 
 import javax.swing.Action;
 import javax.swing.JFileChooser;
+import javax.swing.JMenu;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -111,8 +112,17 @@ public class ViewHelper {
 		List<Component> compList = new ArrayList<Component>();
 		for (Component comp : comps) {
 			compList.add(comp);
-			if (comp instanceof Container)
+
+			if (comp instanceof JMenu) {
+				JMenu menu = (JMenu) comp;
+				for (int i = 0; i < menu.getItemCount(); i++) {
+					if (menu.getItem(i)!=null)
+					compList.add(menu.getItem(i));
+				}
+			}
+			else if (comp instanceof Container)
 				compList.addAll(getAllComponents((Container) comp));
+
 		}
 		return compList;
 	}

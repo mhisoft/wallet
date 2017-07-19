@@ -98,6 +98,7 @@ import org.mhisoft.wallet.service.ServiceRegistry;
 import com.googlecode.vfsjfilechooser2.VFSJFileChooser;
 
 import hu.kazocsaba.imageviewer.ImageViewer;
+import hu.kazocsaba.imageviewer.ResizeStrategy;
 
 /**
  * Description: The Wallet Form UI
@@ -655,7 +656,7 @@ public class WalletForm {
 		//bufferedImage = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
 		imageViewer = new ImageViewer(bufferedImage, true);
 		imagePanel.add(imageViewer.getComponent());
-
+		imageViewer.setResizeStrategy(ResizeStrategy.CUSTOM_ZOOM);
 
 		frame.pack();
 
@@ -664,6 +665,11 @@ public class WalletForm {
 		componentsList = ViewHelper.getAllComponents(frame);
 		componentsList.add(itemList);
 		componentsList.add(imageViewer.getComponent());
+
+
+		List<Component> pmenus = ViewHelper.getAllComponents(imageViewer.getPopupMenu());
+
+		componentsList.addAll( pmenus  );
 
 		setupMenu();
 
@@ -1199,6 +1205,7 @@ public class WalletForm {
 		if (FileUtils.isImageFile(fileAccessEntry.getFileName())) {
 			imageViewer.getComponent().setVisible(true);
 
+
 			if (loadFromFileStoreContent) {
 
 				//use content
@@ -1208,6 +1215,7 @@ public class WalletForm {
 				ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContent);
 				bufferedImage = ImageIO.read(inputStream);
 				imageViewer.setImage(bufferedImage);
+				imageViewer.setZoomFactor(0.5);
 
 			} else {
 				/*new entry is from file*/
@@ -1217,6 +1225,7 @@ public class WalletForm {
 				//int scaledHeight = icon.getIconHeight() * fldNotes.getWidth() / icon.getIconWidth();
 				//ImageIcon thumbnailIcon = new ImageIcon(getScaledImage(icon.getImage(), fldNotes.getWidth(), scaledHeight));
 				imageViewer.setImage(bufferedImage);
+				imageViewer.setZoomFactor(0.5);
 			}
 
 			labelAttachmentFileName.setVisible(false);
@@ -1327,7 +1336,7 @@ public class WalletForm {
 					DialogUtils.getInstance().showMessageModelDialog("Close the viewer and continue.");
 
 					while (!new File(tmpFile).delete()) {
-						DialogUtils.getInstance().showMessageModelDialog("Close the viewer and continue.");
+						DialogUtils.getInstance().showMessageModelDialog("The external viewer is not closed. Please close the viewer and continue.");
 					}
 
 				}
