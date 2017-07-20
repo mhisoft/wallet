@@ -291,7 +291,9 @@ public class WalletForm {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAttach", null));
 //				String imageFile = ViewHelper.chooseFile(VFSJFileChooser.SELECTION_MODE.FILES_ONLY
 //						,"png", "gif", "jpg", "jpeg", "doc", "docx", "txt", "pdf", "csv", "xls");
-				String imageFile = ViewHelper.chooseFilev1("png", "gif", "jpg", "jpeg", "doc", "docx", "txt", "pdf", "csv", "xls");
+				String imageFile = ViewHelper.chooseFile(         VFSJFileChooser.SELECTION_MODE.FILES_ONLY,
+						"png", "gif", "jpg", "jpeg", "doc", "docx"
+						, "txt", "pdf", "csv", "xls", "pptx", "ppt");
 				if (imageFile != null) {
 					//todo validate size.
 					//File f = new File(imageFile) ;
