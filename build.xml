@@ -116,6 +116,8 @@ also add the entry to the MANIFEST.MF
 
         <antcall target="update-version"></antcall>
 
+
+        <maven dir="../common-utils" argline="clean install -DskipTests=true"/>
         <maven dir=".." argline="package -DskipTests=true"/>
 
         <!--copy the jar to the dist folder -->

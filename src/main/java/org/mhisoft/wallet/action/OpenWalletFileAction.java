@@ -25,7 +25,6 @@ package org.mhisoft.wallet.action;
 
 import java.io.File;
 
-import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.FileContentHeader;
@@ -50,8 +49,8 @@ public class OpenWalletFileAction implements Action {
 		if (params.length>0)
 			fileName = (String)params[0];
 		else {
-			String[] parts = FileUtils.splitFileParts(WalletSettings.getInstance().getLastFile());
-			fileName = ViewHelper.chooseFilev1(parts[0]);  //last file's directory.
+			//String[] parts = FileUtils.splitFileParts(WalletSettings.getInstance().getLastFile());
+			fileName = ViewHelper.chooseFilev1();  //last file's directory.
 		}
 
 
