@@ -32,7 +32,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
 
-import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.UIManager;
@@ -145,8 +144,8 @@ public class ViewHelper {
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Wallet data files", extensions));
 		chooser.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX()/2, WalletSettings.getInstance().getDimensionX()/3));
 		//start with detailed view.
-		Action details = chooser.getActionMap().get("viewTypeDetails");
-		details.actionPerformed(null);
+		//Action details = chooser.getActionMap().get("viewTypeDetails");
+		//details.actionPerformed(null);
 
 		//set font
 		setFileChooserFont(chooser.getComponents(), WalletSettings.getInstance().getFontSize());
@@ -224,7 +223,7 @@ public class ViewHelper {
 
 
 
-	public static String chooseFile(VFSJFileChooser.SELECTION_MODE selectionMode, String... extensions) {
+	public static String chooseFile( VFSJFileChooser.SELECTION_MODE selectionMode, String... extensions) {
 
 		File[] files = chooseFiles(WalletSettings.getInstance().getRecentOpenDirFile()
 				, selectionMode//VFSJFileChooser.SELECTION_MODE.FILES_ONLY
