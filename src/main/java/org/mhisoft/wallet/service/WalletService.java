@@ -48,6 +48,14 @@ public class WalletService {
 
 	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
 
+		for (WalletItem item : model.getItemsFlatList()) {
+			int k = item.getName().indexOf("(*)");
+			if (k>0) {
+				item.setName(item.getName().substring(0, k));
+			}
+		}
+
+
 		DataServiceFactory.createDataService().saveToFile(filename, model, encryptor);
 
 		//save attachments.

@@ -53,10 +53,14 @@ public class WalletModel {
 	int dataFileVersion=LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
 	private boolean addingNode=false;
-	private boolean importing=false;
+
 
 	private transient PassCombinationVO passPlain;     //todo move to model?
 	private int deletedEntriesInStore;
+
+	private boolean importing=false;
+	private transient WalletModel impModel;
+	private String vaultFileName;
 
 
 	public WalletModel() {
@@ -429,5 +433,21 @@ public class WalletModel {
 
 	public void setDeletedEntriesInStore(int deletedEntriesInStore) {
 		this.deletedEntriesInStore = deletedEntriesInStore;
+	}
+
+	public WalletModel getImpModel() {
+		return impModel;
+	}
+
+	public void setImpModel(WalletModel impModel) {
+		this.impModel = impModel;
+	}
+
+	public String getVaultFileName() {
+		return vaultFileName;
+	}
+
+	public void setVaultFileName(String vaultFileName) {
+		this.vaultFileName = vaultFileName;
 	}
 }

@@ -32,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
 
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.UIManager;
@@ -66,6 +67,18 @@ public class ViewHelper {
 
 		}
 	}
+
+	public static void setFontSizeForComponent(JComponent component, int newFontSize)  {
+		Font original = component.getFont();
+		Font newFont = original.deriveFont(Float.valueOf(newFontSize));
+		component.setFont(newFont);
+	}
+
+	public static void setFontSize(Container c, int newFontSize) {
+		List<Component> components = getAllComponents(c);
+		setFileChooserFont (components.toArray( new Component[components.size()] ), newFontSize);
+	}
+
 
 
 	public static void setFontSize(Component[] componetsList, int newFontSize) {
@@ -126,10 +139,6 @@ public class ViewHelper {
 		return compList;
 	}
 
-	public static void setFontSize(Container c, int newFontSize) {
-		List<Component> components = getAllComponents(c);
-		setFileChooserFont (components.toArray( new Component[components.size()] ), newFontSize);
-	}
 
 
 	/* use java swing JFileChooser. */

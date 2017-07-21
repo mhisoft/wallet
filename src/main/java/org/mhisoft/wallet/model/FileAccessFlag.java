@@ -30,7 +30,7 @@ package org.mhisoft.wallet.model;
  * @since Jul, 2017
  */
 public enum FileAccessFlag {
-	None, Create, Update, Delete  ;
+	None, Create, Update, Delete, Merge  ;
 	//0,1,2, 3
 	public static final FileAccessFlag values[] = values();
 }

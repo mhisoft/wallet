@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.wallet.model.FileAccessFlag;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
@@ -83,7 +84,7 @@ public class ImportWalletAction implements Action {
 
 								//reload the tree and trigger change node.
 								ServiceRegistry.instance.getWalletForm().loadTree();
-								DialogUtils.getInstance().info("Import successfully.");
+								DialogUtils.getInstance().info("Import successfully. It has not been saved yet. Make sure to save after validating the import.");
 								ServiceRegistry.instance.getWalletModel().setImporting(false);
 							} catch (Exception e1) {
 								DialogUtils.getInstance().error(e1.getMessage());
@@ -123,10 +124,10 @@ public class ImportWalletAction implements Action {
 
 
 
-	protected void doTheImport(String filename, PassCombinationVO importFilePass, String importFileHash) {
+	protected void doTheImport(String impFilename, PassCombinationVO importFilePass, String importFileHash) {
 
 		Encryptor encryptor = new Encryptor(importFilePass.getPassAndCombination());
-		FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(filename, encryptor);
+		FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(impFilename, encryptor);
 
 
 		WalletModel impModel = new WalletModel();
@@ -134,9 +135,23 @@ public class ImportWalletAction implements Action {
 		impModel.setEncryptor(encryptor);
 		impModel.setItemsFlatList(fileContent.getWalletItems());
 		impModel.buildTreeFromFlatList();
+		impModel.setVaultFileName(impFilename);
 
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		WalletItem root  = model.getRootItem();
+
+		//refer to the imp model so that we have the encryptor and store file name
+		//when need to save the current model.
+		model.setImpModel( impModel);
+
+
+		//prepare to be merged attachment entries , mark them as Merge
+		for (WalletItem impItem : impModel.getItemsFlatList()) {
+			if (impItem.getAttachmentEntry()!=null) {
+				impItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Merge);
+			}
+		};
+
 
 	    //will change the tree structure
 		try {
@@ -148,13 +163,23 @@ public class ImportWalletAction implements Action {
 				if (modelItem!=null) {
 					if (!modelItem.isSame(impItem)) {
 						modelItem.mergeFrom(impItem);
+						modelItem.setName( modelItem.getName() +"(*)");
 					}
+
+					//merge the attachment, only when the target is empty
+					if (modelItem.getAttachmentEntry()==null && impItem.getAttachmentEntry()!=null) {
+						modelItem.setAttachmentEntry(impItem.getAttachmentEntry());
+						modelItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Merge);
+						modelItem.setName( modelItem.getName() +"(*)");
+					}
+
 				}
 				else {
 					if (impItem.getType().equals(ItemType.category)) {
 						//found a new category which does not have a match
 						//add it and all its children
 						root.addChild(impItem);
+						impItem.setName( impItem.getName() +"(*)");
 						//jump to next cat
 						i++;
 						while (i<impModel.getItemsFlatList().size()) {
@@ -175,6 +200,7 @@ public class ImportWalletAction implements Action {
 							throw new IllegalStateException("not matches cat can't happen here, impItem: " + impItem);
 						}
 						modelCat.addChild(impItem);
+						impItem.setName( impItem.getName() +"(*)");
 
 					}
 				}
@@ -186,6 +212,7 @@ public class ImportWalletAction implements Action {
 			model.buildFlatListFromTree();
 
 		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
 			DialogUtils.getInstance().error(e.getMessage());
 		}
 

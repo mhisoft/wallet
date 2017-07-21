@@ -902,6 +902,7 @@ public class WalletForm {
 			m.addActionListener(new OpenRecentFilesActionListener(rf));
 			menuOpenRecent.add(m);
 			componentsList.add(m);
+			ViewHelper.setFontSizeForComponent(m,  WalletSettings.getInstance().getFontSize());
 		}
 	}
 
@@ -1210,8 +1211,18 @@ public class WalletForm {
 
 			if (loadFromFileStoreContent) {
 
-				//use content
-				byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
+				byte[]  fileContent;
+
+				if (fileAccessEntry.getAccessFlag()==FileAccessFlag.Merge) {
+					 //read conent from the importing vault attachment store.
+					 fileContent = attachmentService.readFileContent(
+							 ServiceRegistry.instance.getAttachmentService().getAttachmentFileName( model.getImpModel().getVaultFileName() )
+							, fileAccessEntry, model.getImpModel().getEncryptor());
+
+				}
+				else
+					//use content
+					 fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
 						, fileAccessEntry, model.getEncryptor());
 
 				ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContent);

@@ -280,13 +280,27 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	/**
 	 * Compare the content
 	 *
-	 * @param item
+	 * @param impItem
 	 * @return
 	 */
-	public boolean isSame(final WalletItem item) {
-		if (item == null)
+	public boolean isSame(final WalletItem impItem) {
+		if (impItem == null)
 			return false;
-		return this.toStringJson().equals(item.toStringJson());
+		boolean isSame =  this.toStringJson().equals(impItem.toStringJson());
+		if (isSame) {
+			if (!this.name.equals(impItem.getName())) {
+				if (this.lastModifiedDate.after(impItem.getLastModifiedDate()))
+					//keep the current name. so no changes.
+					return true;
+				else
+					return false;
+
+			}
+			else
+				return true;
+
+		}
+		return false;
 	}
 
 	@Override
@@ -300,7 +314,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		return "WalletItem{" +
 				//"sysGUID='" + sysGUID + '\'' +
 				" type=" + type +
-				", name='" + name + '\'' +
+				//", name='" + name + '\'' +  handle separately
 				", URL='" + URL + '\'' +
 				", userName='" + userName + '\'' +
 				", accountNumber='" + accountNumber + '\'' +
@@ -373,7 +387,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	 * @param item
 	 */
 	public void mergeFrom(final WalletItem item) throws NoSuchFieldException {
-		if (!this.name.equals(item.getName())) {
+	    if (!this.name.equals(item.getName())) {
 			if (this.lastModifiedDate.before(item.getLastModifiedDate()))
 				this.name = item.getName();
 		}
@@ -491,12 +505,15 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 			attachmentEntry.setFileName(fname);
 			attachmentEntry.setAccessFlag(FileAccessFlag.Create);
 		}
+		setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
+
 	}
 
 	public void removeAttachment()  {
 	   if (this.attachmentEntry!=null) {
 		   attachmentEntry.setAccessFlag(FileAccessFlag.Delete);
 		   newAttachmentEntry = null;
+		   setLastModifiedDate(new Timestamp(System.currentTimeMillis()));
 	   }
 	}
 
