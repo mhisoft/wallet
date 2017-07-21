@@ -265,7 +265,7 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCancelEdit", null));
-				itemDetailView.cancelEditAction();
+				cancelEdit();
 			}
 		});
 
@@ -300,6 +300,8 @@ public class WalletForm {
 					//if (f.get)
 
 					model.getCurrentItem().addOrReplaceAttachment(imageFile);
+					model.setModified(true);
+
 					LoadImageWorker loadImageWorker = new LoadImageWorker(model.getCurrentItem());
 					loadImageWorker.execute();
 
@@ -316,6 +318,7 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				model.getCurrentItem().removeAttachment();
+				model.setModified(true);
 
 				LoadImageWorker loadImageWorker = new LoadImageWorker(model.getCurrentItem());
 				loadImageWorker.execute();
@@ -478,7 +481,7 @@ public class WalletForm {
 						itemDetailView.editDetailAction();
 					} else if (e.getSource() == btnCancelEdit) {
 						EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnCancelEdit", null));
-						itemDetailView.cancelEditAction();
+						cancelEdit();
 					} else if (e.getSource() == btnSaveForm) {
 						saveFormListener.actionPerformed(null);
 					} else if (e.getSource() == btnTogglePasswordView) {
@@ -854,7 +857,6 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuImport", null));
-
 				ImportWalletAction importWalletAction = ServiceRegistry.instance.getService(BeanType.singleton, ImportWalletAction.class);
 				importWalletAction.execute();
 			}
@@ -883,6 +885,25 @@ public class WalletForm {
 		});
 
 
+	}
+
+	public void disableMenus() {
+		menuOpen.setEnabled(false);
+		menuNew.setEnabled(false);
+		menuClose.setEnabled(false);
+		menuImport.setEnabled(false);
+		menuBackup.setEnabled(false);
+		menuChangePassword.setEnabled(false);
+		menuOpenRecent.setEnabled(false);
+	}
+	public void enableMenus() {
+		menuOpen.setEnabled(true);
+		menuNew.setEnabled(true);
+		menuClose.setEnabled(true);
+		menuImport.setEnabled(true);
+		menuBackup.setEnabled(true);
+		menuChangePassword.setEnabled(true);
+		menuOpenRecent.setEnabled(true);
 	}
 
 	public void refreshRecentFilesMenu() {
@@ -1130,7 +1151,7 @@ public class WalletForm {
 		btnClose.setVisible(true);
 		btnCancelEdit.setVisible(false);
 		btnEditForm.setVisible(false);
-		//btnAttach.setVisible(false);
+		btnAttach.setVisible(false);
 		btnRemoveAttachment.setVisible(false);
 		btnDownloadAttachment.setVisible(false);
 		btnViewDocument.setVisible(false);
@@ -1367,6 +1388,14 @@ public class WalletForm {
 			}
 		}
 
+
+	}
+
+
+	public void cancelEdit() {
+		//cancel attachments
+		attachmentService.reloadAttachments(WalletSettings.getInstance().getLastFile(), model);
+		itemDetailView.cancelEditAction();
 
 	}
 

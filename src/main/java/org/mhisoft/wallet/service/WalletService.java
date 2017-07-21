@@ -18,17 +18,15 @@ import org.mhisoft.wallet.view.DialogUtils;
  */
 public class WalletService {
 
+	AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
 
 
 	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
 		FileContentHeader header = readHeader(filename, true);
 		DataService ds = DataServiceFactory.createDataService(header.getVersion());
 		FileContent ret =  ds.readFromFile(filename, encryptor);
-		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
 		String attFileName = attachmentService.getAttachmentFileName(filename);
 		FileAccessTable t = attachmentService.read(attFileName, encryptor);
-
-
 		if (t!=null) {
 			for (FileAccessEntry entry : t.getEntries()) {
 				WalletItem item = ret.getWalletItem(entry.getGUID());
@@ -44,6 +42,7 @@ public class WalletService {
 
 
 	}
+
 
 
 	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {

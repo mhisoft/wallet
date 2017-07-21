@@ -395,6 +395,7 @@ public class AttachmentService {
 
 			fileAccessEntry.setPosition(pos);
 
+
 			/*  UUID*/
 			int uuidSize = FileUtils.writeString(dataOut, fileAccessEntry.getGUID());
 			pos += 40;
@@ -482,6 +483,7 @@ public class AttachmentService {
 		/*#3: ciperParameters size 4 bytes*/
 		int cipherParametersLength = fileIn.readInt();
 		ret.pos += 4;
+		logger.fine("read cipherParametersLength:" + cipherParametersLength );
 
 		/*#4: cipherParameters body*/
 		byte[] _byteCiper = new byte[cipherParametersLength];
@@ -624,6 +626,25 @@ public class AttachmentService {
 		}
 		return null;
 	}
+
+
+	//re-read the attachments from file and refresh the model items.
+	public void  reloadAttachments(final String walletFileName, final WalletModel model) {
+		String attFileName = getAttachmentFileName(walletFileName);
+		FileAccessTable t = read(attFileName, model.getEncryptor());
+		if (t!=null) {
+			for (FileAccessEntry entry : t.getEntries()) {
+				WalletItem item = model.getWalletItem(entry.getGUID());
+				if (item!=null) {
+					item.setAttachmentEntry(entry);
+					item.setNewAttachmentEntry(null);
+				}
+			}
+			model.setDeletedEntriesInStore(t.getDeletedEntries());
+		}
+
+	}
+
 
 
 }

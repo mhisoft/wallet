@@ -187,7 +187,6 @@ public class ItemDetailView {
 		if (model.getCurrentItem() != null) {
 			model.setModified(false);
 			displayWalletItemDetails(model.getCurrentItem(), DisplayMode.view);
-
 		}
 	}
 
