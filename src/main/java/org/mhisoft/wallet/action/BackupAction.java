@@ -35,16 +35,22 @@ public class BackupAction implements Action {
 
 
 		String[] parts = FileUtils.splitFileParts(WalletSettings.getInstance().getLastFile());
-
+		String targetAttachmeSoteName ;
 
 		StringBuilder targetFile = new StringBuilder(parts[0]);
 		targetFile.append(File.separator).append(parts[1])  ;
 		targetFile.append("-") .append(System.currentTimeMillis() ) ;
+		targetAttachmeSoteName = targetFile.toString();
+
 		targetFile.append(".")  ;
 		targetFile.append(parts[2])  ;  //ext
+		targetAttachmeSoteName = targetAttachmeSoteName + "_attachments." +parts[2];
+
 
 		try {
 			FileUtils.copyFile( new File(WalletSettings.getInstance().getLastFile()), new File(targetFile.toString()));
+			FileUtils.copyFile( new File( WalletSettings.getInstance().getAttachmentStoreFileName()  )
+					, new File(targetAttachmeSoteName));
 			DialogUtils.getInstance().info("The data file is backed up at :" + targetFile.toString());
 		} catch (IOException e) {
 			logger.severe(e.toString());

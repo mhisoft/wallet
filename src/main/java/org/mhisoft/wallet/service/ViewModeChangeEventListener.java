@@ -46,6 +46,7 @@ public class ViewModeChangeEventListener implements EventListener {
 		}
 
 		if (ServiceRegistry.instance.getWalletModel().isModified())  {
+			form.btnCancelEdit.setVisible(true);
 			form.btnSaveForm.setVisible(true);
 			form.disableMenus();
 		}
