@@ -40,6 +40,7 @@ public class BackupAction implements Action {
 		StringBuilder targetFile = new StringBuilder(parts[0]);
 		targetFile.append(File.separator).append(parts[1])  ;
 		targetFile.append("-") .append(System.currentTimeMillis() ) ;
+		targetFile.append("-") .append( "BACKUP" ) ;
 		targetAttachmeSoteName = targetFile.toString();
 
 		targetFile.append(".")  ;
