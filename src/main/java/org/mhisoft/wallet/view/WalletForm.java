@@ -1080,7 +1080,9 @@ public class WalletForm {
 
 				} else {
 					//not choose to save now, mark the model modified
-					model.setModified(true);
+					//model.setModified(true);
+					//same AS canceled.
+					cancelEdit();
 				}
 
 			} else {
