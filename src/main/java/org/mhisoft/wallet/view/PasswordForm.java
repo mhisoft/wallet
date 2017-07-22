@@ -226,13 +226,28 @@ public class PasswordForm implements ActionListener {
 		}
 	}
 
+
+	public  interface Callback {
+		void setResult (ActionResult result);
+
+	}
+
+	public static abstract  class PasswordFormActionListener implements ActionListener {
+		private Callback callback;
+
+		public PasswordFormActionListener(Callback  callback) {
+			this.callback = callback;
+		}
+
+	}
+
 	//entry point
 
 	/**
 	 * @param walletForm
 	 * @param actionListener optional action listener. if not provided, the one in this class will be used.
 	 */
-	public void showPasswordForm(WalletForm walletForm, ActionListener actionListener) {
+	public void showPasswordForm(WalletForm walletForm, PasswordFormActionListener actionListener) {
 		this.walletForm = walletForm;
 		dialog = new JDialog(walletForm.frame, "Please enter password", true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -264,8 +279,9 @@ public class PasswordForm implements ActionListener {
 
 		if (actionListener != null)
 			btnOk.addActionListener(actionListener);
-		else
+		else {
 			btnOk.addActionListener(this);
+		}
 
 
 //		IndexedFocusTraversalPolicy policy = new IndexedFocusTraversalPolicy();

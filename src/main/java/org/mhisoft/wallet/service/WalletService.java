@@ -64,6 +64,33 @@ public class WalletService {
 	}
 
 
+	/**
+	 *
+	 * @param filename
+	 * @param model
+	 * @param newEnc This is the new encryptor with new pass
+	 */
+	public void saveToFileWithNewPassword(final String filename, final WalletModel model, final Encryptor newEnc) {
+
+		for (WalletItem item : model.getItemsFlatList()) {
+			int k = item.getName().indexOf("(*)");
+			if (k>0) {
+				item.setName(item.getName().substring(0, k));
+			}
+		}
+
+
+		DataServiceFactory.createDataService().saveToFile(filename, model, newEnc);
+
+		//save attachments.
+		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
+		attachmentService.transferAttachmentStore( attachmentService.getAttachmentFileName(filename)  , model, newEnc);
+
+	}
+
+
+
+
 	private FileContentHeader readVersion(DataService ds, final String filename) {
 		try {
 			FileContentHeader header = ds.readHeader(filename, true);

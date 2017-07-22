@@ -24,39 +24,83 @@
 package org.mhisoft.wallet.action;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import org.mhisoft.common.util.Encryptor;
 import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
+import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.DialogUtils;
 import org.mhisoft.wallet.view.PasswordForm;
 
 /**
  * Description: Change the password
+ * needs to be prototype
  *
  * @author Tony Xue
  * @since May, 2016
  */
 public class ChangePasswordAction implements Action {
 
-	public static void main(String[] args) {
-		ChangePasswordAction action = new ChangePasswordAction();
-		//action.changeDataFilePass();
+
+	boolean oldPassVerified = false;
+
+
+	PasswordForm.Callback callback = new PasswordForm.Callback() {
+		@Override
+		public void setResult(ActionResult result) {
+			oldPassVerified = true;
+		}
+	};
+
+
+	private void verifyOldPass() {
+		oldPassVerified = false;
+		final PasswordForm passwordForm = new PasswordForm("Enter the current password");
+
+		passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new PasswordForm.PasswordFormActionListener(
+						callback
+
+				) {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						//boolean createHash = ServiceRegistry.instance.getWalletModel().getPassHash() == null;
+						PassCombinationVO passVO = passwordForm.getUserEnteredPassForVerification();
+
+						if (passVO == null) {
+							//user input is not good. try again.
+						} else {
+							VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
+							ActionResult result = verifyPasswordAction.execute(passVO,
+									ServiceRegistry.instance.getWalletModel().getPassHash(),
+									ServiceRegistry.instance.getWalletModel().getCombinationHash()
+							);
+							if (result.isSuccess()) {
+								//close the password form
+								passwordForm.exitPasswordForm();
+								callback.setResult(new ActionResult(true));
+
+							} else
+								callback.setResult(new ActionResult(false));
+						}
+					}
+
+				}
+
+		);
 	}
 
 
+	private void enterNewPass() {
 
-	private void startByGettingNewPass() {
-		//now show password form to enter the password.
-		PasswordForm passwordForm = new PasswordForm("Enter a new password");
-		passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new ActionListener() {
+		/*now show password form to enter the password.*/
+		final PasswordForm passwordForm2 = new PasswordForm("Enter a new password");
+		passwordForm2.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new PasswordForm.PasswordFormActionListener(null) {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PassCombinationVO newPass = passwordForm.getUserEnteredPassForVerification();
+				PassCombinationVO newPass = passwordForm2.getUserEnteredPassForVerification();
 
 				try {
 					String hash = HashingUtils.createHash(newPass.getPass());
@@ -66,23 +110,28 @@ public class ChangePasswordAction implements Action {
 					model.setCombinationHash(combinationHash);
 
 					model.setPassPlain(newPass);
-					passwordForm.exitPasswordForm();
+					passwordForm2.exitPasswordForm();
 
 
 //			Encryptor oldEnc = new  Encryptor(newPass);
 //			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile,  oldEnc  );
 //			model.setItemsFlatList(fileContent.getWalletItems());
-					Encryptor newEnc = model.createNewEncryptor(newPass) ;
+					Encryptor newEnc = model.createNewEncryptor(newPass);
 
 					//save the file with new password.
-					ServiceRegistry.instance.getWalletService().saveToFile(  //
+					ServiceRegistry.instance.getWalletService().saveToFileWithNewPassword(  //
 							WalletSettings.getInstance().getLastFile() //
 							, model, newEnc);  //
 
 					DialogUtils.getInstance().info("<html>The password has successfully been changed.<br>"
-							+"Please keep this in a safe place, it can't be recovered when lost:\n"
-									+ passwordForm.getUserInputPass() + ", combination:"
-									+ passwordForm.getCombinationDisplay())   ;
+							+ "Please keep this in a safe place, it can't be recovered when lost:\n"
+							+ passwordForm2.getUserInputPass() + ", combination:"
+							+ passwordForm2.getCombinationDisplay());
+
+
+					//reload
+					LoadWalletAction loadWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, LoadWalletAction.class);
+					loadWalletAction.execute();
 
 
 				} catch (HashingUtils.CannotPerformOperationException e1) {
@@ -92,16 +141,23 @@ public class ChangePasswordAction implements Action {
 
 			}
 		});
-
 	}
-
-
 
 	@Override
 	public ActionResult execute(Object... params) {
 
-		startByGettingNewPass();
+		if (ServiceRegistry.instance.getWalletModel().isModified()) {
+			DialogUtils.getInstance().info("Please save the changes first.");
+			return new ActionResult(false);
+		}
 
-		return null;
+
+		verifyOldPass();
+
+		if (oldPassVerified) {
+			enterNewPass();
+
+		}
+		return new ActionResult(true);
 	}
 }

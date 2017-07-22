@@ -64,7 +64,7 @@ public class ImportWalletAction implements Action {
 
 				//now show password form to enter the password.
 				PasswordForm passwordForm = new PasswordForm("Opening file: " + importFile);
-				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new ActionListener() {
+				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new PasswordForm.PasswordFormActionListener(null) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						PassCombinationVO passVO = passwordForm.getUserEnteredPassForVerification();

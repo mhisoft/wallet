@@ -87,7 +87,7 @@ public class NewWalletAction implements Action {
 			/*Delegate to the password form the create password*/
 			WalletForm form = ServiceRegistry.instance.getWalletForm();
 			PasswordForm passwordForm = new PasswordForm("Creating a new wallet");
-			passwordForm.showPasswordForm(form, new ActionListener() {
+			passwordForm.showPasswordForm(form, new PasswordForm.PasswordFormActionListener(null) {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 

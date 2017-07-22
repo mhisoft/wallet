@@ -110,6 +110,8 @@ public class AttachmentService {
 		//Refresh / Reload the wallet item file access entries after save.
 		FileAccessTable t = read(filename, encryptor);
 		model.setDeletedEntriesInStore(t.getDeletedEntries());
+
+
 		//drive from item.
 		for (WalletItem item : model.getItemsFlatList()) {
 			item.setAttachmentEntry(t == null ? null : t.getEntry(item.getSysGUID()));
@@ -117,6 +119,75 @@ public class AttachmentService {
 				item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
 			item.setNewAttachmentEntry(null);
 		}
+
+	}
+
+
+	/**
+	 *
+	 * @param oldStoreName The old store name
+	 * @param model model
+	 * @param encryptor   The encryptor for write.
+	 */
+
+	public void transferAttachmentStore(final String oldStoreName, final WalletModel model, final Encryptor encryptor) {
+		String newStoreName = oldStoreName + ".tmp";
+		File newFile = new File(newStoreName);
+		if (newFile.exists()) {
+			if (!newFile.delete()) {
+				DialogUtils.getInstance().error("Can't delete the tmp file:" + newStoreName);
+			}
+		}
+		FileAccessTable t = new FileAccessTable();
+		for (WalletItem item : model.getItemsFlatList()) {
+			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFileName() != null)
+				t.addEntry(item.getAttachmentEntry());
+		}
+
+		DataOutputStream dataOut = null;
+		if (t.getSize() > 0) {
+			//new store
+			//write it out
+			try {
+				dataOut = new DataOutputStream(new FileOutputStream(new File(newStoreName)));
+
+				//write the total number of entries first
+				/*#0*/
+				dataOut.writeInt(t.getEntries().size());
+				//itemStartPos = 4;
+
+				writeFileEntries(model, true, oldStoreName, 4, dataOut, t, encryptor);
+
+				dataOut.flush();
+				dataOut.close();
+
+
+				//now do the swap of the store to the new one.
+				new File(oldStoreName).delete();
+				newFile.renameTo(new File(oldStoreName));
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				DialogUtils.getInstance().error("transferAttachmentStore failed:", e.getMessage());
+			} finally {
+				if (dataOut != null)
+					try {
+						dataOut.close();
+					} catch (IOException e) {
+						//e.printStackTrace();
+					}
+			}
+
+		}
+
+		//now clear the access flag on the item
+		for (WalletItem item : model.getItemsFlatList()) {
+			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
+					&& item.getAttachmentEntry().getAccessFlag() != null) {
+				item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
+			}
+		}
+
 
 	}
 
@@ -429,7 +500,7 @@ public class AttachmentService {
 
 			else if (transferStoreMode && fileAccessEntry.getAccessFlag() == FileAccessFlag.None && fileAccessEntry.getEncSize() > 0) {
 				//no change, this is an transfer to the new store. need to read the filecontent from the old store.
-				fileContent = readFileContent(oldStoreFileName, fileAccessEntry, encryptor);
+				fileContent = readFileContent(oldStoreFileName, fileAccessEntry, model.getEncryptor());
 			} else
 				fileContent = FileUtils.readFile(fileAccessEntry.getFile());
 

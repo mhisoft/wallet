@@ -39,6 +39,9 @@ import org.mhisoft.wallet.service.ServiceRegistry;
  */
 public class LoadWalletAction implements Action {
 
+
+
+
 	@Override
 	public ActionResult execute(Object... params) {
 		//PassCombinationVO pass = (PassCombinationVO) params[0];
@@ -63,6 +66,7 @@ public class LoadWalletAction implements Action {
 			WalletSettings.getInstance().setLastFile(fileName);
 			WalletSettings.getInstance().addRecentFile(fileName);
 
+			/*need getPassVOForEncryptor from model*/
 			model.initEncryptor(model.getPassVOForEncryptor());
 			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
 					model.getEncryptorForRead());
