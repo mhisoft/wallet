@@ -1112,10 +1112,15 @@ public class WalletForm {
 
 
 	public void setMessage(String s) {
+		setMessage(s, true) ;
+	}
+
+	public void setMessage(String s, boolean clearLater) {
 		if (labelLastMessage != null) {
 			labelLastMessage.setText(s);
 			labelLastMessage.setVisible(true);
-			clearMessageLater();
+			if (clearLater)
+			  clearMessageLater();
 		}
 	}
 
