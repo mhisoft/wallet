@@ -14,14 +14,15 @@ from the Releases tab above : https://github.com/mhisoft/eVault/releases
 Features
 =========
 * Free. 
-* Runs offline.
 * Secure and fast.  AES 256-bit key encryption.
+* Runs offline for security.
 * Platform: Windows and Mac OS X...etc where Java  is supported. 
 * Organize  passwords with categories.  
 * Search the entire wallet and locate the item you need instantly. 
 * Support multiple data files. Backup.
 * Import and merge in changes from another data file. 
 * Auto close the vault if idling for too long.
+* Now support adding images and attachment docs (PDF, DOC..etc) to the vault items. 
 
 ![Screenshot](dist/evault-screenshot-passwordform.png "screenshot")
 
