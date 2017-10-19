@@ -41,19 +41,18 @@ Some technical details
 * The app runs offline by design so rest ensure there is absolutely no network connection used by the app. 
  While using other similar product which connects to the network, I have always been worried about the data could be secretly transmitted to somewhere across the network without my knowledge, either intentionally or unintentionally due to malware or virus.   The author decided to design the eVault by not using any kind of network activities (i.e. no port is opended on local and not remote port is reached from eVault either). The encrypted database is local unless you share it across the network.
  
+ ## License
+Apache License 2.0, January 2004 http://www.apache.org/licenses/
+
+(The text of this page is available for modification and reuse under the terms of the Creative Commons Attribution-Sharealike 3.0 Unported License and the GNU Free Documentation License (unversioned, with no invariant sections, front-cover texts, or back-cover texts).
+
 ## Disclaimer
 The author is not responsible for loss of any kind incurred directly or indirectly by using this application.
-
-## License
-Apache License 2.0, January 2004 http://www.apache.org/licenses/
 
 
 ## Donate if you feel like
 [![paypal](https://www.paypalobjects.com/webstatic/en_US/i/btn/png/silver-pill-paypal-26px.png)](https://www.paypal.me/mhisoft)
 Help to improve the app.
 Any amount :)
-
-
-
 
 
