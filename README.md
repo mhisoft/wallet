@@ -1,11 +1,15 @@
 MHISoft eVault - A Secure Password Manager and  Vault
 ======================================================
 
-I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source.
+It is a secure password vault which is best suitable for storing passwords or any personal data. Since v1.2 it starts to support saving the attachment documents such images, PDF, Word Doc..etc to the eVault.  All the data are stored in a encrypted database with AES 256-bit key encryption.
 
-It is a secure password vault which is best suitable for storing passwords and any personal data. Since v1.2 it starts to support saving the attachment documents such images, PDF, Doc..etc to the Vault.  All the data are stored in a encrypted database with AES 256 bit key  encryption. You only need to remember one master password and a set of combination code to the vault. The password is stored as one way Hash and can't be reverse engineered.  The app runs offline so you don't need to worry about data being transmitted over the network.  
+One master password and a set of combination code is required to enter the eVault. The master password  and combination code are stored as one-way-Hash and can't be reverse engineered.  
 
-The password once lost can't be recovered. This is by design. The author of this code can't even recover the lost password. And without the password and combination, the vault can't be opened, so please keep the master password and combination key in a safe place, such as in your brain only. 
+I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source. I believe a personal data vault or password manager should never be clound based. So as designed, the eVault does not use network so you can rest asure that not a single bit of data is transmitted over the network which is not under your control.  
+
+Though the MHISoft eVault encrypted database is local, you can choose to share it on Google Drive or Dropbox.. etc. So you can share the same database across multiple devices. 
+
+The password once lost can't be recovered, which is by design. Even he author of this code can't recover the lost password. And without the password and combination, the vault can't be opened, so please keep the master password and combination key in a safe place, such as in your brain only. 
 
 Download
 ========
@@ -13,16 +17,17 @@ from the Releases tab above : https://github.com/mhisoft/eVault/releases
 
 Features
 =========
-* Free. 
+* Open source and Free. 
 * Secure and fast.  AES 256-bit key encryption.
-* Runs offline for security.
-* Platform: Windows and Mac OS X...etc where Java  is supported. 
-* Organize  passwords with categories.  
-* Search the entire wallet and locate the item you need instantly. 
-* Support multiple data files. Backup.
+* Runs offline and database is kept local on your machine.
+* Platform: Windows and Mac OS X...etc where Java is supported. 
+* Organize passwords with categories.  
+* Search the entire wallet and locate an item instantly. 
+* Support multiple eVault data files. 
+* Backup .
 * Import and merge in changes from another data file. 
 * Auto close the vault if idling for too long.
-* Now support adding images and attachment docs (PDF, DOC..etc) to the vault items. 
+* Support adding images and attachment docs (PDF, DOC..etc) to the vault items. 
 
 ![Screenshot](dist/evault-screenshot-passwordform.png "screenshot")
 
@@ -34,7 +39,7 @@ Some technical details
 
 *  The JRE is bundled with the release. But if you use your own JRE or JDK , the  “Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy”  need to be installed. 
 
-* All the data are stored locally, encrypted. By default, it uses the PBEWithHmacSHA512AndAES_256 algorithm, 256 bit key encryption provide by the Java 8.  No extra third party library is required. 
+* All the data are stored locally, encrypted. By default, it uses the PBEWithHmacSHA512AndAES_256 algorithm, 256 bit key encryption provide by the Java 8.  No extra third party library is used. 
  
 * Password is stored in the most secured Hash format. In theory the password can't be reverse engineered from this hash , not under the current human technology. Random salted hashing with the  PBKDF2WithHmacSHA512 algorithm is used.   More tech details please see  https://crackstation.net/hashing-security.htm for more information. (thanks to crackstation)
 
