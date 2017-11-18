@@ -193,6 +193,7 @@ public class WalletForm {
 	private JButton btnDownloadAttachment;
 	private JLabel labelAttachmentFileName;
 	private JButton btnViewDocument;
+	public JLabel labelLastModified;
 
 
 	private JScrollPane rightScrollPane;
@@ -1035,7 +1036,9 @@ public class WalletForm {
 		menuImport.setEnabled(false);
 		menuOpen.setEnabled(true);
 
+		labelLastMessage.setText("");
 		labelLastMessage.setVisible(false);
+
 
 		imageViewer.setImage(null);
 		imageViewer.getComponent().setVisible(false);

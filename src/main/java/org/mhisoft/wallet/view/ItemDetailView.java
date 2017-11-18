@@ -163,6 +163,7 @@ public class ItemDetailView {
 		}
 
 
+		form.labelLastModified.setText( item.getLastModifiedDate()==null?"NA": item.getLastViewdDate().toString() );
 		form.displayAttachment();
 
 
