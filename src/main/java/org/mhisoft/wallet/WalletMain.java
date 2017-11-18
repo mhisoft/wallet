@@ -37,7 +37,7 @@ public class WalletMain {
 	 //three places to update the version number,
 	//here  in the code
 	// pom.xml and build.xml
-	public static final String version = "1.2.1";
+	public static final String version = "1.2.2";
 
 
 	public static final String build = "651";
