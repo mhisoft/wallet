@@ -145,7 +145,7 @@ public class WalletModel {
 	}
 
 	public void setHash(final String passwordHash, final String combinationHash) {
-		this.passHash = passHash;
+		this.passHash = passwordHash;
 		this.combinationHash = combinationHash;
 	}
 

@@ -3,9 +3,12 @@ package org.mhisoft.wallet.service;
 import java.io.IOException;
 
 import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.HashingUtils;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
+import org.mhisoft.wallet.model.ItemType;
+import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.view.DialogUtils;
@@ -141,6 +144,41 @@ public class WalletService {
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException("cloneItem() failed", e);
 		}
+	}
+
+
+	/**
+	 * Export the sourceItem to a new vault for transportation.
+	 * @param sourceItem
+	 * @param exportVaultPassVO
+	 * @param exportVaultFilename
+	 */
+	public void exportItem(final WalletItem sourceItem
+	      ,final PassCombinationVO exportVaultPassVO
+			, final String exportVaultFilename ) {
+		try {
+
+			WalletItem newItem = cloneItem(sourceItem);
+
+			WalletModel expModel = new WalletModel();
+			String hash2 = HashingUtils.createHash(exportVaultPassVO.getPass());
+			String combinationHash2 = HashingUtils.createHash(exportVaultPassVO.getCombination());
+			expModel.setHash(hash2, combinationHash2);
+			expModel.initEncryptor(exportVaultPassVO);
+
+			WalletItem root = new WalletItem(ItemType.category, "export");
+			expModel.getItemsFlatList().add(root);
+			expModel.getItemsFlatList().add(newItem);
+
+			//save to the export vault.
+			saveToFile(exportVaultFilename, expModel, expModel.getEncryptor());
+
+
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
+			DialogUtils.getInstance().error("An error occurred while trying to export the entry", e.getMessage());
+		}
+
 	}
 
 

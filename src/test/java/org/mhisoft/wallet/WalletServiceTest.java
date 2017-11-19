@@ -27,9 +27,7 @@ import java.io.File;
 
 import org.junit.Test;
 import org.mhisoft.common.util.HashingUtils;
-import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
-import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.FileContent;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -62,27 +60,21 @@ public class WalletServiceTest extends WalletFileTest {
 			model.initEncryptor(passVO);
 
 
-
-			WalletModel expModel = new WalletModel();
 			PassCombinationVO passVO2 = new PassCombinationVO("testPa!ss213%_new","030405") ;
-			String hash2 = HashingUtils.createHash(passVO.getPass());
-			String combinationHash2 = HashingUtils.createHash(passVO.getCombination());
-			expModel.setHash(hash2, combinationHash2);
-			expModel.initEncryptor(passVO2);
-			expModel.setPassHash(hash2);
-
-			WalletItem root = new WalletItem(ItemType.category, "root");
-			expModel.getItemsFlatList().add(root);
-			expModel.getItemsFlatList().add(dNode); //export the d node
-
 
 			//save to the export vault.
 			f = new File(eVaultFileExp);
 			f.delete();
-			walletService.saveToFile(eVaultFileExp, expModel, expModel.getEncryptor());
+			walletService.exportItem(dNode, passVO2, eVaultFileExp  );
 
 
 		   //rest read it back
+
+			WalletModel expModel = new WalletModel();
+			String hash2 = HashingUtils.createHash(passVO2.getPass());
+			String combinationHash2 = HashingUtils.createHash(passVO2.getCombination());
+			expModel.setHash(hash2, combinationHash2);
+			expModel.initEncryptor(passVO2);
 			FileContent fc  = walletService.readFromFile(eVaultFileExp, expModel.getEncryptor() );
 			assertEquals(2, fc.getWalletItems().size()); //root and dnote
 			assertEquals(fc.getWalletItems().get(1), dNode);
