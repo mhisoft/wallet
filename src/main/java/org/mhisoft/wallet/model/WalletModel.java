@@ -144,6 +144,11 @@ public class WalletModel {
 		this.combinationHash = combinationHash;
 	}
 
+	public void setHash(final String passwordHash, final String combinationHash) {
+		this.passHash = passHash;
+		this.combinationHash = combinationHash;
+	}
+
 	public boolean isModified() {
 		return modified;
 	}

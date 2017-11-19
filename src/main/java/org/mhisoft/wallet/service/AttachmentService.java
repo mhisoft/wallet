@@ -109,15 +109,17 @@ public class AttachmentService {
 
 		//Refresh / Reload the wallet item file access entries after save.
 		FileAccessTable t = read(filename, encryptor);
-		model.setDeletedEntriesInStore(t.getDeletedEntries());
+		if (t!=null) {
+			model.setDeletedEntriesInStore(t.getDeletedEntries());
 
 
-		//drive from item.
-		for (WalletItem item : model.getItemsFlatList()) {
-			item.setAttachmentEntry(t == null ? null : t.getEntry(item.getSysGUID()));
-			if (item.getAttachmentEntry() != null)
-				item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
-			item.setNewAttachmentEntry(null);
+			//drive from item.
+			for (WalletItem item : model.getItemsFlatList()) {
+				item.setAttachmentEntry(t == null ? null : t.getEntry(item.getSysGUID()));
+				if (item.getAttachmentEntry() != null)
+					item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
+				item.setNewAttachmentEntry(null);
+			}
 		}
 
 	}

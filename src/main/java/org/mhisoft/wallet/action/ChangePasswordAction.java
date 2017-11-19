@@ -106,8 +106,8 @@ public class ChangePasswordAction implements Action {
 					String hash = HashingUtils.createHash(newPass.getPass());
 					String combinationHash = HashingUtils.createHash(newPass.getCombination());
 					WalletModel model = ServiceRegistry.instance.getWalletModel();
-					model.setPassHash(hash);
-					model.setCombinationHash(combinationHash);
+					model.setHash(hash, combinationHash);
+
 
 					model.setPassPlain(newPass);
 					passwordForm2.exitPasswordForm();
