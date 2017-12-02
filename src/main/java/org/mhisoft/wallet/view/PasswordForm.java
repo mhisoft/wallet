@@ -348,7 +348,7 @@ public class PasswordForm implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dialog.dispose();
-//				walletForm.exit();
+ 				walletForm.resetForm();
 			}
 		});
 

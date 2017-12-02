@@ -37,10 +37,10 @@ public class WalletMain {
 	 //three places to update the version number,
 	//here  in the code
 	// pom.xml and build.xml
-	public static final String version = "1.2.2";
+	public static final String version = "1.2.3";
 
 
-	public static final String build = "651";
+	public static final String build = "655";
 	public static final String BUILD_DETAIL = "MHISoft eVault " + version +" build " +  build;
 
 
@@ -58,11 +58,12 @@ public class WalletMain {
 		app.registerEventListeners();
 
 		WalletForm form = ServiceRegistry.instance.getWalletForm();
-		//read the last wallet file header if can.
-		app.prepareModel();
 
 		form.init();
 
+		//read the last wallet file header if can.
+		//bugfix: need form components like menu to be created.
+		app.prepareModel();
 
 		//Open old wallet file or create new password.
 		String title ;

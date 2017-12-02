@@ -162,6 +162,8 @@ public class WalletSettings implements Serializable {
 
 
 	public void addRecentFile(String fileName) {
+		if (fileName==null)
+			return;
 
 		if (recentFiles==null)
 			recentFiles = new LinkedList<>();

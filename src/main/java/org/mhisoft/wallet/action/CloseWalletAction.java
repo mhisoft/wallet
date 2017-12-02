@@ -24,6 +24,7 @@
 package org.mhisoft.wallet.action;
 
 import org.mhisoft.wallet.model.WalletModel;
+import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.Confirmation;
 import org.mhisoft.wallet.view.DialogUtils;
@@ -40,6 +41,10 @@ public class CloseWalletAction extends SaveWalletAction {
 
 	@Override
 	public  boolean saveVault(String filename) {
+
+		WalletSettings.getInstance().addRecentFile( WalletSettings.getInstance().getLastFile()  );
+
+
 		//save the wallet
 		if (ServiceRegistry.instance.getWalletForm().isDetailModified()
 			|| ServiceRegistry.instance.getWalletModel().isModified()
