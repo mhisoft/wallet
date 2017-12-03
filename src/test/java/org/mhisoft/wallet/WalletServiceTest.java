@@ -76,9 +76,15 @@ public class WalletServiceTest extends WalletFileTest {
 			expModel.setHash(hash2, combinationHash2);
 			expModel.initEncryptor(passVO2);
 			FileContent fc  = walletService.readFromFile(eVaultFileExp, expModel.getEncryptor() );
-			assertEquals(2, fc.getWalletItems().size()); //root and dnote
-			assertEquals(fc.getWalletItems().get(1), dNode);
 
+			model.getItemsFlatList().clear();
+			model.setItemsFlatList(fc.getWalletItems());
+			model.buildTreeFromFlatList();
+
+			assertEquals(3, fc.getWalletItems().size()); //root and dnote
+			assertEquals(fc.getWalletItems().get(1), cNode);
+			assertEquals(fc.getWalletItems().get(2), dNode);
+			assertEquals(dNode.getParent(), cNode);
 
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();

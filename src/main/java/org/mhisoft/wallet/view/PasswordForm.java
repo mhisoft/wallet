@@ -241,20 +241,43 @@ public class PasswordForm implements ActionListener {
 
 	}
 
+	/**
+	 *
+	 */
+	public static  class PasswordFormCancelActionListener extends  PasswordFormActionListener {
+		PasswordForm passwordForm;
+
+		public PasswordFormCancelActionListener(Callback callback, PasswordForm passwordForm) {
+			super(callback);
+			this.passwordForm = passwordForm;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			passwordForm.exitPasswordForm();
+		}
+	};
+
+
+
+	public PasswordFormCancelActionListener defaultCancelListener = new PasswordFormCancelActionListener(null, this);
+
+
+
+
 	//entry point
 
 	/**
 	 * @param walletForm
-	 * @param actionListener optional action listener. if not provided, the one in this class will be used.
+	 * @param okListener optional action listener. if not provided, the one in this class will be used.
 	 */
-	public void showPasswordForm(WalletForm walletForm, PasswordFormActionListener actionListener) {
+	public void showPasswordForm(WalletForm walletForm, PasswordFormActionListener okListener, PasswordFormActionListener cancelListener) {
 		this.walletForm = walletForm;
 		dialog = new JDialog(walletForm.frame, "Please enter password", true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getContentPane().add(mainPanel);
 		dialog.setPreferredSize(new Dimension(800, 400));
 
-//		final Container contentPane = dialog.getContentPane();
 		dialog.getRootPane().setDefaultButton(btnOk);
 
 		//set up spinner to be blank
@@ -277,25 +300,18 @@ public class PasswordForm implements ActionListener {
 		}
 
 
-		if (actionListener != null)
-			btnOk.addActionListener(actionListener);
+		if (okListener != null)
+			btnOk.addActionListener(okListener);
 		else {
 			btnOk.addActionListener(this);
 		}
 
+		if (cancelListener != null)
+			btnCancel.addActionListener(cancelListener);
+		else {
+			btnCancel.addActionListener(defaultCancelListener);
+		}
 
-//		IndexedFocusTraversalPolicy policy = new IndexedFocusTraversalPolicy();
-//		policy.addIndexedComponent(spinner1);
-//		policy.addIndexedComponent(spinner2);
-//		policy.addIndexedComponent(spinner3);
-//		policy.addIndexedComponent(fldPassword);
-//		policy.addIndexedComponent(btnCancel);
-//		policy.addIndexedComponent(btnOk);
-//		dialog.setFocusTraversalPolicy(policy);
-
-
-		//componentsList = ViewHelper.getAllComponents(dialog);
-		//ViewHelper.setFontSize(componentsList, WalletSettings.getInstance().getFontSize());
 
 		dialog.setLocationRelativeTo(walletForm.frame);
 		dialog.setVisible(true);
@@ -322,37 +338,7 @@ public class PasswordForm implements ActionListener {
 
 
 	private void init() {
-
-//		KeyListener keyListener = new KeyListener() {
-//			@Override
-//			public void keyTyped(KeyEvent e) {
-//
-//			}
-//
-//			@Override
-//			public void keyPressed(KeyEvent e) {
-//
-//				// e.getSource()==btnCancel evals to true
-//				if (e.getKeyCode()==KeyEvent.VK_ENTER){
-//					dialog.dispose();
-//				}
-//			}
-//
-//			@Override
-//			public void keyReleased(KeyEvent e) {
-//
-//			}
-//		}    ;
-
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dialog.dispose();
- 				walletForm.resetForm();
-			}
-		});
-
-
+		//
 	}
 
 
@@ -384,11 +370,6 @@ public class PasswordForm implements ActionListener {
 			passVO.setPass(fldPassword.getText());
 			passVO.setCombination(spinner1.getValue().toString(), spinner2.getValue().toString(), spinner3.getValue().toString());
 		}
-//		} else {
-//			ret.setPass(spinner2.getValue().toString() + fldPassword.getText() + spinner1.getValue().toString() + spinner3.getValue().toString());
-//			//read old file, set the combination as well so the encryptor can be initialized for write later
-//			ret.setCombination(spinner2.getValue().toString() + spinner1.getValue().toString() + spinner3.getValue().toString());
-//		}
 
 
 		model.setPassPlain(passVO);

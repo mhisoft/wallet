@@ -1,9 +1,14 @@
 package org.mhisoft.wallet.view;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -45,6 +50,7 @@ public class ListExplorerView  implements ListSelectionListener {
 		itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		itemList.setSelectedIndex(0);
 		itemList.addListSelectionListener(this);
+		itemList.addMouseListener(mouseRightClickListener);
 
 
 		model.getItemsFlatList().forEach(item -> {
@@ -70,8 +76,6 @@ public class ListExplorerView  implements ListSelectionListener {
 		});
 
 		itemList.setSelectedIndex(0);
-
-
 
 
 	}
@@ -104,5 +108,18 @@ public class ListExplorerView  implements ListSelectionListener {
 			}
 		}
 	}
+
+	MouseListener mouseRightClickListener = new MouseAdapter() {
+		public void mousePressed(MouseEvent e) {
+
+			if (SwingUtilities.isRightMouseButton(e)) {
+
+				DialogUtils.getInstance().info("Selected item:" + (model.getCurrentItem() == null ? "none" : model.getCurrentItem().getName()));
+
+
+			}
+		}
+	};
+
 
 }

@@ -149,29 +149,47 @@ public class WalletService {
 
 	/**
 	 * Export the sourceItem to a new vault for transportation.
-	 * @param sourceItem
-	 * @param exportVaultPassVO
-	 * @param exportVaultFilename
+	 * @param sourceItem the source item to be exported.
+	 * @param exportVaultPassVO the passwords for the new vault.
+	 * @param exportVaultFilename The new vault name.
 	 */
 	public void exportItem(final WalletItem sourceItem
 	      ,final PassCombinationVO exportVaultPassVO
 			, final String exportVaultFilename ) {
 		try {
 
-			WalletItem newItem = cloneItem(sourceItem);
 
-			WalletModel expModel = new WalletModel();
-			String hash2 = HashingUtils.createHash(exportVaultPassVO.getPass());
-			String combinationHash2 = HashingUtils.createHash(exportVaultPassVO.getCombination());
-			expModel.setHash(hash2, combinationHash2);
-			expModel.initEncryptor(exportVaultPassVO);
+			if (sourceItem.getType()==ItemType.category) {
+				//not suporoted. now.
+				DialogUtils.getInstance().warn("Error", "Category is not supported yet. Select an item instead.");
+			}
+			else {
+				//get its parent.
 
-			WalletItem root = new WalletItem(ItemType.category, "export");
-			expModel.getItemsFlatList().add(root);
-			expModel.getItemsFlatList().add(newItem);
 
-			//save to the export vault.
-			saveToFile(exportVaultFilename, expModel, expModel.getEncryptor());
+				WalletModel expModel = new WalletModel();
+				String hash2 = HashingUtils.createHash(exportVaultPassVO.getPass());
+				String combinationHash2 = HashingUtils.createHash(exportVaultPassVO.getCombination());
+				expModel.setHash(hash2, combinationHash2);
+				expModel.initEncryptor(exportVaultPassVO);
+
+				WalletItem newParent=null;
+				WalletItem newItem = cloneItem(sourceItem);
+				if (sourceItem.getParent()!=null) {
+					newParent = cloneItem(sourceItem.getParent());
+					newParent.addChild(newItem);
+				}
+
+
+				WalletItem root = new WalletItem(ItemType.category, "export");
+				expModel.getItemsFlatList().add(root);
+				if (newParent!=null)
+					expModel.getItemsFlatList().add(newParent);
+				expModel.getItemsFlatList().add(newItem);
+
+				//save to the export vault.
+				saveToFile(exportVaultFilename, expModel, expModel.getEncryptor());
+			}
 
 
 		} catch (HashingUtils.CannotPerformOperationException e) {

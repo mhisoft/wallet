@@ -25,6 +25,9 @@ package org.mhisoft.wallet.view;
 
 import java.util.Enumeration;
 import java.util.logging.Logger;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JTree;
@@ -98,6 +101,11 @@ public class TreeExploreView {
 
 			}
 		});
+
+
+
+
+		tree.addMouseListener(jtreeMouseRightClickListener);
 
 
 		//update the tree node when fldName loses focus.
@@ -227,6 +235,7 @@ public class TreeExploreView {
 			form.btnDeleteNode.setEnabled(false);
 			form.btnMoveNode.setEnabled(false);
 			form.btnCollapse.setEnabled(false);
+			form.menuExport.setEnabled(false);
 		} else {
 
 			form.btnCollapse.setEnabled(true);
@@ -235,10 +244,12 @@ public class TreeExploreView {
 				form.btnAddNode.setEnabled(true);
 				form.btnDeleteNode.setEnabled(!currentItem.hasChildren());
 				form.btnMoveNode.setEnabled(false);
+				form.menuExport.setEnabled(false); //todo support in the future.
 			} else {
 				form.btnAddNode.setEnabled(true);
 				form.btnDeleteNode.setEnabled(true);
 				form.btnMoveNode.setEnabled(true);
+				form.menuExport.setEnabled(true);
 			}
 		}
 	}
@@ -495,6 +506,33 @@ public class TreeExploreView {
 		TreeNode node = (TreeNode) tree.getModel().getRoot();
 		expandCollapseAll(tree, new TreePath(node), true);
 	}
+
+
+
+
+	/* right click to popup the context menu */
+	MouseListener jtreeMouseRightClickListener = new MouseAdapter() {
+		public void mousePressed(MouseEvent e) {
+			int selRow = tree.getRowForLocation(e.getX(), e.getY());
+			TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+
+			if (SwingUtilities.isRightMouseButton(e)) {
+
+				DialogUtils.getInstance().info("Selected item:" + (model.getCurrentItem() == null ? "none" : model.getCurrentItem().getName()));
+
+				// popupMenu.show(e.getComponent(), e.getX(), e.getY());
+
+//			if(selRow != -1) {
+//				if(e.getClickCount() == 1) {
+//					mySingleClick(selRow, selPath);
+//				}
+//				else if(e.getClickCount() == 2) {
+//					myDoubleClick(selRow, selPath);
+//				}
+//			}
+			}
+		}
+	};
 
 
 

@@ -1,5 +1,6 @@
 package org.mhisoft.wallet;
 
+import java.awt.event.ActionEvent;
 import java.io.File;
 
 import org.mhisoft.common.event.EventDispatcher;
@@ -75,7 +76,15 @@ public class WalletMain {
 			title ="Opening file:" + WalletSettings.getInstance().getLastFile();
 
 		PasswordForm passwordForm = new PasswordForm(title);
-		passwordForm.showPasswordForm(form, null);
+		passwordForm.showPasswordForm(form, null, new PasswordForm.PasswordFormCancelActionListener(null, passwordForm) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//close the password form
+				super.actionPerformed(e);
+				//when creating new wallets.
+				ServiceRegistry.instance.getWalletForm().resetForm();
+			}
+		});
 
 
 	}

@@ -81,6 +81,7 @@ import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.BackupAction;
 import org.mhisoft.wallet.action.ChangePasswordAction;
 import org.mhisoft.wallet.action.CloseWalletAction;
+import org.mhisoft.wallet.action.ExportItemsAction;
 import org.mhisoft.wallet.action.ImportWalletAction;
 import org.mhisoft.wallet.action.NewWalletAction;
 import org.mhisoft.wallet.action.OpenWalletFileAction;
@@ -201,7 +202,8 @@ public class WalletForm {
 
 	JMenuBar menuBar;
 	public JMenu menuFile;
-	public JMenuItem menuOpen, menuNew, menuClose, menuImport, menuBackup, menuChangePassword, menuOpenRecent;
+	public JMenuItem menuOpen, menuNew, menuClose, menuImport,menuExport
+			, menuBackup, menuChangePassword, menuOpenRecent;
 	//JRadioButtonMenuItem rbMenuItem;
 	//JCheckBoxMenuItem cbMenuItem;
 
@@ -799,6 +801,9 @@ public class WalletForm {
 		menuNew = new JMenuItem("New Vault", KeyEvent.VK_N);
 		menuFile.add(menuNew);
 
+		menuExport = new JMenuItem("Export", KeyEvent.VK_I);
+		menuFile.add(menuExport);
+
 		menuImport = new JMenuItem("Import and Merge", KeyEvent.VK_I);
 		menuFile.add(menuImport);
 
@@ -808,7 +813,7 @@ public class WalletForm {
 		menuChangePassword = new JMenuItem("Change Password", KeyEvent.VK_P);
 		menuFile.add(menuChangePassword);
 
-		menuClose = new JMenuItem("Quit", KeyEvent.VK_Q);
+		menuClose = new JMenuItem("Sign Out", KeyEvent.VK_Q);
 		menuFile.add(menuClose);
 
 
@@ -818,6 +823,7 @@ public class WalletForm {
 		componentsList.add(menuNew);
 		componentsList.add(menuClose);
 		componentsList.add(menuChangePassword);
+		componentsList.add(menuExport);
 		componentsList.add(menuImport);
 		componentsList.add(menuBackup);
 		componentsList.add(menuOpenRecent);
@@ -852,6 +858,14 @@ public class WalletForm {
 				action.execute();
 
 
+			}
+		});
+		menuExport.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "menuExport", null));
+				ExportItemsAction exportItemsAction = ServiceRegistry.instance.getService(BeanType.singleton, ExportItemsAction.class);
+				exportItemsAction.execute();
 			}
 		});
 		menuImport.addActionListener(new ActionListener() {
@@ -893,6 +907,7 @@ public class WalletForm {
 		menuNew.setEnabled(false);
 		menuClose.setEnabled(false);
 		menuImport.setEnabled(false);
+		menuExport.setEnabled(false);
 		menuBackup.setEnabled(false);
 		menuChangePassword.setEnabled(false);
 		menuOpenRecent.setEnabled(false);
@@ -902,6 +917,7 @@ public class WalletForm {
 		menuNew.setEnabled(true);
 		menuClose.setEnabled(true);
 		menuImport.setEnabled(true);
+		menuExport.setEnabled(true);
 		menuBackup.setEnabled(true);
 		menuChangePassword.setEnabled(true);
 		menuOpenRecent.setEnabled(true);
@@ -1011,6 +1027,7 @@ public class WalletForm {
 		menuChangePassword.setEnabled(true);
 		menuClose.setEnabled(true);
 		menuImport.setEnabled(true);
+		menuExport.setEnabled(true);
 		menuOpen.setEnabled(true);
 
 	}
@@ -1034,6 +1051,7 @@ public class WalletForm {
 		menuChangePassword.setEnabled(false);
 		menuClose.setEnabled(true);
 		menuImport.setEnabled(false);
+		menuExport.setEnabled(false);
 		menuOpen.setEnabled(true);
 
 		labelLastMessage.setText("");

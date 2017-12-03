@@ -40,82 +40,67 @@ import org.mhisoft.wallet.view.WalletForm;
  * @author Tony Xue
  * @since July, 2016
  */
-public class NewWalletAction implements Action {
+public class ExportItemsAction implements Action {
 
 	//pick a file
-	String newVaultfn ;
+	String newVaultFileName;
 
 	@Override
 	public ActionResult execute(Object... params) {
 
-		//get the new vault file name.
-		VaultNameDialog.display( "Create a new Vault", "Location and name of the new Vault:",
+		VaultNameDialog.display( "Export to a Vault", "Location of the new of existing Vault to export to:",
 				new VaultNameDialog.NewVaultCallback() {
 			@Override
 			public void onOK(String fileName) {
-				newVaultfn = fileName;
+				newVaultFileName = fileName;
 			}
 
 			@Override
 			public void onCancel() {
-				newVaultfn =null;
+				newVaultFileName =null;
 			}
 		});
 
 
-		if (newVaultfn==null)
+		if (newVaultFileName ==null)
 			return new ActionResult(false);
 
-		/*close and save the current file is needed. */
-		CloseWalletAction closeWalletAction = ServiceRegistry.instance.getService(BeanType.prototype, CloseWalletAction.class);
-		ActionResult r = closeWalletAction.execute(Boolean.FALSE); //close the wallet file quietly  ?
 
-		if (r.isSuccess()) {
 
 
 
 			/*Delegate to the password form the create password*/
 			WalletForm form = ServiceRegistry.instance.getWalletForm();
-			PasswordForm passwordForm = new PasswordForm("Creating a new wallet");
-			passwordForm.showPasswordForm(form, new PasswordForm.PasswordFormActionListener(null) {
-						@Override
-						public void actionPerformed(ActionEvent e) {
+			PasswordForm passwordForm = new PasswordForm("Creating a new wallet for export");
+			passwordForm.showPasswordForm(form,
+					new PasswordForm.PasswordFormActionListener(null) {
 
-							PassCombinationVO pass = passwordForm.getUserEnteredPassForVerification();
+				/*when Ok button is clicked*/
+				@Override
+				public void actionPerformed(ActionEvent e) {
 
-							if (pass == null) {
-								//user input is not good. try again.
-							} else {
+					PassCombinationVO pass = passwordForm.getUserEnteredPassForVerification();
 
-								//create an empty tree with one root.
-								WalletModel model = ServiceRegistry.instance.getWalletModel();
-								String[] parts = FileUtils.splitFileParts(newVaultfn);
+					if (pass == null) {
+						//user input is not good. try again.
+					}
+					else {
 
-								model.setupEmptyWalletData(parts[1]);
+						//create an empty tree with one root.
+						WalletModel model  = ServiceRegistry.instance.getWalletModel();
+						String[] parts  = FileUtils.splitFileParts(newVaultFileName) ;
+
+						model.setupEmptyWalletData(parts[1]);
 
 
-								CreateWalletAction createWalletAction = ServiceRegistry.instance.getService(
-										BeanType.prototype, CreateWalletAction.class);
-								createWalletAction.execute(pass, passwordForm, newVaultfn);
-							}
-
-						}
-					},
-					new PasswordForm.PasswordFormCancelActionListener(null, passwordForm) {
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							//close the password form
-							super.actionPerformed(e);
-							//when creating new wallets.
-							ServiceRegistry.instance.getWalletForm().resetForm();
-						}
+						CreateWalletAction createWalletAction = ServiceRegistry.instance.getService(
+								BeanType.prototype, CreateWalletAction.class);
+						createWalletAction.execute(pass, passwordForm, newVaultFileName);
 					}
 
+				}
+			},null);
 
-			);
-
-			return new ActionResult(true);
-		}
 		return new ActionResult(false);
 	}
 

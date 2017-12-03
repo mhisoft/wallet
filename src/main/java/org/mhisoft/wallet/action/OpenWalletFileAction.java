@@ -69,7 +69,7 @@ public class OpenWalletFileAction implements Action {
 				model.setCombinationHash(header.getCombinationHash());
 				//now show password form to enter the password.
 				PasswordForm passwordForm = new PasswordForm("Opening file:"+ fileName);
-				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), null);
+				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), null,null);
 
 				//hand off to the OK listener and
 

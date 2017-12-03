@@ -49,6 +49,7 @@ public class DebugUtil {
 		//if (WalletModel.debug) {
 		form.textAreaDebug.append("\n");
 		form.textAreaDebug.append(WalletMain.BUILD_DETAIL + "\n");
+		form.textAreaDebug.append("Project home: https://github.com/mhisoft/eVault" + "\n");
 		form.textAreaDebug.append("\n");
 		form.textAreaDebug.append("java.home=" + System.getProperty("java.home") + "\n");
 		form.textAreaDebug.append("java.specification.version=" + System.getProperty("java.specification.version") + "\n");

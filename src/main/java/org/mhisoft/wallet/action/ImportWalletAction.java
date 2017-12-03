@@ -24,7 +24,6 @@
 package org.mhisoft.wallet.action;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 import org.mhisoft.common.util.Encryptor;
@@ -64,7 +63,8 @@ public class ImportWalletAction implements Action {
 
 				//now show password form to enter the password.
 				PasswordForm passwordForm = new PasswordForm("Opening file: " + importFile);
-				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), new PasswordForm.PasswordFormActionListener(null) {
+				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm()
+						, new PasswordForm.PasswordFormActionListener(null) {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						PassCombinationVO passVO = passwordForm.getUserEnteredPassForVerification();
@@ -94,7 +94,10 @@ public class ImportWalletAction implements Action {
 
 						}
 					}
-				});
+				}, null
+
+
+				);
 
 				//hand off to the OK listener , actionPerformed() below to do VerifyPasswordAction
 

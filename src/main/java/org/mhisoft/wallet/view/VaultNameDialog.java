@@ -20,21 +20,24 @@ import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.model.WalletSettings;
 
 
-public class NewVaultDialog extends JDialog {
+public class VaultNameDialog extends JDialog {
 	private JPanel contentPane;
 	private JButton buttonOK;
 	private JButton buttonCancel;
-	private JLabel labelTitle1;
+	private JLabel labelTitle;
 
 	private JTextField fldNewFileName;
 
 	//reuse it
 	NewVaultCallback callback = null;
 
-	public NewVaultDialog() {
+	public VaultNameDialog(String title, String label) {
 
 		setContentPane(contentPane);
 		setModal(true);
+		setTitle(title);
+		if (label!=null)
+			this.labelTitle.setText(label);
 
 
 		getRootPane().setDefaultButton(buttonOK);
@@ -111,10 +114,10 @@ public class NewVaultDialog extends JDialog {
 	/**
 	 * Display the dialog
 	 */
-	public static void display( NewVaultCallback callback) {
+	public static void display( String title, String label, NewVaultCallback callback) {
 
 		//create a new dialog every time.
-		NewVaultDialog dialog = new NewVaultDialog( );
+		VaultNameDialog dialog = new VaultNameDialog(title, label );
 		dialog.callback = callback;
 
 		dialog.pack();

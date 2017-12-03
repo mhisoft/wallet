@@ -534,14 +534,6 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="bdf9" class="javax.swing.JButton" binding="btnAttach">
-                            <constraints/>
-                            <properties>
-                              <icon value="attachment.png"/>
-                              <text value="Attach"/>
-                              <toolTipText value="Attach image or file"/>
-                            </properties>
-                          </component>
                           <component id="7012f" class="javax.swing.JButton" binding="btnEditForm">
                             <constraints/>
                             <properties>
@@ -563,11 +555,19 @@
                               <text value="&amp;Cancel"/>
                             </properties>
                           </component>
+                          <component id="bdf9" class="javax.swing.JButton" binding="btnAttach">
+                            <constraints/>
+                            <properties>
+                              <icon value="attachment.png"/>
+                              <text value="Attach"/>
+                              <toolTipText value="Attach image or file"/>
+                            </properties>
+                          </component>
                           <component id="7429f" class="javax.swing.JButton" binding="btnClose">
                             <constraints/>
                             <properties>
                               <icon value="close1463468299_46.png"/>
-                              <text value="Cl&amp;ose"/>
+                              <text value="Sign &amp;Out"/>
                             </properties>
                           </component>
                         </children>

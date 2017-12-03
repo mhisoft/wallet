@@ -88,6 +88,7 @@ public class ChangePasswordAction implements Action {
 					}
 
 				}
+				,null
 
 		);
 	}
@@ -140,7 +141,7 @@ public class ChangePasswordAction implements Action {
 				}
 
 			}
-		});
+		},null);
 	}
 
 	@Override

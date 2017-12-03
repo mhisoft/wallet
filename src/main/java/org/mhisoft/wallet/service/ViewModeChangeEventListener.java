@@ -33,6 +33,7 @@ public class ViewModeChangeEventListener implements EventListener {
 				form.btnClose.setVisible(false);
 				form.menuClose.setVisible(false);
 				form.btnAttach.setVisible(true);
+				form.menuExport.setVisible(false);
 				form.disableMenus();
 			} else if (displayMode == DisplayMode.view) {
 				form.btnEditForm.setVisible(true);
@@ -41,6 +42,7 @@ public class ViewModeChangeEventListener implements EventListener {
 				form.btnClose.setVisible(true);
 				form.menuClose.setVisible(true);
 				form.btnAttach.setVisible(true);
+				form.menuExport.setVisible(true);
 				form.enableMenus();
 			}
 		}
