@@ -1,5 +1,6 @@
 package org.mhisoft.wallet.service;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.mhisoft.common.util.Encryptor;
@@ -66,6 +67,39 @@ public class WalletService {
 
 	}
 
+	/**
+	 * Save the model to a new exported store.
+	 * And if there are attachments on the item, we need to read the content out from the old attachment store and transfer to a new one.
+	 * @param expVaultName
+	 * @param expModel
+	 * @param expEncryptor
+	 */
+	public void saveToFileAndTransferAttachment(final String existingVaultFileName,
+			final String expVaultName, final WalletModel expModel, final Encryptor expEncryptor) {
+
+		for (WalletItem item : expModel.getItemsFlatList()) {
+			int k = item.getName().indexOf("(*)");
+			if (k>0) {
+				item.setName(item.getName().substring(0, k));
+			}
+		}
+
+
+		DataServiceFactory.createDataService().saveToFile(expVaultName, expModel, expEncryptor);
+
+		//save attachments.
+		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
+		attachmentService.transferAttachmentStore(
+				 attachmentService.getAttachmentFileName(existingVaultFileName)
+				,attachmentService.getAttachmentFileName(expVaultName)
+				,ServiceRegistry.instance.getWalletModel()
+				,expModel, expEncryptor);
+
+	}
+
+
+	//
+
 
 	/**
 	 *
@@ -87,7 +121,18 @@ public class WalletService {
 
 		//save attachments.
 		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
-		attachmentService.transferAttachmentStore( attachmentService.getAttachmentFileName(filename)  , model, newEnc);
+
+		//transfer to the ne store with new password.
+		String oldStoreName = attachmentService.getAttachmentFileName(filename);
+		String newStoreName = oldStoreName + ".tmp";
+
+		//the same one model, just that use the new encryptor for writing the new store.
+		if (attachmentService.transferAttachmentStore( oldStoreName,  newStoreName  , model, model, newEnc)) {
+			//now do the swap of the store to the new one.
+			new File(oldStoreName).delete();
+			File newFile = new File(newStoreName);
+			newFile.renameTo(new File(oldStoreName));
+		}
 
 	}
 
@@ -188,7 +233,12 @@ public class WalletService {
 				expModel.getItemsFlatList().add(newItem);
 
 				//save to the export vault.
-				saveToFile(exportVaultFilename, expModel, expModel.getEncryptor());
+				String vaultFileName = ServiceRegistry.instance.getWalletModel().getVaultFileName();
+				saveToFileAndTransferAttachment(vaultFileName, exportVaultFilename, expModel, expModel.getEncryptor());
+
+				DialogUtils.getInstance().info("The item " + sourceItem.getName() +" has been successfully exported to vault:" + exportVaultFilename);
+
+
 			}
 
 

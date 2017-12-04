@@ -126,22 +126,27 @@ public class AttachmentService {
 
 
 	/**
-	 *
-	 * @param oldStoreName The old store name
-	 * @param model model
-	 * @param encryptor   The encryptor for write.
+	 * Read the attachments from the old attachment store and write to the new attachment store.
+	 * It is really copy attachments from one store to anotehr.
+	 * @param oldStoreName The old store name, needed to read the attachment content out.
+	 * @param model  The old model, need the encryptor from it to read old attachment for transfer.
+	 * @param newModel  the new store model, items list is from the new model.
+	 * @param newStoreEncryptor   The encryptor for writing the new attachment store.
 	 */
 
-	public void transferAttachmentStore(final String oldStoreName, final WalletModel model, final Encryptor encryptor) {
-		String newStoreName = oldStoreName + ".tmp";
+	public boolean transferAttachmentStore(final String oldStoreName, String newStoreName
+			, final WalletModel model
+			, final WalletModel newModel,  final Encryptor newStoreEncryptor) {
+
 		File newFile = new File(newStoreName);
 		if (newFile.exists()) {
 			if (!newFile.delete()) {
 				DialogUtils.getInstance().error("Can't delete the tmp file:" + newStoreName);
+				return false;
 			}
 		}
 		FileAccessTable t = new FileAccessTable();
-		for (WalletItem item : model.getItemsFlatList()) {
+		for (WalletItem item : newModel.getItemsFlatList()) {
 			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFileName() != null)
 				t.addEntry(item.getAttachmentEntry());
 		}
@@ -158,15 +163,13 @@ public class AttachmentService {
 				dataOut.writeInt(t.getEntries().size());
 				//itemStartPos = 4;
 
-				writeFileEntries(model, true, oldStoreName, 4, dataOut, t, encryptor);
+				writeFileEntries(newModel, true, oldStoreName, 4, dataOut, t, model.getEncryptorForRead(), newStoreEncryptor);
 
 				dataOut.flush();
 				dataOut.close();
 
 
-				//now do the swap of the store to the new one.
-				new File(oldStoreName).delete();
-				newFile.renameTo(new File(oldStoreName));
+
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -180,6 +183,8 @@ public class AttachmentService {
 					}
 			}
 
+
+
 		}
 
 		//now clear the access flag on the item
@@ -190,10 +195,18 @@ public class AttachmentService {
 			}
 		}
 
+		return true;
+
 
 	}
 
 
+	/**
+	 * Create a new attachment store.
+	 * @param filename
+	 * @param model
+	 * @param encryptor
+	 */
 	public void newAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
 
 		FileAccessTable t = new FileAccessTable();
@@ -214,7 +227,7 @@ public class AttachmentService {
 				dataOut.writeInt(t.getEntries().size());
 				//itemStartPos = 4;
 
-				writeFileEntries(model, false, null, 4, dataOut, t, encryptor);
+				writeFileEntries(model, false, null, 4, dataOut, t, model.getEncryptorForRead(),  encryptor);
 
 				dataOut.flush();
 			} catch (IOException e) {
@@ -284,7 +297,7 @@ public class AttachmentService {
 				attachmentFileStore.seek(itemStartPos);
 
 				//append new entries to the end of the store.
-				writeFileEntries(model, false, filename, itemStartPos, attachmentFileStore, t, encryptor);
+				writeFileEntries(model, false, filename, itemStartPos, attachmentFileStore, t, model.getEncryptorForRead(), encryptor);
 
 
 			}
@@ -326,8 +339,13 @@ public class AttachmentService {
 	} //appendAttachmentStore
 
 
-
-
+	/**
+	 * abandon the old store and transfer everthing to the wnew store.
+	 * The same model for both old and new store.
+	 * @param oldStorefName
+	 * @param model
+	 * @param encryptor
+	 */
 	protected void compactAttachmentStore(final String oldStorefName, final WalletModel model, final Encryptor encryptor) {
 		String newStoreName = oldStorefName + ".tmp";
 		File newFile = new File(newStoreName);
@@ -368,7 +386,7 @@ public class AttachmentService {
 				attachmentFileStore.seek(0);
 				attachmentFileStore.writeInt(t.getSize());
 
-				writeFileEntries(model, true, oldStorefName, 4, attachmentFileStore, t, encryptor);
+				writeFileEntries(model, true, oldStorefName, 4, attachmentFileStore, t, model.getEncryptorForRead(), encryptor);
 
 
 				attachmentFileStore.close();
@@ -423,7 +441,7 @@ public class AttachmentService {
 
 
 	/**
-	 * @param transferStoreMode a new store will be created becaue the old one has t
+	 * @param transferStoreMode a new store will be created because the old one has t
 	 * @param oldStoreFileName  provide along with the transferStoreMode. for read the contents to be transfered to the new store  when doing compacting.
 	 * @param itemStartPos      start position for the data output file.
 	 * @param dataOut           data output file/stream
@@ -434,7 +452,9 @@ public class AttachmentService {
 	protected void writeFileEntries( WalletModel model,
 			boolean transferStoreMode
 			, String oldStoreFileName,
-			final long itemStartPos, DataOutput dataOut, final FileAccessTable t, final Encryptor encryptor) throws IOException {
+			final long itemStartPos, DataOutput dataOut, final FileAccessTable t
+			, final Encryptor oldEncryptorForRead
+			, final Encryptor encryptor) throws IOException {
 
 		long pos = itemStartPos;
 
@@ -502,7 +522,7 @@ public class AttachmentService {
 
 			else if (transferStoreMode && fileAccessEntry.getAccessFlag() == FileAccessFlag.None && fileAccessEntry.getEncSize() > 0) {
 				//no change, this is an transfer to the new store. need to read the filecontent from the old store.
-				fileContent = readFileContent(oldStoreFileName, fileAccessEntry, model.getEncryptor());
+				fileContent = readFileContent(oldStoreFileName, fileAccessEntry, oldEncryptorForRead);
 			} else
 				fileContent = FileUtils.readFile(fileAccessEntry.getFile());
 

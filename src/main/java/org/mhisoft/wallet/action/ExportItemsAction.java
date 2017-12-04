@@ -25,9 +25,11 @@ package org.mhisoft.wallet.action;
 
 import java.awt.event.ActionEvent;
 
+import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.DialogUtils;
 import org.mhisoft.wallet.view.PasswordForm;
 import org.mhisoft.wallet.view.VaultNameDialog;
 import org.mhisoft.wallet.view.WalletForm;
@@ -46,7 +48,15 @@ public class ExportItemsAction implements Action {
 	@Override
 	public ActionResult execute(Object... params) {
 
-		WalletItem sourceItem =   (WalletItem)params[0];
+		//validate
+
+
+		WalletItem sourceItem =   ServiceRegistry.instance.getWalletModel().getCurrentItem();
+		if (sourceItem==null || sourceItem.getType()!= ItemType.item) {
+			DialogUtils.getInstance().error("Error", "Select the item to export.");
+			return new ActionResult(false);
+		}
+
 
 		VaultNameDialog.display("Export to a Vault", "Location of the new of existing Vault to export to:",
 				new VaultNameDialog.NewVaultCallback() {
@@ -88,7 +98,11 @@ public class ExportItemsAction implements Action {
 							//user input is not good. try again.
 						} else {
 
+							//close the password form
+							passwordForm.exitPasswordForm();
+
 							ServiceRegistry.instance.getWalletService().exportItem(sourceItem, pass, newVaultFileName );
+
 
 						}
 

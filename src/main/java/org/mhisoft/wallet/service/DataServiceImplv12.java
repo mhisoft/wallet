@@ -163,7 +163,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 			Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
 
-			saveHeader(dataOut, model);
+			saveHeader(dataOut, model);   //need pass hash from model ,
 
 			int i=0;
 			byte[] cipherParameters;

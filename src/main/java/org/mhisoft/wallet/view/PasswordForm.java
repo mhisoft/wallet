@@ -398,7 +398,7 @@ public class PasswordForm implements ActionListener {
 						ServiceRegistry.instance.getWalletModel().getCombinationHash()
 				);
 				if (result.isSuccess()) {
-					//clsoe the password form
+					//close the password form
 					exitPasswordForm();
 
 					//load the wallet
