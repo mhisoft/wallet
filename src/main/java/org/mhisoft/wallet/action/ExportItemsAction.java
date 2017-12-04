@@ -25,13 +25,11 @@ package org.mhisoft.wallet.action;
 
 import java.awt.event.ActionEvent;
 
-import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.wallet.model.PassCombinationVO;
-import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.BeanType;
+import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.view.VaultNameDialog;
 import org.mhisoft.wallet.view.PasswordForm;
+import org.mhisoft.wallet.view.VaultNameDialog;
 import org.mhisoft.wallet.view.WalletForm;
 
 /**
@@ -48,58 +46,54 @@ public class ExportItemsAction implements Action {
 	@Override
 	public ActionResult execute(Object... params) {
 
-		VaultNameDialog.display( "Export to a Vault", "Location of the new of existing Vault to export to:",
+		WalletItem sourceItem =   (WalletItem)params[0];
+
+		VaultNameDialog.display("Export to a Vault", "Location of the new of existing Vault to export to:",
 				new VaultNameDialog.NewVaultCallback() {
-			@Override
-			public void onOK(String fileName) {
-				newVaultFileName = fileName;
-			}
+					@Override
+					public void onOK(String fileName) {
+						newVaultFileName = fileName;
+					}
 
-			@Override
-			public void onCancel() {
-				newVaultFileName =null;
-			}
-		});
+					@Override
+					public void onCancel() {
+						newVaultFileName = null;
+					}
+				});
 
 
-		if (newVaultFileName ==null)
+		if (newVaultFileName == null)
 			return new ActionResult(false);
 
+		//todo detect file exist so we know it is existing vault or new vault.
 
 
 
+		//2. for a new vault , get the password
 
-			/*Delegate to the password form the create password*/
-			WalletForm form = ServiceRegistry.instance.getWalletForm();
-			PasswordForm passwordForm = new PasswordForm("Creating a new wallet for export");
-			passwordForm.showPasswordForm(form,
-					new PasswordForm.PasswordFormActionListener(null) {
 
-				/*when Ok button is clicked*/
-				@Override
-				public void actionPerformed(ActionEvent e) {
+		/*Delegate to the password form the create password*/
+		WalletForm form = ServiceRegistry.instance.getWalletForm();
+		PasswordForm passwordForm = new PasswordForm("Creating a new wallet for export");
+		passwordForm.showPasswordForm(form,
+				new PasswordForm.PasswordFormActionListener(null) {
 
-					PassCombinationVO pass = passwordForm.getUserEnteredPassForVerification();
+					/*when Ok button is clicked*/
+					@Override
+					public void actionPerformed(ActionEvent e) {
 
-					if (pass == null) {
-						//user input is not good. try again.
+						PassCombinationVO pass = passwordForm.getUserEnteredPassForVerification();
+
+						if (pass == null) {
+							//user input is not good. try again.
+						} else {
+
+							ServiceRegistry.instance.getWalletService().exportItem(sourceItem, pass, newVaultFileName );
+
+						}
+
 					}
-					else {
-
-						//create an empty tree with one root.
-						WalletModel model  = ServiceRegistry.instance.getWalletModel();
-						String[] parts  = FileUtils.splitFileParts(newVaultFileName) ;
-
-						model.setupEmptyWalletData(parts[1]);
-
-
-						CreateWalletAction createWalletAction = ServiceRegistry.instance.getService(
-								BeanType.prototype, CreateWalletAction.class);
-						createWalletAction.execute(pass, passwordForm, newVaultFileName);
-					}
-
-				}
-			},null);
+				}, null);
 
 		return new ActionResult(false);
 	}
