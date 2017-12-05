@@ -49,7 +49,7 @@ public class NewWalletAction implements Action {
 	public ActionResult execute(Object... params) {
 
 		//get the new vault file name.
-		VaultNameDialog.display( "Create a new Vault", "Location and name of the new Vault:",
+		VaultNameDialog.display( "Create a new Vault", "Location and name of the new Vault:",null,
 				new VaultNameDialog.NewVaultCallback() {
 			@Override
 			public void onOK(String fileName) {

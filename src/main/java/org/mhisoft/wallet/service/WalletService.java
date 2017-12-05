@@ -185,6 +185,12 @@ public class WalletService {
 		try {
 			Serializer<WalletItem> serializer = new Serializer<WalletItem>();
 			WalletItem ret = serializer.deserialize(serializer.serialize(src));
+
+			//this part is not really a clone. point to the same Attachment Entry for exporting is good enough.
+			if (src.getAttachmentEntry()!=null ) {
+				ret.setAttachmentEntry(  src.getAttachmentEntry() );
+			}
+
 			return ret;
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException("cloneItem() failed", e);

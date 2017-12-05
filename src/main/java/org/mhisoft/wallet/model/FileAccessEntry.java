@@ -24,6 +24,7 @@
 package org.mhisoft.wallet.model;
 
 import java.io.File;
+import java.io.Serializable;
 import java.security.AlgorithmParameters;
 
 import org.mhisoft.common.util.StringUtils;
@@ -34,7 +35,9 @@ import org.mhisoft.common.util.StringUtils;
  * @author Tony Xue
  * @since Mar, 2017
  */
-public class FileAccessEntry {
+public class FileAccessEntry implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	String GUID;     //40
 	long position;   // file entry start position.
 
@@ -45,7 +48,7 @@ public class FileAccessEntry {
 	FileAccessFlag accessFlag;
 
 	FileAccessEntry newEntry;
-	AlgorithmParameters algorithmParameters;   //for the content.
+	transient AlgorithmParameters algorithmParameters;   //for the content.
 	long posOfContent;
 	int encSize;
 

@@ -27,12 +27,14 @@ public class VaultNameDialog extends JDialog {
 	private JLabel labelTitle;
 
 	private JTextField fldNewFileName;
+	private String filename;
 
 	//reuse it
 	NewVaultCallback callback = null;
 
-	public VaultNameDialog(String title, String label) {
+	public VaultNameDialog(String title, String label, String filename) {
 
+		this.filename = filename;
 		setContentPane(contentPane);
 		setModal(true);
 		setTitle(title);
@@ -114,16 +116,16 @@ public class VaultNameDialog extends JDialog {
 	/**
 	 * Display the dialog
 	 */
-	public static void display( String title, String label, NewVaultCallback callback) {
+	public static void display( String title, String label, String defaultFileNamePattern, NewVaultCallback callback) {
 
 		//create a new dialog every time.
-		VaultNameDialog dialog = new VaultNameDialog(title, label );
+		VaultNameDialog dialog = new VaultNameDialog(title, label, defaultFileNamePattern );
 		dialog.callback = callback;
+		dialog.setFilename(defaultFileNamePattern);
 
 		dialog.pack();
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
-
 
 //
 //		SwingUtilities.invokeLater(new Runnable() {
@@ -137,10 +139,22 @@ public class VaultNameDialog extends JDialog {
 
 	}
 
+	public String getFilename() {
+		if (filename == null) {
+			filename = "eVault-" + System.currentTimeMillis();
+		}
+		filename = WalletSettings.userHome+filename +".dat";
+		return filename;
+
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
 	private void createUIComponents() {
 		fldNewFileName = new JTextField();
-		String fname = "eVault-" + System.currentTimeMillis();
-		fname = WalletSettings.userHome+fname +".dat";
+		String fname = getFilename();
 		fldNewFileName.setText(fname);
 
 	}

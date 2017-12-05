@@ -59,6 +59,7 @@ public class LoadWalletAction implements Action {
 
 
 		WalletModel model  = ServiceRegistry.instance.getWalletModel();
+		model.setVaultFileName(fileName);
 
 
 		if (new File(fileName).isFile()) {
