@@ -58,7 +58,7 @@ public class ExportItemsAction implements Action {
 		}
 
 
-		VaultNameDialog.display("Export to a Vault", "Location of the new of existing Vault to export to:",
+		VaultNameDialog.display("Export " + sourceItem.getName(), "Location of the new of existing Vault to export to:",
 				"eVault-export-" + System.currentTimeMillis()
 				,new VaultNameDialog.NewVaultCallback() {
 					@Override

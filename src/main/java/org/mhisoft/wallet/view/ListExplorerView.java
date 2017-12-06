@@ -50,7 +50,7 @@ public class ListExplorerView  implements ListSelectionListener {
 		itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		itemList.setSelectedIndex(0);
 		itemList.addListSelectionListener(this);
-		itemList.addMouseListener(mouseRightClickListener);
+		itemList.addMouseListener(form.jtreeMouseRightClickListener);
 
 
 		model.getItemsFlatList().forEach(item -> {

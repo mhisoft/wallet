@@ -40,6 +40,9 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -56,6 +59,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
@@ -65,6 +69,7 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -88,6 +93,7 @@ import org.mhisoft.wallet.action.OpenWalletFileAction;
 import org.mhisoft.wallet.action.SaveWalletAction;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessFlag;
+import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
@@ -202,10 +208,10 @@ public class WalletForm {
 
 	JMenuBar menuBar;
 	public JMenu menuFile;
-	public JMenuItem menuOpen, menuNew, menuClose, menuImport,menuExport
+	public JMenuItem menuOpen, menuNew, menuClose, menuImport,menuExport, popupMenuMove
 			, menuBackup, menuChangePassword, menuOpenRecent;
-	//JRadioButtonMenuItem rbMenuItem;
-	//JCheckBoxMenuItem cbMenuItem;
+	// build poup menu
+	final JPopupMenu popupMenu = new JPopupMenu();
 
 	List<Component> componentsList;
 	WalletModel model;
@@ -680,6 +686,7 @@ public class WalletForm {
 		componentsList.addAll( pmenus  );
 
 		setupMenu();
+		setupPopupContextMenu();
 
 
 		/*position it*/
@@ -801,7 +808,7 @@ public class WalletForm {
 		menuNew = new JMenuItem("New Vault", KeyEvent.VK_N);
 		menuFile.add(menuNew);
 
-		menuExport = new JMenuItem("Export", KeyEvent.VK_I);
+		menuExport = new JMenuItem("Export", KeyEvent.VK_E);
 		menuFile.add(menuExport);
 
 		menuImport = new JMenuItem("Import and Merge", KeyEvent.VK_I);
@@ -902,6 +909,8 @@ public class WalletForm {
 
 	}
 
+
+
 	public void disableMenus() {
 		menuOpen.setEnabled(false);
 		menuNew.setEnabled(false);
@@ -922,6 +931,24 @@ public class WalletForm {
 		menuChangePassword.setEnabled(true);
 		menuOpenRecent.setEnabled(true);
 	}
+
+	public void	setupPopupContextMenu() {
+		popupMenuMove = new JMenuItem("Move", KeyEvent.VK_M);
+		//let's try reuse the export menu
+		popupMenu.add(menuExport);
+		popupMenu.add(popupMenuMove);
+		componentsList.add(popupMenuMove);
+
+		popupMenuMove.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "popupMenuMove", null));
+				treeExploreView.moveItem();
+			}
+
+		});
+	}
+
 
 	public void refreshRecentFilesMenu() {
 		JMenu m = ((JMenu) menuOpenRecent);
@@ -1426,6 +1453,31 @@ public class WalletForm {
 		itemDetailView.cancelEditAction();
 
 	}
+
+
+
+	/* right click to popup the context menu */
+	public MouseListener jtreeMouseRightClickListener = new MouseAdapter() {
+		public void mousePressed(MouseEvent e) {
+
+			if (SwingUtilities.isRightMouseButton(e)) {
+				//DialogUtils.getInstance().info("Selected item:" + (model.getCurrentItem() == null ? "none" : model.getCurrentItem().getName()));
+				WalletItem sourceItem = model.getCurrentItem();
+				if (sourceItem!=null && sourceItem.getType()== ItemType.item) {
+					showPopup(e);
+				}
+
+
+			}
+		}
+
+		private void showPopup(MouseEvent e) {
+			popupMenu.show(e.getComponent(),e.getX()+10, e.getY()+10);
+		}
+
+	};
+
+
 
 
 }
