@@ -34,7 +34,7 @@ import java.security.AlgorithmParameters;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 
-import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
@@ -64,7 +64,7 @@ public class AttachmentService {
 	}
 
 
-	public void saveAttachments(final String filename, final WalletModel model, final Encryptor encryptor) {
+	public void saveAttachments(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 		//iterate the model item's FileAccessEntry
 		File f = new File(filename);
 		if (!f.exists()) {
@@ -136,7 +136,7 @@ public class AttachmentService {
 
 	public boolean transferAttachmentStore(final String oldStoreName, String newStoreName
 			, final WalletModel model
-			, final WalletModel newModel,  final Encryptor newStoreEncryptor) {
+			, final WalletModel newModel,  final PBEEncryptor newStoreEncryptor) {
 
 		File newFile = new File(newStoreName);
 		if (newFile.exists()) {
@@ -207,7 +207,7 @@ public class AttachmentService {
 	 * @param model
 	 * @param encryptor
 	 */
-	public void newAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
+	public void newAttachmentStore(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 
 		FileAccessTable t = new FileAccessTable();
 		for (WalletItem item : model.getItemsFlatList()) {
@@ -255,7 +255,7 @@ public class AttachmentService {
 	}
 
 
-	protected void appendAttachmentStore(final String filename, final WalletModel model, final Encryptor encryptor) {
+	protected void appendAttachmentStore(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 
 		FileAccessTable t = new FileAccessTable();
 		for (WalletItem item : model.getItemsFlatList()) {
@@ -346,7 +346,7 @@ public class AttachmentService {
 	 * @param model
 	 * @param encryptor
 	 */
-	protected void compactAttachmentStore(final String oldStorefName, final WalletModel model, final Encryptor encryptor) {
+	protected void compactAttachmentStore(final String oldStorefName, final WalletModel model, final PBEEncryptor encryptor) {
 		String newStoreName = oldStorefName + ".tmp";
 		File newFile = new File(newStoreName);
 		if (newFile.exists()) {
@@ -453,8 +453,8 @@ public class AttachmentService {
 			boolean transferStoreMode
 			, String oldStoreFileName,
 			final long itemStartPos, DataOutput dataOut, final FileAccessTable t
-			, final Encryptor oldEncryptorForRead
-			, final Encryptor encryptor) throws IOException {
+			, final PBEEncryptor oldEncryptorForRead
+			, final PBEEncryptor encryptor) throws IOException {
 
 		long pos = itemStartPos;
 
@@ -534,9 +534,9 @@ public class AttachmentService {
 	}
 
 	//return pos
-	private long writeEncryptedContent(byte[] content, final Encryptor encryptor, DataOutput dataOut, long pos) throws IOException {
+	private long writeEncryptedContent(byte[] content, final PBEEncryptor encryptor, DataOutput dataOut, long pos) throws IOException {
 
-		Encryptor.EncryptionResult ret = encryptor.encrypt(content);
+		PBEEncryptor.EncryptionResult ret = encryptor.encrypt(content);
 		byte[] _byteEncrypted = ret.getEncryptedData();
 
 		/*  cipherParameters size 4 bytes*/
@@ -585,14 +585,14 @@ public class AttachmentService {
 			throw new RuntimeException("read " + readBytes + " bytes only, expected to read:" + _byteCiper);
 		ret.pos += _byteCiper.length;
 
-		ret.algorithmParameters = AlgorithmParameters.getInstance(Encryptor.ALGORITHM);
+		ret.algorithmParameters = AlgorithmParameters.getInstance(PBEEncryptor.ALGORITHM);
 		ret.algorithmParameters.init(_byteCiper);
 
 		return ret;
 
 	}
 
-	public FileAccessTable read(String dataFile, final Encryptor encryptor) {
+	public FileAccessTable read(String dataFile, final PBEEncryptor encryptor) {
 		FileAccessTable t = null;
 		try {
 			File fIn = new File(dataFile);
@@ -698,7 +698,7 @@ public class AttachmentService {
 	 * @param encryptor
 	 * @return
 	 */
-	public byte[] readFileContent(String fileStoreDataFile, FileAccessEntry entry, Encryptor encryptor) {
+	public byte[] readFileContent(String fileStoreDataFile, FileAccessEntry entry, PBEEncryptor encryptor) {
 		try {
 			RandomAccessFile fileStore = new RandomAccessFile(fileStoreDataFile, "rw");
 			fileStore.seek(entry.getPosOfContent());

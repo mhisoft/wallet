@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.security.AlgorithmParameters;
 
 import org.mhisoft.common.util.ByteArrayHelper;
-import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.wallet.model.WalletItem;
@@ -74,7 +74,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 	//   need Encryptor to be intialized first.
 	@Override
-	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
+	public FileContent readFromFile(final String filename, final PBEEncryptor encryptor) {
 		//ByteArrayInputStream input = null;
 		//byte[] readBuf = new byte[DELIMITER_bytes.length];
 		FileContent ret  = new FileContent();
@@ -107,7 +107,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 				if (readBytes!=cipherParametersLength)
 					throw new RuntimeException("read " + readBytes +" bytes only, expected to read:"+ _byteCiper);
 
-				AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance(Encryptor.ALGORITHM);
+				AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance(PBEEncryptor.ALGORITHM);
 				algorithmParameters.init(_byteCiper);
 
 
@@ -152,7 +152,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 	//hash, flat list in the model and Encryptor
 	@Override
-	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
+	public void saveToFile(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 		FileOutputStream stream = null;
 		try {
 
@@ -170,7 +170,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 			for (WalletItem item : model.getItemsFlatList()) {
 				byte[] _byteItem = serializer.serialize(item);
-				Encryptor.EncryptionResult ret = encryptor.encrypt(_byteItem);
+				PBEEncryptor.EncryptionResult ret = encryptor.encrypt(_byteItem);
 				byte[] encrypted = ret.getEncryptedData();
 
 				//have to write for each encryption because a random salt is used.

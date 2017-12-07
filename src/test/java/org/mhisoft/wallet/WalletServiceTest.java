@@ -26,7 +26,7 @@ package org.mhisoft.wallet;
 import java.io.File;
 
 import org.junit.Test;
-import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.FileContent;

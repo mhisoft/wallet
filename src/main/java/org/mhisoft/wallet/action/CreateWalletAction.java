@@ -23,7 +23,7 @@
 
 package org.mhisoft.wallet.action;
 
-import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;

@@ -3,8 +3,8 @@ package org.mhisoft.wallet.service;
 import java.io.File;
 import java.io.IOException;
 
-import org.mhisoft.common.util.Encryptor;
-import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.common.util.security.PBEEncryptor;
+import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessTable;
@@ -25,7 +25,7 @@ public class WalletService {
 	AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
 
 
-	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
+	public FileContent readFromFile(final String filename, final PBEEncryptor encryptor) {
 		FileContentHeader header = readHeader(filename, true);
 		DataService ds = DataServiceFactory.createDataService(header.getVersion());
 		FileContent ret =  ds.readFromFile(filename, encryptor);
@@ -49,7 +49,7 @@ public class WalletService {
 
 
 
-	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
+	public void saveToFile(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 
 		for (WalletItem item : model.getItemsFlatList()) {
 			int k = item.getName().indexOf("(*)");
@@ -75,7 +75,7 @@ public class WalletService {
 	 * @param expEncryptor
 	 */
 	public void saveToFileAndTransferAttachment(final String existingVaultFileName,
-			final String expVaultName, final WalletModel expModel, final Encryptor expEncryptor) {
+			final String expVaultName, final WalletModel expModel, final PBEEncryptor expEncryptor) {
 
 		for (WalletItem item : expModel.getItemsFlatList()) {
 			int k = item.getName().indexOf("(*)");
@@ -107,7 +107,7 @@ public class WalletService {
 	 * @param model
 	 * @param newEnc This is the new encryptor with new pass
 	 */
-	public void saveToFileWithNewPassword(final String filename, final WalletModel model, final Encryptor newEnc) {
+	public void saveToFileWithNewPassword(final String filename, final WalletModel model, final PBEEncryptor newEnc) {
 
 		for (WalletItem item : model.getItemsFlatList()) {
 			int k = item.getName().indexOf("(*)");

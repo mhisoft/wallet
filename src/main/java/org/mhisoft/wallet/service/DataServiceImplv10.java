@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.security.AlgorithmParameters;
 
 import org.mhisoft.common.util.ByteArrayHelper;
-import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.wallet.model.WalletItem;
@@ -73,7 +73,7 @@ public class DataServiceImplv10 extends AbstractDataService {
 
 	//   need Encryptor to be intialized first.
 	@Override
-	public FileContent readFromFile(final String filename, final Encryptor encryptor) {
+	public FileContent readFromFile(final String filename, final PBEEncryptor encryptor) {
 		//ByteArrayInputStream input = null;
 		//byte[] readBuf = new byte[DELIMITER_bytes.length];
 		FileContent ret  = new FileContent();
@@ -106,7 +106,7 @@ public class DataServiceImplv10 extends AbstractDataService {
 				if (readBytes!=cipherParametersLength)
 					throw new RuntimeException("read " + readBytes +" bytes only, expected to read:"+ _byteCiper);
 
-				AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance(Encryptor.ALGORITHM);
+				AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance(PBEEncryptor.ALGORITHM);
 				algorithmParameters.init(_byteCiper);
 
 				/*#5: item body*/
@@ -147,7 +147,7 @@ public class DataServiceImplv10 extends AbstractDataService {
 
 
 	@Override
-	public void saveToFile(final String filename, final WalletModel model, final Encryptor encryptor) {
+	public void saveToFile(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 		FileOutputStream stream = null;
 		try {
 
@@ -164,7 +164,7 @@ public class DataServiceImplv10 extends AbstractDataService {
 			byte[] cipherParameters;
 			for (WalletItem item : model.getItemsFlatList()) {
 				byte[] _byteItem = serializer.serialize(item);
-				Encryptor.EncryptionResult encResult = encryptor.encrypt(_byteItem);
+				PBEEncryptor.EncryptionResult encResult = encryptor.encrypt(_byteItem);
 				byte[] enc = encResult.getEncryptedData();
 				cipherParameters = encryptor.getCipherParameters();
 				/*#3: cipherParameters size 4 bytes*/

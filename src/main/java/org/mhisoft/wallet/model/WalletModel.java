@@ -30,7 +30,7 @@ import java.util.List;
 import org.mhisoft.common.event.EventDispatcher;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
-import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.security.PBEEncryptor;
 
 /**
  * Description: The model for the wallet view.
@@ -48,8 +48,8 @@ public class WalletModel {
 	String combinationHash;
 	boolean modified =false;
 
-	Encryptor encryptor;
-	Encryptor encryptor_v12; //for reading the v12 data file
+	PBEEncryptor encryptor;
+	PBEEncryptor encryptor_v12; //for reading the v12 data file
 	int dataFileVersion=LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
 	private boolean addingNode=false;
@@ -85,29 +85,29 @@ public class WalletModel {
 		this.deletedEntriesInStore=0;
 	}
 
-	public Encryptor createNewEncryptor(final PassCombinationVO newPass)   {
-		Encryptor enc = new  Encryptor(newPass.getPassAndCombination());
+	public PBEEncryptor createNewEncryptor(final PassCombinationVO newPass)   {
+		PBEEncryptor enc = new PBEEncryptor(newPass.getPassAndCombination());
 		return enc;
 	}
 
 	public void initEncryptor(final PassCombinationVO pass)   {
-		encryptor = new Encryptor(pass.getPassAndCombination());
+		encryptor = new PBEEncryptor(pass.getPassAndCombination());
 		if (dataFileVersion==12)
-			encryptor_v12 = new Encryptor(pass.getPass());
+			encryptor_v12 = new PBEEncryptor(pass.getPass());
 	}
 
 
-	public Encryptor getEncryptor() {
+	public PBEEncryptor getEncryptor() {
 		return encryptor;
 
-	}public Encryptor getEncryptorForRead() {
+	}public PBEEncryptor getEncryptorForRead() {
 		if (dataFileVersion<=12)
 		     return encryptor_v12;
 		else
 			return encryptor;
 	}
 
-	public void setEncryptor(Encryptor encryptor) {
+	public void setEncryptor(PBEEncryptor encryptor) {
 		this.encryptor = encryptor;
 	}
 

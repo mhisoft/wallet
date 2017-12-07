@@ -27,7 +27,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;

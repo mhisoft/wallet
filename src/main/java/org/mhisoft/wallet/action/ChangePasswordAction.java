@@ -25,8 +25,8 @@ package org.mhisoft.wallet.action;
 
 import java.awt.event.ActionEvent;
 
-import org.mhisoft.common.util.Encryptor;
-import org.mhisoft.common.util.HashingUtils;
+import org.mhisoft.common.util.security.PBEEncryptor;
+import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
@@ -117,7 +117,7 @@ public class ChangePasswordAction implements Action {
 //			Encryptor oldEnc = new  Encryptor(newPass);
 //			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(dataFile,  oldEnc  );
 //			model.setItemsFlatList(fileContent.getWalletItems());
-					Encryptor newEnc = model.createNewEncryptor(newPass);
+					PBEEncryptor newEnc = model.createNewEncryptor(newPass);
 
 					//save the file with new password.
 					ServiceRegistry.instance.getWalletService().saveToFileWithNewPassword(  //

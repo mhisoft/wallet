@@ -26,7 +26,7 @@ package org.mhisoft.wallet.action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import org.mhisoft.common.util.Encryptor;
+import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.wallet.model.FileAccessFlag;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
@@ -129,7 +129,7 @@ public class ImportWalletAction implements Action {
 
 	protected void doTheImport(String impFilename, PassCombinationVO importFilePass, String importFileHash) {
 
-		Encryptor encryptor = new Encryptor(importFilePass.getPassAndCombination());
+		PBEEncryptor encryptor = new PBEEncryptor(importFilePass.getPassAndCombination());
 		FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(impFilename, encryptor);
 
 
