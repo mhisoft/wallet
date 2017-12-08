@@ -1,12 +1,15 @@
 package org.mhisoft.wallet.model;
 
+import java.io.Serializable;
+
 /**
  * Description:
  *
  * @author Tony Xue
  * @since Mar, 2017
  */
-public class PassCombinationVO {
+public class PassCombinationVO implements Serializable {
+	private static final long serialVersionUID = 1L;
 	String pass;
 	String combination;
 	String spinner1, spinner2, spinner3;
@@ -37,25 +40,17 @@ public class PassCombinationVO {
 		return spinner1;
 	}
 
-	public void setSpinner1(String spinner1) {
-		this.spinner1 = spinner1;
-	}
+
 
 	public String getSpinner2() {
 		return spinner2;
 	}
 
-	public void setSpinner2(String spinner2) {
-		this.spinner2 = spinner2;
-	}
 
 	public String getSpinner3() {
 		return spinner3;
 	}
 
-	public void setSpinner3(String spinner3) {
-		this.spinner3 = spinner3;
-	}
 
 	public void setCombination(String spinner1, String spinner2, String spinner3) {
 		this.spinner1 = spinner1;

@@ -242,7 +242,11 @@ public class WalletService {
 				String vaultFileName = ServiceRegistry.instance.getWalletModel().getVaultFileName();
 				saveToFileAndTransferAttachment(vaultFileName, exportVaultFilename, expModel, expModel.getEncryptor());
 
-				DialogUtils.getInstance().info("The item " + sourceItem.getName() +" has been successfully exported to vault:" + exportVaultFilename);
+				try {
+					DialogUtils.getInstance().info("The item " + sourceItem.getName() +" has been successfully exported to vault:" + exportVaultFilename);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
 
 			}

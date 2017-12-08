@@ -48,6 +48,7 @@ import org.mhisoft.wallet.action.ActionResult;
 import org.mhisoft.wallet.action.CreateWalletAction;
 import org.mhisoft.wallet.action.LoadWalletAction;
 import org.mhisoft.wallet.action.VerifyPasswordAction;
+import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.PasswordValidator;
 import org.mhisoft.wallet.model.WalletModel;
@@ -273,7 +274,7 @@ public class PasswordForm implements ActionListener {
 	 */
 	public void showPasswordForm(WalletForm walletForm, PasswordFormActionListener okListener, PasswordFormActionListener cancelListener) {
 		this.walletForm = walletForm;
-		dialog = new JDialog(walletForm.frame, "Please enter password", true);
+		dialog = new JDialog(walletForm.frame, this.title!=null?this.title:"Please enter password", true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getContentPane().add(mainPanel);
 		dialog.setPreferredSize(new Dimension(800, 400));
@@ -358,7 +359,7 @@ public class PasswordForm implements ActionListener {
 		}
 		//
 
-		PassCombinationVO passVO = new PassCombinationVO();
+		PassCombinationVO passVO = new PassCombinationEncryptionAdaptor();
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		//set the raw data only, do not add logic here. or later we can't get the raw pass
 		//	if (model.getDataFileVersion() == 13) {

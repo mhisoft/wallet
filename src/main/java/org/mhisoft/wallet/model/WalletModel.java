@@ -55,7 +55,7 @@ public class WalletModel {
 	private boolean addingNode=false;
 
 
-	private transient PassCombinationVO passPlain;     //todo move to model?
+	private transient PassCombinationVO passPlain;
 	private int deletedEntriesInStore;
 
 	private boolean importing=false;
@@ -413,14 +413,14 @@ public class WalletModel {
 
 	/**
 	 *
-	 * @return
+	 * @return   PassCombinationEncryptionAdaptor
 	 */
 	public PassCombinationVO getUserEnteredPassForVerification(){
 		if (dataFileVersion >= 13) {
 			return passPlain;
 		} else {
 			//v12 format
-			PassCombinationVO ret =  new PassCombinationVO();
+			PassCombinationVO ret =  new PassCombinationEncryptionAdaptor();
 			ret.setPass(passPlain.spinner2 + passPlain.pass + passPlain.spinner1 + passPlain.spinner3);  //v12 version format
 			return ret;
 		}

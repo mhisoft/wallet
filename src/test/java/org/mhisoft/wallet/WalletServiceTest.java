@@ -52,6 +52,7 @@ public class WalletServiceTest extends WalletFileTest {
 
 			model.getItemsFlatList().clear();
 			model.setupTestData();
+			model.setVaultFileName("test_vault_001.dat");
 			ServiceRegistry.instance.getWalletForm().setModel(model);
 			PassCombinationVO passVO = new PassCombinationVO("testPa!ss213%", "112233") ;
 			String hash = HashingUtils.createHash(passVO.getPass());
