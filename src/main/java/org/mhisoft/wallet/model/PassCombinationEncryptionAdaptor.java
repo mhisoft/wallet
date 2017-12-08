@@ -117,6 +117,8 @@ public class PassCombinationEncryptionAdaptor extends PassCombinationVO {
 	}
 
 
+
+
 	@Override
 	public void setCombination(String spinner1, String spinner2, String spinner3) {
 		PassCombinationVO internal =getInternal();
@@ -126,7 +128,6 @@ public class PassCombinationEncryptionAdaptor extends PassCombinationVO {
 		internal.spinner2=spinner2;
 		internal.spinner3=spinner3;
 		saveEncryptInternal(internal);
-		super.setCombination(spinner1, spinner2, spinner3);
 	}
 
 	@Override
