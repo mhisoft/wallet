@@ -66,6 +66,7 @@ public class AttachmentService {
 
 	public void saveAttachments(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 		//iterate the model item's FileAccessEntry
+		boolean deleted = false;
 		File f = new File(filename);
 		if (!f.exists()) {
 			/* create new store */
@@ -89,7 +90,11 @@ public class AttachmentService {
 			//delete count need to add the orphan records (marked as DELETE) in the attachment store.
 			deleteCount += model.getDeletedEntriesInStore();
 
-			if (deleteCount / totalCount > 0.3) {
+			if (deleteCount == totalCount) {
+				//remove it.
+				deleteAttachmentStore(filename);
+				deleted = true;
+			} else if (deleteCount / totalCount > 0.3) {
 				/* transfer to a new store */
 				logger.fine("\n");
 				logger.fine("compactAttachmentStore");
@@ -103,24 +108,26 @@ public class AttachmentService {
 		}
 
 
+		FileAccessTable t = null;
+		if (!deleted) {
+			logger.fine("file size: " + intDF.format(new File(filename).length()));
+			//Refresh / Reload the wallet item file access entries after save.
+			t = read(filename, encryptor);
+			if (t!=null)
+				model.setDeletedEntriesInStore(t.getDeletedEntries());
 
-		logger.fine("file size: " + intDF.format(new File(filename).length()));
-
-
-		//Refresh / Reload the wallet item file access entries after save.
-		FileAccessTable t = read(filename, encryptor);
-		if (t!=null) {
-			model.setDeletedEntriesInStore(t.getDeletedEntries());
-
-
-			//drive from item.
-			for (WalletItem item : model.getItemsFlatList()) {
-				item.setAttachmentEntry(t == null ? null : t.getEntry(item.getSysGUID()));
-				if (item.getAttachmentEntry() != null)
-					item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
-				item.setNewAttachmentEntry(null);
-			}
 		}
+
+
+		//reset the item attachment entries.
+		//drive from item.
+		for (WalletItem item : model.getItemsFlatList()) {
+			item.setAttachmentEntry(t == null ? null : t.getEntry(item.getSysGUID()));
+			if (item.getAttachmentEntry() != null)
+				item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
+			item.setNewAttachmentEntry(null);
+		}
+
 
 	}
 
@@ -128,15 +135,16 @@ public class AttachmentService {
 	/**
 	 * Read the attachments from the old attachment store and write to the new attachment store.
 	 * It is really copy attachments from one store to anotehr.
-	 * @param oldStoreName The old store name, needed to read the attachment content out.
-	 * @param model  The old model, need the encryptor from it to read old attachment for transfer.
-	 * @param newModel  the new store model, items list is from the new model.
-	 * @param newStoreEncryptor   The encryptor for writing the new attachment store.
+	 *
+	 * @param oldStoreName      The old store name, needed to read the attachment content out.
+	 * @param model             The old model, need the encryptor from it to read old attachment for transfer.
+	 * @param newModel          the new store model, items list is from the new model.
+	 * @param newStoreEncryptor The encryptor for writing the new attachment store.
 	 */
 
 	public boolean transferAttachmentStore(final String oldStoreName, String newStoreName
 			, final WalletModel model
-			, final WalletModel newModel,  final PBEEncryptor newStoreEncryptor) {
+			, final WalletModel newModel, final PBEEncryptor newStoreEncryptor) {
 
 		File newFile = new File(newStoreName);
 		if (newFile.exists()) {
@@ -169,8 +177,6 @@ public class AttachmentService {
 				dataOut.close();
 
 
-
-
 			} catch (IOException e) {
 				e.printStackTrace();
 				DialogUtils.getInstance().error("transferAttachmentStore failed:", e.getMessage());
@@ -182,7 +188,6 @@ public class AttachmentService {
 						//e.printStackTrace();
 					}
 			}
-
 
 
 		}
@@ -203,6 +208,7 @@ public class AttachmentService {
 
 	/**
 	 * Create a new attachment store.
+	 *
 	 * @param filename
 	 * @param model
 	 * @param encryptor
@@ -227,7 +233,7 @@ public class AttachmentService {
 				dataOut.writeInt(t.getEntries().size());
 				//itemStartPos = 4;
 
-				writeFileEntries(model, false, null, 4, dataOut, t, model.getEncryptorForRead(),  encryptor);
+				writeFileEntries(model, false, null, 4, dataOut, t, model.getEncryptorForRead(), encryptor);
 
 				dataOut.flush();
 			} catch (IOException e) {
@@ -263,14 +269,12 @@ public class AttachmentService {
 				continue;
 			if (item.getAttachmentEntry().getAccessFlag() == FileAccessFlag.Merge) {
 				t.addEntry(item.getAttachmentEntry());
-			}
-			else if (FileAccessFlag.Create == item.getAttachmentEntry().getAccessFlag()
+			} else if (FileAccessFlag.Create == item.getAttachmentEntry().getAccessFlag()
 					|| FileAccessFlag.Update == item.getAttachmentEntry().getAccessFlag()) {
 
 				if (item.getNewAttachmentEntry() != null && item.getNewAttachmentEntry().getFile() != null) {
 					t.addEntry(item.getNewAttachmentEntry());
-				}
-				else if (item.getAttachmentEntry().getFile() != null) {
+				} else if (item.getAttachmentEntry().getFile() != null) {
 					t.addEntry(item.getAttachmentEntry());
 				}
 			}
@@ -339,9 +343,15 @@ public class AttachmentService {
 	} //appendAttachmentStore
 
 
+	protected void deleteAttachmentStore(final String oldStorefName) {
+		new File(oldStorefName).delete();
+	}
+
+
 	/**
 	 * abandon the old store and transfer everthing to the wnew store.
 	 * The same model for both old and new store.
+	 *
 	 * @param oldStorefName
 	 * @param model
 	 * @param encryptor
@@ -363,11 +373,9 @@ public class AttachmentService {
 			if (item.getAttachmentEntry().getAccessFlag() == FileAccessFlag.None) {
 				//no change , need to transfer to the new file.
 				t.addEntry(item.getAttachmentEntry());
-			}
-			else if (item.getAttachmentEntry().getAccessFlag() == FileAccessFlag.Merge) {
+			} else if (item.getAttachmentEntry().getAccessFlag() == FileAccessFlag.Merge) {
 				t.addEntry(item.getAttachmentEntry());
-			}
-			else if (FileAccessFlag.Create == item.getAttachmentEntry().getAccessFlag()
+			} else if (FileAccessFlag.Create == item.getAttachmentEntry().getAccessFlag()
 					|| FileAccessFlag.Update == item.getAttachmentEntry().getAccessFlag()) {
 				if (item.getAttachmentEntry() != null) {
 					if (item.getAttachmentEntry().getNewEntry() != null)
@@ -449,7 +457,7 @@ public class AttachmentService {
 	 * @param encryptor         The encryptor
 	 * @throws IOException
 	 */
-	protected void writeFileEntries( WalletModel model,
+	protected void writeFileEntries(WalletModel model,
 			boolean transferStoreMode
 			, String oldStoreFileName,
 			final long itemStartPos, DataOutput dataOut, final FileAccessTable t
@@ -466,9 +474,9 @@ public class AttachmentService {
 		/*#0*/
 		//dataOut.writeInt(t.getEntries().size());
 		//itemStartPos = 4;
-		String impAttachmentStoreName=null;
-		if (model.getImpModel()!=null)
-			 impAttachmentStoreName = getAttachmentFileName(model.getImpModel().getVaultFileName());
+		String impAttachmentStoreName = null;
+		if (model.getImpModel() != null)
+			impAttachmentStoreName = getAttachmentFileName(model.getImpModel().getVaultFileName());
 
 
 		//write each entry
@@ -507,26 +515,24 @@ public class AttachmentService {
 			/* write filename encrypted */
 			String strFName = FileUtils.getFileNameWithoutPath(fileAccessEntry.getFileName());
 			byte[] _byteFileName = StringUtils.getBytes(strFName);
-			pos = writeEncryptedContent(_byteFileName, encryptor, dataOut, pos );
+			pos = writeEncryptedContent(_byteFileName, encryptor, dataOut, pos);
 			logger.fine("\t file name: " + strFName);
 
 
 			/* Attachment body */
 			byte[] fileContent;
 
-			if (fileAccessEntry.getAccessFlag() == FileAccessFlag.Merge && fileAccessEntry.getEncSize() > 0 ) {
-				if (impAttachmentStoreName==null)
+			if (fileAccessEntry.getAccessFlag() == FileAccessFlag.Merge && fileAccessEntry.getEncSize() > 0) {
+				if (impAttachmentStoreName == null)
 					throw new IOException("impAttachmentStoreName is not set.");
 				fileContent = readFileContent(impAttachmentStoreName, fileAccessEntry, model.getImpModel().getEncryptor());
-			}
-
-			else if (transferStoreMode && fileAccessEntry.getAccessFlag() == FileAccessFlag.None && fileAccessEntry.getEncSize() > 0) {
+			} else if (transferStoreMode && fileAccessEntry.getAccessFlag() == FileAccessFlag.None && fileAccessEntry.getEncSize() > 0) {
 				//no change, this is an transfer to the new store. need to read the filecontent from the old store.
 				fileContent = readFileContent(oldStoreFileName, fileAccessEntry, oldEncryptorForRead);
 			} else
 				fileContent = FileUtils.readFile(fileAccessEntry.getFile());
 
-			pos = writeEncryptedContent(fileContent, encryptor, dataOut, pos );
+			pos = writeEncryptedContent(fileContent, encryptor, dataOut, pos);
 
 		}
 
@@ -565,18 +571,18 @@ public class AttachmentService {
 
 	class ReadContentVO {
 		long pos;
-		AlgorithmParameters algorithmParameters  ;
+		AlgorithmParameters algorithmParameters;
 
 	}
 
-	private ReadContentVO  readCipherParameter(RandomAccessFile fileIn, long pos) throws IOException, NoSuchAlgorithmException {
+	private ReadContentVO readCipherParameter(RandomAccessFile fileIn, long pos) throws IOException, NoSuchAlgorithmException {
 		ReadContentVO ret = new ReadContentVO();
-		ret.pos =pos;
+		ret.pos = pos;
 
 		/*#3: ciperParameters size 4 bytes*/
 		int cipherParametersLength = fileIn.readInt();
 		ret.pos += 4;
-		logger.fine("read cipherParametersLength:" + cipherParametersLength );
+		logger.fine("read cipherParametersLength:" + cipherParametersLength);
 
 		/*#4: cipherParameters body*/
 		byte[] _byteCiper = new byte[cipherParametersLength];
@@ -629,7 +635,7 @@ public class AttachmentService {
 
 				/* read filename */
 				ReadContentVO vo = readCipherParameter(fileIn, pos);
-				pos= vo.pos;
+				pos = vo.pos;
 				int encSize_FileName = fileIn.readInt();
 				pos += 4;
 				byte[] _encedBytes = new byte[encSize_FileName];
@@ -641,7 +647,7 @@ public class AttachmentService {
 
 				/* attachment content */
 				vo = readCipherParameter(fileIn, pos);
-				pos= vo.pos;
+				pos = vo.pos;
 				fileAccessEntry.setAlgorithmParameters(vo.algorithmParameters);
 
 				/*#5  size of the content (int): 4 bytes */
@@ -682,7 +688,7 @@ public class AttachmentService {
 
 
 		DebugUtil.append("Attachment Store total entries:" + t.getSize()
-				+"\n" + "Orphan records :" + t.deletedEntries
+				+ "\n" + "Orphan records :" + t.deletedEntries
 		);
 
 
@@ -715,20 +721,20 @@ public class AttachmentService {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			DialogUtils.getInstance().error("Can't read "+ fileStoreDataFile + ":" + e.toString());
+			DialogUtils.getInstance().error("Can't read " + fileStoreDataFile + ":" + e.toString());
 		}
 		return null;
 	}
 
 
 	//re-read the attachments from file and refresh the model items.
-	public void  reloadAttachments(final String walletFileName, final WalletModel model) {
+	public void reloadAttachments(final String walletFileName, final WalletModel model) {
 		String attFileName = getAttachmentFileName(walletFileName);
 		FileAccessTable t = read(attFileName, model.getEncryptor());
-		if (t!=null) {
+		if (t != null) {
 			for (FileAccessEntry entry : t.getEntries()) {
 				WalletItem item = model.getWalletItem(entry.getGUID());
-				if (item!=null) {
+				if (item != null) {
 					item.setAttachmentEntry(entry);
 					item.setNewAttachmentEntry(null);
 				}
@@ -737,7 +743,6 @@ public class AttachmentService {
 		}
 
 	}
-
 
 
 }
