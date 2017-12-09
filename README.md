@@ -1,15 +1,16 @@
-MHISoft eVault - A Secure Password Manager and  Vault
+MHISoft eVault 
 ======================================================
+MHISoft eVault is a open source password manager and password vault, i.e a secured eVault. 
 
-It is a secure password vault which is best suitable for storing passwords or any personal data. Since v1.2 it starts to support saving the attachment documents such images, PDF, Word Doc..etc to the eVault.  All the data are stored in a encrypted database with AES 256-bit key encryption.
+It is suitable to store password , private document and any personal information. Since v1.2 it starts to support saving the attachment documents such images, PDF, Word Doc..etc to the eVault.  All the data are stored in a encrypted offline database with AES 256-bit key encryption.
 
-One master password and a set of combination code is required to enter the eVault. The master password  and combination code are stored as one-way-Hash and can't be reverse engineered.  
+One master password and a set of combination code is required to open the eVault. The master password  and combination code are stored as one-way-Hash and can't be reverse engineered. They are used to decrypt the database. 
 
-I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source. I believe a personal data vault or password manager should never be clound based. So as designed, the eVault does not use network so you can rest asure that not a single bit of data is transmitted over the network which is not under your control.  
+I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source. I believe a password manager vault should never be clound-based. So the MHISoft eVault does not use network at all by design. You can rest asure that not a single bit of data is transmitted over the network and is not under your control.  
 
-Though the MHISoft eVault encrypted database is local, you can choose to share it on Google Drive or Dropbox.. etc. So you can share the same database across multiple devices. 
+Though the MHISoft eVault encrypted database is local, you can choose to share it on Google Drive or Dropbox.. etc. So you can share the same database across multiple devices. If somebody gets a hand on the encrypted data vault file, they won't be able to decrypt. 
 
-The password once lost can't be recovered, which is by design. Even he author of this code can't recover the lost password. And without the password and combination, the vault can't be opened, so please keep the master password and combination key in a safe place, such as in your brain only. 
+The password once lost can't be recovered, which is by design. Even he author of this code can't recover the lost password. And without the password and combination, the vault can't be opened, so please keep the master password and combination key in a safe place, such as in your head only. 
 
 Download
 ========
@@ -26,8 +27,9 @@ Features
 * Support multiple eVault data files. 
 * Backup .
 * Import and merge in changes from another data file. 
+* Export an entry so you can transfer it to someone else. 
 * Auto close the vault if idling for too long.
-* Support adding images and attachment docs (PDF, DOC..etc) to the vault items. 
+* Support adding images and attachment docs (PDF, DOC..etc). You can view or download them from the vault. 
 
 ![Screenshot](dist/evault-screenshot-passwordform.png "screenshot")
 
