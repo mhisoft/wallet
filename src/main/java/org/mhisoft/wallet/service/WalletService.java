@@ -1,5 +1,6 @@
 package org.mhisoft.wallet.service;
 
+import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 
@@ -21,6 +22,8 @@ import org.mhisoft.wallet.view.DialogUtils;
  * @since Apr, 2016
  */
 public class WalletService {
+
+	private static final Logger logger = Logger.getLogger(WalletService.class.getName());
 
 	AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
 
@@ -175,6 +178,9 @@ public class WalletService {
 	 * @param model current model
 	 * @param encryptor encryptor use to write the new store.
 	 */
+
+	//to simplify, I should just do the upgrade without model being modified at all.
+
 	public void upgradeAttachmentStore(final String vaultFileName, final WalletModel model,final PBEEncryptor encryptor) {
 
 		//save attachments.
@@ -198,6 +204,8 @@ public class WalletService {
 			//re read the new store into newModel
 			attachmentService.reloadAttachments(vaultFileName, newModel );
 
+			boolean hasNewEntriesTobeCreated = false;
+
 			for (WalletItem walletItem : model.getItemsFlatList()) {
 				if (walletItem.getAttachmentEntry()!=null) {
 					if (walletItem.getAttachmentEntry().getAccessFlag()== FileAccessFlag.Delete) {
@@ -205,26 +213,23 @@ public class WalletService {
 						walletItem.setAttachmentEntry(null);
 						walletItem.setNewAttachmentEntry(null);
 					}
-					else if (walletItem.getAttachmentEntry().getAccessFlag()!= FileAccessFlag.Update) {
+					else if (walletItem.getAttachmentEntry().getAccessFlag()== FileAccessFlag.Update
+							|| walletItem.getAttachmentEntry().getAccessFlag()== FileAccessFlag.Create
+							) {
 						//to be appended to new store.
 						walletItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Create);
-					}
-					else {
-						/*NONE -- transfered*/
-						WalletItem newModelItem = walletItem.findItemInModel(newModel);
-						if (newModelItem != null && newModelItem.getAttachmentEntry() != null)
-							//transfered to the new store already. no more action. so clear it out in the model
-							walletItem.setAttachmentEntry(null);
-							walletItem.setNewAttachmentEntry(null);
+						hasNewEntriesTobeCreated = true;
 					}
 				}
 			}
 
 
-			//NONE items were transered.
-			//DELETE items is set to null , ignored.
-			//UPDATE --> create
-			attachmentService.appendAttachmentStore(vaultFileName, model, encryptor);
+			if (hasNewEntriesTobeCreated) {
+				//NONE items were transered.
+				//DELETE items is set to null , ignored.
+				//UPDATE --> create
+				attachmentService.appendAttachmentStore(vaultFileName, model, encryptor);
+			}
 
 
 		}
@@ -265,7 +270,7 @@ public class WalletService {
 		} catch (IOException e) {
 //			if (DialogUtils.getInstance() != null)
 //				DialogUtils.getInstance().error("Error occurred", "Can't read file " + filename);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return null;
 	}
@@ -274,16 +279,21 @@ public class WalletService {
 		DataService dataServicev10 = DataServiceFactory.createDataService(10);
 		DataService dataServicev12 = DataServiceFactory.createDataService(12);
 		DataService dataServicev13 = DataServiceFactory.createDataService(13);
+		DataService dataServicev14 = DataServiceFactory.createDataService(14);
 
 		int v;
 		FileContentHeader header = null;
 
-		header = readVersion(dataServicev13, filename);
+		header = readVersion(dataServicev14, filename);
 		if (header == null) {
-			header = readVersion(dataServicev12, filename);
-			if (header == null)
-				header = readVersion(dataServicev10, filename);
+			header = readVersion(dataServicev13, filename);
+			if (header == null) {
+				header = readVersion(dataServicev12, filename);
+				if (header == null)
+					header = readVersion(dataServicev10, filename);
+			}
 		}
+
 
 		if (header==null) {
 			if (DialogUtils.getInstance() != null)
@@ -291,6 +301,7 @@ public class WalletService {
 			throw new RuntimeException("Can't read file  header" + filename) ;
 		}
 
+		logger.fine("version from header:" + header.getVersion() +", file:" + filename);
 //		if (SystemSettings.isDevMode && DialogUtils.getInstance() != null)
 //			DialogUtils.getInstance().info("file version:" + header.getVersion());
 		return header;

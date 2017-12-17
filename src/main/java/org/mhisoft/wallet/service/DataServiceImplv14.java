@@ -23,37 +23,16 @@
 
 package org.mhisoft.wallet.service;
 
-import org.mhisoft.wallet.model.WalletModel;
-
 /**
  * Description:
  *
  * @author Tony Xue
- * @since May, 2016
+ * @since Mar, 2017
  */
-public class DataServiceFactory {
-
-
-	public static DataService createDataService(int version) {
-
-		if (version==10 || version==11)
-			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv10.class);
-		else if (version==12)
-			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv12.class);
-		else if (version==13)
-			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv13.class);
-		else if (version==14)
-			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv14.class);
-
-		throw new RuntimeException("version " + version + " not supported.");
-
+//only added combinatin hash to the header.
+public class DataServiceImplv14 extends DataServiceImplv13 {
+	public int getVersion() {
+		return 14;
 	}
 
-	/**
-	 * Create a latest version of the data service.
-	 * @return
-	 */
-	public static DataService createDataService() {
-		return createDataService(WalletModel.LATEST_DATA_VERSION);
-	}
 }

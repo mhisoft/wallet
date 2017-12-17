@@ -300,6 +300,12 @@ public class AttachmentService {
 	}
 
 
+	/**
+	 * Append to the existing store for Merged and Created/Updated attachments.
+	 * @param filename
+	 * @param model
+	 * @param encryptor
+	 */
 	protected void appendAttachmentStore(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 
 		FileAccessTable t = new FileAccessTable();
@@ -656,7 +662,7 @@ public class AttachmentService {
 		/*#3: ciperParameters size 4 bytes*/
 		int cipherParametersLength = fileIn.readInt();
 		ret.pos += 4;
-		logger.fine("read cipherParametersLength:" + cipherParametersLength);
+		//logger.fine("read cipherParametersLength:" + cipherParametersLength);
 
 		/*#4: cipherParameters body*/
 		byte[] _byteCiper = new byte[cipherParametersLength];
@@ -673,6 +679,7 @@ public class AttachmentService {
 	}
 
 	public FileAccessTable read(String dataFile, final PBEEncryptor encryptor) {
+		logger.fine("\n\nread attachment file:" + dataFile);
 		FileAccessTable t = null;
 		try {
 			File fIn = new File(dataFile);
@@ -693,7 +700,7 @@ public class AttachmentService {
 				String UUID = FileUtils.readString(fileIn);
 				FileAccessEntry fileAccessEntry = new FileAccessEntry(UUID);
 				pos += 40;
-				logger.fine("Read entry, UUID:" + UUID);
+				logger.fine("\tRead entry, UUID:" + UUID);
 
 				/*  accessflag */
 				fileAccessEntry.setAccessFlag(FileAccessFlag.values[fileIn.readInt()]);
