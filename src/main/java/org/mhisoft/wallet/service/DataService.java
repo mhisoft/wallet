@@ -38,7 +38,7 @@ public interface DataService {
 
 	public  FileContentHeader readHeader(final String filename, boolean closeAfterRead)  throws IOException;
 
-	public FileContent readFromFile(final String filename, final PBEEncryptor encryptor) ;
+	public StoreVO readFromFile(final String filename, final PBEEncryptor encryptor) ;
 
 	public void saveToFile(final String filename, final WalletModel model, final PBEEncryptor encryptor);
 }

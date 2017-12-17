@@ -46,11 +46,11 @@ public class SaveWalletAction implements Action {
 		model.buildFlatListFromTree();
 
 		try {
-			if (model.getDataFileVersion() < 13) {
+			if (model.getCurrentDataFileVersion() < WalletModel.LATEST_DATA_VERSION) {
 				//data conversion.
 				//to be saved to the latest v13 version , prepare the new hashes.
 				// and need the combination hash set
-				model.setDataFileVersion(13);
+				//model.setDataFileVersion(WalletModel.LATEST_DATA_VERSION);
 				String combinationHash = HashingUtils.createHash(model.getPassPlain().getCombination());
 				model.setCombinationHash(combinationHash);
 				model.setPassHash(HashingUtils.createHash(model.getPassPlain().getPass()));

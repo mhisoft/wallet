@@ -3,10 +3,10 @@ package org.mhisoft.wallet.service;
 import java.io.File;
 import java.io.IOException;
 
-import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.common.util.security.HashingUtils;
-import org.mhisoft.common.util.Serializer;
+import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.wallet.model.FileAccessEntry;
+import org.mhisoft.wallet.model.FileAccessFlag;
 import org.mhisoft.wallet.model.FileAccessTable;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
@@ -25,10 +25,10 @@ public class WalletService {
 	AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
 
 
-	public FileContent readFromFile(final String filename, final PBEEncryptor encryptor) {
+	public StoreVO readFromFile(final String filename, final PBEEncryptor encryptor) {
 		FileContentHeader header = readHeader(filename, true);
 		DataService ds = DataServiceFactory.createDataService(header.getVersion());
-		FileContent ret =  ds.readFromFile(filename, encryptor);
+		StoreVO ret =  ds.readFromFile(filename, encryptor);
 		String attFileName = attachmentService.getAttachmentFileName(filename);
 		FileAccessTable t = attachmentService.read(attFileName, encryptor);
 		if (t!=null) {
@@ -48,7 +48,36 @@ public class WalletService {
 	}
 
 
+	/**
+	 * Create the model by reading from the vault file.
+	 * @param vaultFileName
+	 * @param encryptor
+	 * @return
+	 */
+	public WalletModel createModelByReadVaultFile(final String vaultFileName, final PBEEncryptor encryptor) {
 
+		StoreVO vo = readFromFile(vaultFileName, encryptor);
+
+		WalletModel model = new WalletModel();
+		model.setPassHash(vo.getHeader().getPassHash());
+		model.setCombinationHash(vo.getHeader().getCombinationHash());
+		model.setDataFileVersion(vo.getHeader().getVersion());
+
+		model.setEncryptor(encryptor);
+		model.setItemsFlatList(vo.getWalletItems());
+		model.buildTreeFromFlatList();
+		model.setVaultFileName(vaultFileName);
+		return model;
+
+	}
+
+
+	/**
+	 *
+	 * @param filename main store filename.
+	 * @param model the model to be saved.
+	 * @param encryptor encrypor to use for write the new store.
+	 */
 	public void saveToFile(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 
 		for (WalletItem item : model.getItemsFlatList()) {
@@ -59,11 +88,22 @@ public class WalletService {
 		}
 
 
+		//save with the latest version of data services.
 		DataServiceFactory.createDataService().saveToFile(filename, model, encryptor);
 
 		//save attachments.
 		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
-		attachmentService.saveAttachments(attachmentService.getAttachmentFileName(filename), model, encryptor);
+
+		//upgrade the current store to the lates first.
+		if (model.getCurrentDataFileVersion()!=WalletModel.LATEST_DATA_VERSION) {
+			upgradeAttachmentStore(filename, model, encryptor);
+
+
+		}
+		else {
+			//then save as regular.
+			attachmentService.saveAttachments(attachmentService.getAttachmentFileName(filename), model, encryptor);
+		}
 
 	}
 
@@ -74,15 +114,8 @@ public class WalletService {
 	 * @param expModel
 	 * @param expEncryptor
 	 */
-	public void saveToFileAndTransferAttachment(final String existingVaultFileName,
+	public void export(final String existingVaultFileName,
 			final String expVaultName, final WalletModel expModel, final PBEEncryptor expEncryptor) {
-
-		for (WalletItem item : expModel.getItemsFlatList()) {
-			int k = item.getName().indexOf("(*)");
-			if (k>0) {
-				item.setName(item.getName().substring(0, k));
-			}
-		}
 
 
 		DataServiceFactory.createDataService().saveToFile(expVaultName, expModel, expEncryptor);
@@ -93,12 +126,11 @@ public class WalletService {
 				 attachmentService.getAttachmentFileName(existingVaultFileName)
 				,attachmentService.getAttachmentFileName(expVaultName)
 				,ServiceRegistry.instance.getWalletModel()
-				,expModel, expEncryptor);
+				,expModel, expEncryptor
+				, false); //no change to original model
 
 	}
 
-
-	//
 
 
 	/**
@@ -127,12 +159,98 @@ public class WalletService {
 		String newStoreName = oldStoreName + ".tmp";
 
 		//the same one model, just that use the new encryptor for writing the new store.
-		if (attachmentService.transferAttachmentStore( oldStoreName,  newStoreName  , model, model, newEnc)) {
+		if (attachmentService.transferAttachmentStore( oldStoreName,  newStoreName  , model, model, newEnc, true)) {
 			//now do the swap of the store to the new one.
 			new File(oldStoreName).delete();
 			File newFile = new File(newStoreName);
 			newFile.renameTo(new File(oldStoreName));
 		}
+
+	}
+
+
+	/**
+	 *
+	 * @param vaultFileName main store file name
+	 * @param model current model
+	 * @param encryptor encryptor use to write the new store.
+	 */
+	public void upgradeAttachmentStore(final String vaultFileName, final WalletModel model,final PBEEncryptor encryptor) {
+
+		//save attachments.
+		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
+
+		//transfer to the the store
+		String oldStoreName = attachmentService.getAttachmentFileName(vaultFileName);
+		String newStoreName = oldStoreName + ".tmp";
+
+		//the same one model, just that use the new encryptor for writing the new store.
+		if (attachmentService.transferAttachmentStore( oldStoreName,  newStoreName  , model, model, encryptor, false)) {
+			//now do the swap of the store to the new one.
+			new File(oldStoreName).delete();
+			File newFile = new File(newStoreName);
+			newFile.renameTo(new File(oldStoreName));
+
+			// reload entries into a model, the attment entry  pos points has changed.
+			WalletModel  newModel =  model.clone();
+			newModel.setDataFileVersion(WalletModel.LATEST_DATA_VERSION);
+
+			//re read the new store into newModel
+			attachmentService.reloadAttachments(vaultFileName, newModel );
+
+			for (WalletItem walletItem : model.getItemsFlatList()) {
+				if (walletItem.getAttachmentEntry()!=null) {
+					if (walletItem.getAttachmentEntry().getAccessFlag()== FileAccessFlag.Delete) {
+						//ignore the deleted attachments. they does not exist in the new store.
+						walletItem.setAttachmentEntry(null);
+						walletItem.setNewAttachmentEntry(null);
+					}
+					else if (walletItem.getAttachmentEntry().getAccessFlag()!= FileAccessFlag.Update) {
+						//to be appended to new store.
+						walletItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Create);
+					}
+					else {
+						/*NONE -- transfered*/
+						WalletItem newModelItem = walletItem.findItemInModel(newModel);
+						if (newModelItem != null && newModelItem.getAttachmentEntry() != null)
+							//transfered to the new store already. no more action. so clear it out in the model
+							walletItem.setAttachmentEntry(null);
+							walletItem.setNewAttachmentEntry(null);
+					}
+				}
+			}
+
+
+			//NONE items were transered.
+			//DELETE items is set to null , ignored.
+			//UPDATE --> create
+			attachmentService.appendAttachmentStore(vaultFileName, model, encryptor);
+
+
+		}
+		else {
+
+			/* nothing transferred. such as all attachments are marked as deleted. */
+
+			for (WalletItem walletItem : model.getItemsFlatList()) {
+				if (walletItem.getAttachmentEntry() != null) {
+					if (walletItem.getAttachmentEntry().getAccessFlag() == FileAccessFlag.Delete) {
+						//ignore the deleted attachments. they does not exist in the new store.
+						walletItem.setAttachmentEntry(null);
+						walletItem.setNewAttachmentEntry(null);
+					}
+				}
+			}
+
+
+			//no transfer happened.
+			//no upgrade , creating of new store with latest version happened.
+			attachmentService.newAttachmentStore(vaultFileName, model, encryptor);
+		}
+
+
+		//re read the new store into newModel
+		attachmentService.reloadAttachments(vaultFileName, model );
 
 	}
 
@@ -181,21 +299,6 @@ public class WalletService {
 	}
 
 
-	public WalletItem cloneItem(final WalletItem src) {
-		try {
-			Serializer<WalletItem> serializer = new Serializer<WalletItem>();
-			WalletItem ret = serializer.deserialize(serializer.serialize(src));
-
-			//this part is not really a clone. point to the same Attachment Entry for exporting is good enough.
-			if (src.getAttachmentEntry()!=null ) {
-				ret.setAttachmentEntry(  src.getAttachmentEntry() );
-			}
-
-			return ret;
-		} catch (IOException | ClassNotFoundException e) {
-			throw new RuntimeException("cloneItem() failed", e);
-		}
-	}
 
 
 	/**
@@ -225,9 +328,9 @@ public class WalletService {
 				expModel.initEncryptor(exportVaultPassVO);
 
 				WalletItem newParent=null;
-				WalletItem newItem = cloneItem(sourceItem);
+				WalletItem newItem = sourceItem.clone();
 				if (sourceItem.getParent()!=null) {
-					newParent = cloneItem(sourceItem.getParent());
+					newParent =sourceItem.getParent().clone();
 					newParent.addChild(newItem);
 				}
 
@@ -240,7 +343,7 @@ public class WalletService {
 
 				//save to the export vault.
 				String vaultFileName = ServiceRegistry.instance.getWalletModel().getVaultFileName();
-				saveToFileAndTransferAttachment(vaultFileName, exportVaultFilename, expModel, expModel.getEncryptor());
+				export(vaultFileName, exportVaultFilename, expModel, expModel.getEncryptor());
 
 				try {
 					DialogUtils.getInstance().info("The item " + sourceItem.getName() +" has been successfully exported to vault:" + exportVaultFilename);

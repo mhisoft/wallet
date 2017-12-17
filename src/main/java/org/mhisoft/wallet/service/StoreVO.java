@@ -28,18 +28,18 @@ import java.util.List;
 import org.mhisoft.wallet.model.WalletItem;
 
 /**
- * Description:
+ * Description:  the value object holds the store data read from the vault file.
  *
  * @author Tony Xue
  * @since May, 2016
  */
-public class FileContent {
+public class StoreVO {
 
 	private FileContentHeader header;
 	private List<WalletItem> walletItems;
 	private int deletedEntriesInStore;
 
-	public FileContent() {
+	public StoreVO() {
 		header = new FileContentHeader();
 	}
 

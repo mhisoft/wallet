@@ -27,7 +27,7 @@ import java.io.File;
 
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
-import org.mhisoft.wallet.service.FileContent;
+import org.mhisoft.wallet.service.StoreVO;
 import org.mhisoft.wallet.service.IdleTimerService;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
@@ -69,14 +69,14 @@ public class LoadWalletAction implements Action {
 
 			/*need getPassVOForEncryptor from model*/
 			model.initEncryptor(model.getPassVOForEncryptor());
-			FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
+			StoreVO storeVO = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
 					model.getEncryptorForRead());
-			model.setItemsFlatList(fileContent.getWalletItems());
-			model.setPassHash(fileContent.getHeader().getPassHash());
-			model.setCombinationHash(fileContent.getHeader().getCombinationHash());
-			model.setDeletedEntriesInStore(fileContent.getDeletedEntriesInStore());
+			model.setItemsFlatList(storeVO.getWalletItems());
+			model.setPassHash(storeVO.getHeader().getPassHash());
+			model.setCombinationHash(storeVO.getHeader().getCombinationHash());
+			model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
 			//opened a old version file, need to save to v13 version on close. .
-			if (model.getDataFileVersion()<13)
+			if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION)
 				ServiceRegistry.instance.getWalletModel().setModified(true);
 
 

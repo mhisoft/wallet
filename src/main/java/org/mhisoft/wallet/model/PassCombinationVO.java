@@ -17,6 +17,10 @@ public class PassCombinationVO implements Serializable {
 	public PassCombinationVO() {
 	}
 
+	public PassCombinationEncryptionAdaptor clone()  {
+		throw new RuntimeException("not implemented");
+	}
+
 	public PassCombinationVO(String pass, String combination) {
 		this.pass = pass;
 		this.combination = combination;

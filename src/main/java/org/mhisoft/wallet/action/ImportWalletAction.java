@@ -33,7 +33,6 @@ import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.FileContent;
 import org.mhisoft.wallet.service.FileContentHeader;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.DialogUtils;
@@ -114,31 +113,10 @@ public class ImportWalletAction implements Action {
 	}
 
 
-	WalletItem findItemInModel(WalletItem item) {
-		for (WalletItem walletItem : ServiceRegistry.instance.getWalletModel().getItemsFlatList()) {
-			if (walletItem.getSysGUID().equals(item.getSysGUID()) || walletItem.getName().equalsIgnoreCase(item.getName()))
-					return walletItem;
-
-		}
-		return null;
-
-	}
-
-
-
-
 	protected void doTheImport(String impFilename, PassCombinationVO importFilePass, String importFileHash) {
 
 		PBEEncryptor encryptor = new PBEEncryptor(importFilePass.getPassAndCombination());
-		FileContent fileContent = ServiceRegistry.instance.getWalletService().readFromFile(impFilename, encryptor);
-
-
-		WalletModel impModel = new WalletModel();
-		impModel.setPassHash(importFileHash);
-		impModel.setEncryptor(encryptor);
-		impModel.setItemsFlatList(fileContent.getWalletItems());
-		impModel.buildTreeFromFlatList();
-		impModel.setVaultFileName(impFilename);
+		WalletModel impModel =  ServiceRegistry.instance.getWalletService().createModelByReadVaultFile(impFilename, encryptor );
 
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		WalletItem root  = model.getRootItem();
@@ -161,8 +139,8 @@ public class ImportWalletAction implements Action {
 			int i=1;
 			while ( i < impModel.getItemsFlatList().size() ) {
 
-				WalletItem impItem = fileContent.getWalletItems().get(i);
-				WalletItem modelItem = findItemInModel(impItem);
+				WalletItem impItem = impModel.getItemsFlatList().get(i);
+				WalletItem modelItem = impItem.findItemInModel();
 				if (modelItem!=null) {
 					if (!modelItem.isSame(impItem)) {
 						modelItem.mergeFrom(impItem);
@@ -197,7 +175,7 @@ public class ImportWalletAction implements Action {
 					}
 					else {
 						//it is an item, locate its parent and find a match in the current model
-						WalletItem modelCat = findItemInModel(impItem.getParent());
+						WalletItem modelCat = impItem.getParent().findItemInModel();
 						if (modelCat==null) {
 							//not matches cat can't happen here
 							throw new IllegalStateException("not matches cat can't happen here, impItem: " + impItem);

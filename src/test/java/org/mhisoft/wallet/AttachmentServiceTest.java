@@ -27,13 +27,19 @@ import java.io.File;
 import java.io.IOException;
 
 import org.mhisoft.common.util.FileUtils;
+import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.FileAccessEntry;
+import org.mhisoft.wallet.model.FileAccessFlag;
 import org.mhisoft.wallet.model.FileAccessTable;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.AttachmentService;
+import org.mhisoft.wallet.service.DataService;
+import org.mhisoft.wallet.service.DataServiceFactory;
+import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.service.WalletService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -53,27 +59,44 @@ import org.testng.annotations.Test;
 public class AttachmentServiceTest {
 
 	AttachmentService attachmentService = new AttachmentService();
-
+    WalletService walletService = new WalletService();
 
 	String guid1, guid2;
+	static int version =13;
+	static int LATEST_VERSION =WalletModel.LATEST_DATA_VERSION;
+	static String dir= "." +  File.separator + "target" + File.separator +"classes"+File.separator;
+	static String storeFileName = dir + "AttachmentServiceTest.dat";
+	static String attStoreFile = dir +"AttachmentServiceTest_attachments.dat";
+	static String file1 = "."+ File.separator +"target"+ File.separator +"classes"+ File.separator +"1463467646_61.png";
+	static String file2 = "."+ File.separator +"target"+ File.separator +"test-classes" + File.separator +"LICENSE";
 
-	@Test()
-	public void testWriteFileAcccessTable() {
-		new File("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat").delete();
+
+	private void saveAttachments(int version) throws HashingUtils.CannotPerformOperationException {
+		new File(storeFileName).delete();
+		new File(attStoreFile).delete();
 
 		FileAccessTable t = new FileAccessTable();
 		FileAccessEntry fileEntry = t.addEntry();
-		fileEntry.setFileName("."+ File.separator +"target"+ File.separator +"classes"+ File.separator +"1463467646_61.png");
+		fileEntry.setFileName(file1);
 		guid1 = fileEntry.getGUID();
 
 		FileAccessEntry fileEntry2 = t.addEntry();
-		fileEntry2.setFileName("."+ File.separator +"target"+ File.separator +"classes" + File.separator +"1463467888_13.png");
+		fileEntry2.setFileName(file2);
 		guid2 = fileEntry2.getGUID();
 
 		Assert.assertEquals(t.getSize(), 2);
 
 		WalletModel model = new WalletModel();
+		model.setDataFileVersion(version);
+		String hash = HashingUtils.createHash("testPa!ss213%");
+		model.setPassHash(hash);
+		String combinationHash = HashingUtils.createHash("112233");
+		model.setCombinationHash(combinationHash);
 		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+
+		WalletItem cat1 = new WalletItem(ItemType.category, "cat1");
+		model.getItemsFlatList().add(cat1);
+
 		WalletItem item1 = new WalletItem(ItemType.item, "item1");
 		item1.setSysGUID(guid1);
 		item1.setAttachmentEntry(fileEntry);
@@ -84,7 +107,20 @@ public class AttachmentServiceTest {
 		model.getItemsFlatList().add(item2);
 
 
-		attachmentService.newAttachmentStore("./target/classes/AttachmentServiceTest_testFileAcccessTable.dat", model, model.getEncryptor());
+		//save vault
+		System.out.println("save store version:"+ version);
+		DataService ds = DataServiceFactory.createDataService(version);
+		ds.saveToFile(storeFileName,model, model.getEncryptor() );
+		attachmentService.saveAttachments(attStoreFile, model, model.getEncryptor());
+	}
+
+	@Test()
+	public void testWriteFileAcccessTable() {
+		try {
+			saveAttachments(WalletModel.LATEST_DATA_VERSION);
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -92,36 +128,37 @@ public class AttachmentServiceTest {
 	public void testReadFileAccessTable() {
 		try {
 
-			String dataFile = "./target/classes/AttachmentServiceTest_testFileAcccessTable.dat";
+			String dataFile = attStoreFile;
 			WalletModel model = new WalletModel();
+			model.setDataFileVersion(version);
 			model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
 
 			FileAccessTable t = attachmentService.read(dataFile, model.getEncryptor());
 
-			Assert.assertEquals(t.getSize(), 2);
+			Assert.assertEquals(t.getSize(), 3);
 
 
 			int i = 0;
 
-			FileAccessEntry entry1 = t.getEntries().get(0);
-			FileAccessEntry entry2 = t.getEntries().get(1);
+			FileAccessEntry entry1 = t.getEntries().get(1);
+			FileAccessEntry entry2 = t.getEntries().get(2);
 
-			byte[] bytesEntry1 = attachmentService.readFileContent(dataFile, entry1, model.getEncryptor());
+			byte[] bytesEntry1 = attachmentService.readFileContent(14, dataFile, entry1, model.getEncryptor());
 			byte[] orgin1 = FileUtils.readFile(new File("./target/classes/1463467646_61.png"));
 			Assert.assertEquals(bytesEntry1, orgin1);
 
-			byte[] bytesEntry2 = attachmentService.readFileContent(dataFile, entry2, model.getEncryptor());
-			byte[] orgin2 = FileUtils.readFile(new File("./target/classes/1463467888_13.png"));
+			byte[] bytesEntry2 = attachmentService.readFileContent(LATEST_VERSION, dataFile, entry2, model.getEncryptor());
+			byte[] orgin2 = FileUtils.readFile(new File("./target/test-classes/LICENSE"));
 			Assert.assertEquals(bytesEntry2, orgin2);
 
-			Assert.assertEquals(guid1,t.getEntries().get(0).getGUID() );
-			Assert.assertEquals(guid2,t.getEntries().get(1).getGUID() );
+			Assert.assertEquals(guid1,t.getEntries().get(1).getGUID() );
+			Assert.assertEquals(guid2,t.getEntries().get(2).getGUID() );
 
-			Assert.assertEquals(t.getEntries().get(0).getSize(), 366);
-			Assert.assertEquals(t.getEntries().get(1).getSize(), 412);
+			Assert.assertEquals(t.getEntries().get(1).getSize(), new File(file1).length());
+			Assert.assertEquals(t.getEntries().get(2).getSize(), new File(file2).length());
 
-			Assert.assertEquals(t.getEntries().get(0).getFileName(), "1463467646_61.png");
-			Assert.assertEquals(t.getEntries().get(1).getFileName(), "1463467888_13.png");
+			Assert.assertEquals(t.getEntries().get(1).getFileName(), "1463467646_61.png");
+			//Assert.assertEquals(t.getEntries().get(1).getFileName(), "LICENSE");
 
 //
 //			FileOutputStream out = new FileOutputStream(
@@ -135,5 +172,95 @@ public class AttachmentServiceTest {
 			e.printStackTrace();
 		}
 	}
+
+	/* just upgrade, attachment entries in the model is not modified */
+
+	@Test
+	public void testUpgradeStore() {
+		try {
+			saveAttachments(13);
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
+		}
+
+		WalletModel model = new WalletModel();
+		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+		model = walletService.createModelByReadVaultFile(storeFileName, model.getEncryptor() );
+
+		Assert.assertEquals(model.getItemsFlatList().size(), 3);
+		Assert.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
+		Assert.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
+
+		Assert.assertTrue(model.getItemsFlatList().get(1).getAttachmentEntry().getEncSize()>0);
+		Assert.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
+
+
+		//opened a old version file, need to save to v13 version on close. .
+		if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+			ServiceRegistry.instance.getWalletModel().setModified(true);
+			//the data file version in the model is the old version. do not set to latest.
+			//upgrade will happen if not the latest.
+			//model.setDataFileVersion(WalletModel.LATEST_DATA_VERSION);
+		}
+
+
+		//now save to last store version
+		walletService.saveToFile(storeFileName,model, model.getEncryptor()  );
+
+		//read back to verify
+		model = walletService.createModelByReadVaultFile(storeFileName, model.getEncryptor() );
+		Assert.assertEquals(model.getCurrentDataFileVersion(), WalletModel.LATEST_DATA_VERSION);
+		Assert.assertEquals(model.getItemsFlatList().size(), 3);
+		Assert.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
+		Assert.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
+
+		Assert.assertTrue(model.getItemsFlatList().get(1).getAttachmentEntry().getEncSize()>0);
+		Assert.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
+
+
+	}
+
+
+		/*  attachment entries in the model is  modified */
+
+	@Test
+	public void testUpgradeStore_s2() {
+		try {
+			saveAttachments(13);
+		} catch (HashingUtils.CannotPerformOperationException e) {
+			e.printStackTrace();
+		}
+
+		WalletModel model = new WalletModel();
+		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+		model = walletService.createModelByReadVaultFile(storeFileName, model.getEncryptor() );
+
+		//opened a old version file, need to save to v13 version on close. .
+		if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+			ServiceRegistry.instance.getWalletModel().setModified(true);
+			//the data file version in the model is the old version. do not set to latest.
+			//upgrade will happen if not the latest.
+			//model.setDataFileVersion(WalletModel.LATEST_DATA_VERSION);
+		}
+
+
+		//delete the item1 attachment
+		model.getItemsFlatList().get(1).getAttachmentEntry().setAccessFlag(FileAccessFlag.Delete);
+
+		//now save to last store version
+		walletService.saveToFile(storeFileName,model, model.getEncryptor()  );
+
+		//read back to verify
+		model = walletService.createModelByReadVaultFile(storeFileName, model.getEncryptor() );
+		Assert.assertEquals(model.getItemsFlatList().size(), 3);
+
+		Assert.assertNull(model.getItemsFlatList().get(1).getAttachmentEntry());
+		Assert.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
+
+		Assert.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
+
+
+	}
+
 
 }

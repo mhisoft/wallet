@@ -23,6 +23,7 @@
 
 package org.mhisoft.wallet.action;
 
+import java.util.logging.Logger;
 import java.io.File;
 
 import org.mhisoft.wallet.model.WalletModel;
@@ -41,6 +42,7 @@ import org.mhisoft.wallet.view.ViewHelper;
  */
 public class OpenWalletFileAction implements Action {
 
+	private static final Logger logger = Logger.getLogger(OpenWalletFileAction.class.getName());
 
 	@Override
 	public ActionResult execute(Object... params) {
@@ -70,6 +72,8 @@ public class OpenWalletFileAction implements Action {
 				//now show password form to enter the password.
 				PasswordForm passwordForm = new PasswordForm("Opening file:"+ fileName);
 				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), null,null);
+				logger.info("Open file: " + fileName);
+				logger.info("\t version: " + model.getCurrentDataFileVersion());
 
 				//hand off to the OK listener and
 

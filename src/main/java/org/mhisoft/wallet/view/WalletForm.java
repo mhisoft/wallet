@@ -1291,14 +1291,15 @@ public class WalletForm {
 
 				if (fileAccessEntry.getAccessFlag()==FileAccessFlag.Merge) {
 					 //read conent from the importing vault attachment store.
-					 fileContent = attachmentService.readFileContent(
+					 fileContent = attachmentService.readFileContent( model.getCurrentDataFileVersion(),
 							 ServiceRegistry.instance.getAttachmentService().getAttachmentFileName( model.getImpModel().getVaultFileName() )
 							, fileAccessEntry, model.getImpModel().getEncryptor());
 
 				}
 				else
 					//use content
-					 fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
+					 fileContent = attachmentService.readFileContent( model.getCurrentDataFileVersion(),
+							 WalletSettings.getInstance().getAttachmentStoreFileName()
 						, fileAccessEntry, model.getEncryptor());
 
 				ByteArrayInputStream inputStream = new ByteArrayInputStream(fileContent);
@@ -1386,8 +1387,10 @@ public class WalletForm {
 
 				if (doIt) {
 					//use content
-					byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
+					final byte[] bytes = attachmentService.readFileContent(model.getCurrentDataFileVersion()
+							,WalletSettings.getInstance().getAttachmentStoreFileName()
 							, fileAccessEntry, model.getEncryptor());
+					byte[] fileContent = bytes;
 
 					FileUtils.writeFile(fileContent, saveToFile);
 
@@ -1415,7 +1418,8 @@ public class WalletForm {
 
 
 					//use content
-					byte[] fileContent = attachmentService.readFileContent(WalletSettings.getInstance().getAttachmentStoreFileName()
+					byte[] fileContent = attachmentService.readFileContent(model.getCurrentDataFileVersion(),
+							WalletSettings.getInstance().getAttachmentStoreFileName()
 							, fileAccessEntry, model.getEncryptor());
 
 					FileUtils.writeFile(fileContent, tmpFile);

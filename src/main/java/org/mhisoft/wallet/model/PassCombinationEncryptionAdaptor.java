@@ -23,6 +23,7 @@
 
 package org.mhisoft.wallet.model;
 
+import java.util.Arrays;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -36,9 +37,17 @@ import org.mhisoft.common.util.security.JceEncryption;
  * @since Dec, 2017
  */
 public class PassCombinationEncryptionAdaptor extends PassCombinationVO {
-	private Serializer<PassCombinationVO> sesrializer = new Serializer<PassCombinationVO>();
+	private transient Serializer<PassCombinationVO> sesrializer = new Serializer<PassCombinationVO>();
 	private byte[] encryptedPass;
-	JceEncryption  engine;
+	transient JceEncryption  engine;
+
+	public PassCombinationEncryptionAdaptor clone() {
+		PassCombinationEncryptionAdaptor clone = new PassCombinationEncryptionAdaptor();
+		clone.engine = this.engine;
+		if (encryptedPass!=null)
+			clone.encryptedPass = Arrays.copyOf(encryptedPass, encryptedPass.length);
+		return clone;
+	}
 
 	public PassCombinationEncryptionAdaptor() {
 		super();

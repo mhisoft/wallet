@@ -35,7 +35,7 @@ import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.DataService;
 import org.mhisoft.wallet.service.DataServiceFactory;
-import org.mhisoft.wallet.service.FileContent;
+import org.mhisoft.wallet.service.StoreVO;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.WalletService;
 
@@ -141,11 +141,11 @@ public class WalletFileTest {
 			DataService dataServicev12 = DataServiceFactory.createDataService(12);
 			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptor());
 
-			FileContent fileContent = walletService.readFromFile("test_v12.dat" , model.getEncryptor());
-			model.setItemsFlatList(fileContent.getWalletItems());
-			model.setDeletedEntriesInStore(fileContent.getDeletedEntriesInStore());
+			StoreVO storeVO = walletService.readFromFile("test_v12.dat" , model.getEncryptor());
+			model.setItemsFlatList(storeVO.getWalletItems());
+			model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
 			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, fileContent.getHeader().getPassHash());
+			assertEquals(hash, storeVO.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -171,11 +171,11 @@ public class WalletFileTest {
 			//save
 			dataServicev10.saveToFile("test_v10.dat", model, model.getEncryptor());
 			//read
-			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",model.getEncryptor());
+			StoreVO storeVO = dataServicev10.readFromFile("test_v10.dat",model.getEncryptor());
 
-			model.setItemsFlatList(fileContent.getWalletItems());
+			model.setItemsFlatList(storeVO.getWalletItems());
 			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, fileContent.getHeader().getPassHash());
+			assertEquals(hash, storeVO.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -189,8 +189,8 @@ public class WalletFileTest {
 			model.initEncryptor(new PassCombinationVO("12Abc12334&5AB1310","112233"));
 
 			DataService dataServicev11 = DataServiceFactory.createDataService(11);
-			FileContent fileContent = dataServicev11.readFromFile("test_DefaultWallet_v11.dat",model.getEncryptor());
-			model.setItemsFlatList(fileContent.getWalletItems());
+			StoreVO storeVO = dataServicev11.readFromFile("test_DefaultWallet_v11.dat",model.getEncryptor());
+			model.setItemsFlatList(storeVO.getWalletItems());
 
 
 			DataService dataServicev12 = DataServiceFactory.createDataService(12);
@@ -234,19 +234,19 @@ public class WalletFileTest {
 
 
 			dataServicev10.saveToFile("test_v10.dat", model, model.getEncryptorForRead()); //v12 encryptor
-			FileContent fileContent = dataServicev10.readFromFile("test_v10.dat",model.getEncryptorForRead());
+			StoreVO storeVO = dataServicev10.readFromFile("test_v10.dat",model.getEncryptorForRead());
 
 			//now save to v12 format
-			model.setItemsFlatList(fileContent.getWalletItems());
+			model.setItemsFlatList(storeVO.getWalletItems());
 			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptorForRead());
 
 			//verify by reding it
-			fileContent = dataServicev12.readFromFile("test_v12.dat", model.getEncryptorForRead());
-			model.setItemsFlatList(fileContent.getWalletItems());
+			storeVO = dataServicev12.readFromFile("test_v12.dat", model.getEncryptorForRead());
+			model.setItemsFlatList(storeVO.getWalletItems());
 
-			model.setItemsFlatList(fileContent.getWalletItems());
+			model.setItemsFlatList(storeVO.getWalletItems());
 			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, fileContent.getHeader().getPassHash());
+			assertEquals(hash, storeVO.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -274,9 +274,9 @@ public class WalletFileTest {
 			//save to v12 format
 			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptorForRead()); //v12 encryptor
 			//read the file using v12 service impl
-			FileContent fileContent = dataServicev12.readFromFile("test_v12.dat",model.getEncryptorForRead());
+			StoreVO storeVO = dataServicev12.readFromFile("test_v12.dat",model.getEncryptorForRead());
 			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, fileContent.getHeader().getPassHash());
+			assertEquals(hash, storeVO.getHeader().getPassHash());
 
 			//write to v13 file format.
 			model.setDataFileVersion(13);
@@ -287,10 +287,10 @@ public class WalletFileTest {
 			model.setCombinationHash(combinationHash);
 			dataServicev13.saveToFile("test_v13.dat", model, model.getEncryptor());
 			//read it back.
-			fileContent = dataServicev13.readFromFile("test_v13.dat",model.getEncryptorForRead());
+			storeVO = dataServicev13.readFromFile("test_v13.dat",model.getEncryptorForRead());
 			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, fileContent.getHeader().getPassHash());
-			assertEquals(combinationHash, fileContent.getHeader().getCombinationHash());
+			assertEquals(hash, storeVO.getHeader().getPassHash());
+			assertEquals(combinationHash, storeVO.getHeader().getCombinationHash());
 
 			 f = new File("test_v13.dat");
 			f.delete();

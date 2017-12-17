@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.FileContent;
+import org.mhisoft.wallet.service.StoreVO;
 import org.mhisoft.wallet.service.ServiceRegistry;
 
 import static org.junit.Assert.assertEquals;
@@ -76,7 +76,7 @@ public class WalletServiceTest extends WalletFileTest {
 			String combinationHash2 = HashingUtils.createHash(passVO2.getCombination());
 			expModel.setHash(hash2, combinationHash2);
 			expModel.initEncryptor(passVO2);
-			FileContent fc  = walletService.readFromFile(eVaultFileExp, expModel.getEncryptor() );
+			StoreVO fc  = walletService.readFromFile(eVaultFileExp, expModel.getEncryptor() );
 
 			model.getItemsFlatList().clear();
 			model.setItemsFlatList(fc.getWalletItems());

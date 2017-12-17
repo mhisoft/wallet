@@ -38,7 +38,6 @@ import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
  * Description:
@@ -193,7 +192,7 @@ public class ItemDetailView {
 
 	public boolean isModified() {
 		//need a clone of the current Item.
-		WalletItem newItem = ServiceRegistry.instance.getWalletService().cloneItem(model.getCurrentItem());
+		WalletItem newItem = model.getCurrentItem().clone();
 		if (newItem == null)
 			return false;
 

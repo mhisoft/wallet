@@ -74,10 +74,10 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 	//   need Encryptor to be intialized first.
 	@Override
-	public FileContent readFromFile(final String filename, final PBEEncryptor encryptor) {
+	public StoreVO readFromFile(final String filename, final PBEEncryptor encryptor) {
 		//ByteArrayInputStream input = null;
 		//byte[] readBuf = new byte[DELIMITER_bytes.length];
-		FileContent ret  = new FileContent();
+		StoreVO ret  = new StoreVO();
 		List<WalletItem> walletItems = new ArrayList<>();
 		ret.setWalletItems(walletItems);
 

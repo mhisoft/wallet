@@ -19,3 +19,4 @@ dist/lib/common-utils-1.0.jar
 dist/MHISoft-eVault-1.3-bin-for-WindowsOS.zip
 dist/evault-1.3.jar
 test_v13.dat
+mhisoft-evault.log.*

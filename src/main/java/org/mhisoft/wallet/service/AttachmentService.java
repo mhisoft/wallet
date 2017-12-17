@@ -24,9 +24,12 @@
 package org.mhisoft.wallet.service;
 
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -34,9 +37,11 @@ import java.security.AlgorithmParameters;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 
-import org.mhisoft.common.util.security.PBEEncryptor;
+import org.apache.commons.io.IOUtils;
+import org.mhisoft.common.util.CompressionUtil;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.StringUtils;
+import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessFlag;
 import org.mhisoft.wallet.model.FileAccessTable;
@@ -134,17 +139,26 @@ public class AttachmentService {
 
 	/**
 	 * Read the attachments from the old attachment store and write to the new attachment store.
-	 * It is really copy attachments from one store to anotehr.
+	 * It is really copy attachments from one store to another.
+	 * use case: export, change password;
+	 *     store version change
+	 *
+	 *     DELETED	entries are not transfered.
 	 *
 	 * @param oldStoreName      The old store name, needed to read the attachment content out.
 	 * @param model             The old model, need the encryptor from it to read old attachment for transfer.
 	 * @param newModel          the new store model, items list is from the new model.
 	 * @param newStoreEncryptor The encryptor for writing the new attachment store.
+	 * @param resetModelAttachmentEntries  do not reset for upgrade scenario.
 	 */
 
 	public boolean transferAttachmentStore(final String oldStoreName, String newStoreName
 			, final WalletModel model
-			, final WalletModel newModel, final PBEEncryptor newStoreEncryptor) {
+			, final WalletModel newModel
+			, final PBEEncryptor newStoreEncryptor
+			, final boolean resetModelAttachmentEntries) {
+
+		logger.fine("transferAttachmentStore()");
 
 		File newFile = new File(newStoreName);
 		if (newFile.exists()) {
@@ -153,11 +167,34 @@ public class AttachmentService {
 				return false;
 			}
 		}
+
 		FileAccessTable t = new FileAccessTable();
+		double deleteCount = 0, totalCount = 0;
 		for (WalletItem item : newModel.getItemsFlatList()) {
-			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFileName() != null)
-				t.addEntry(item.getAttachmentEntry());
+			if (item.getAttachmentEntry() != null) {
+				totalCount++;
+
+				if (item.getAttachmentEntry().getAccessFlag() == FileAccessFlag.Delete
+						|| item.getAttachmentEntry().getAccessFlag() == FileAccessFlag.Update)
+					//these are new deleted attachments
+					deleteCount++;
+				else if ( item.getAttachmentEntry().getFileName() != null)
+					t.addEntry(item.getAttachmentEntry());
+
+			}
+
 		}
+
+		//delete count need to add the orphan records (marked as DELETE) in the attachment store.
+		deleteCount += newModel.getDeletedEntriesInStore();
+
+		if (deleteCount == totalCount) {
+			//all deleted or updated.
+			//nothing new need to be transfered.
+			return false;
+		}
+
+
 
 		DataOutputStream dataOut = null;
 		if (t.getSize() > 0) {
@@ -192,15 +229,17 @@ public class AttachmentService {
 
 		}
 
-		//now clear the access flag on the item
-		for (WalletItem item : model.getItemsFlatList()) {
-			if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
-					&& item.getAttachmentEntry().getAccessFlag() != null) {
-				item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
+		if (resetModelAttachmentEntries) {
+			//now clear the access flag on the item
+			for (WalletItem item : model.getItemsFlatList()) {
+				if (item.getAttachmentEntry() != null && item.getAttachmentEntry().getFile() != null  //
+						&& item.getAttachmentEntry().getAccessFlag() != null) {
+					item.getAttachmentEntry().setAccessFlag(FileAccessFlag.None);
+				}
 			}
 		}
 
-		return true;
+		return t.getSize()>0;
 
 
 	}
@@ -490,6 +529,7 @@ public class AttachmentService {
 				continue;
 			}
 
+			logger.fine("------------------");
 			logger.fine("Write entry: " + fileAccessEntry.getGUID() + "-" + fileAccessEntry.getFileName());
 			logger.fine("\t access flag: " + fileAccessEntry.getAccessFlag());
 			logger.fine("\t start pos: " + pos);
@@ -514,34 +554,68 @@ public class AttachmentService {
 
 			/* write filename encrypted */
 			String strFName = FileUtils.getFileNameWithoutPath(fileAccessEntry.getFileName());
+			logger.fine("\t write file name: " + strFName);
 			byte[] _byteFileName = StringUtils.getBytes(strFName);
 			pos = writeEncryptedContent(_byteFileName, encryptor, dataOut, pos);
-			logger.fine("\t file name: " + strFName);
-
+			logger.fine("\t pos: " + pos);
 
 			/* Attachment body */
-			byte[] fileContent;
+			byte[] compressedFileContent;
 
 			if (fileAccessEntry.getAccessFlag() == FileAccessFlag.Merge && fileAccessEntry.getEncSize() > 0) {
 				if (impAttachmentStoreName == null)
 					throw new IOException("impAttachmentStoreName is not set.");
-				fileContent = readFileContent(impAttachmentStoreName, fileAccessEntry, model.getImpModel().getEncryptor());
-			} else if (transferStoreMode && fileAccessEntry.getAccessFlag() == FileAccessFlag.None && fileAccessEntry.getEncSize() > 0) {
-				//no change, this is an transfer to the new store. need to read the filecontent from the old store.
-				fileContent = readFileContent(oldStoreFileName, fileAccessEntry, oldEncryptorForRead);
-			} else
-				fileContent = FileUtils.readFile(fileAccessEntry.getFile());
+				//depends on the import model version, it might or might not be compressed
+				//test case: import an old version data file with attachments.
+				byte[] _impBytes = readCompressedFileContent(  model.getImpModel().getCurrentDataFileVersion(),
+						impAttachmentStoreName, fileAccessEntry, model.getImpModel().getEncryptor());
+				if  (model.getImpModel().getCurrentDataFileVersion()>=14) {
+					//it is compressed.
+					compressedFileContent = _impBytes;
+				}
+				else {
+					//not compressed, need to compress it.
+					compressedFileContent = CompressionUtil.getCompressedBytes(new ByteArrayInputStream(_impBytes));
+				}
 
-			pos = writeEncryptedContent(fileContent, encryptor, dataOut, pos);
+			}
+			else if (transferStoreMode && fileAccessEntry.getAccessFlag() == FileAccessFlag.None && fileAccessEntry.getEncSize() > 0) {
+				// no change, this is an transfer to the new store. need to read the filecontent from the old store.
+				// could be upgrade scenario as well.
+				// should be able to skip the compression-decompression process.
+				compressedFileContent = readCompressedFileContent( model.getCurrentDataFileVersion(),
+						oldStoreFileName, fileAccessEntry, oldEncryptorForRead);
+			} else {
+				/* for CREATE OR UPDATE */
+				//read from file
+				//since v14 , start to compress the contents.
+				File f = fileAccessEntry.getFile();
+				FileInputStream sourceInputStream = new FileInputStream(f);
+				compressedFileContent = CompressionUtil.getCompressedBytes(sourceInputStream);
+				logger.fine("\t read from file: " + fileAccessEntry.getFile()+", comrpessed size:" + compressedFileContent.length +", original size:" + fileAccessEntry.getFile().length());
+			}
+
+			//encrypted the compressed bytes and write out.
+			pos = writeEncryptedContent(compressedFileContent, encryptor, dataOut, pos);
 
 		}
 
-
 	}
 
+
+	/**
+	 * Write the file content to the dataout, which is the attachment store.
+	 * @param content
+	 * @param encryptor
+	 * @param dataOut
+	 * @param pos
+	 * @return
+	 * @throws IOException
+	 */
 	//return pos
 	private long writeEncryptedContent(byte[] content, final PBEEncryptor encryptor, DataOutput dataOut, long pos) throws IOException {
 
+		logger.fine("writeEncryptedContent");
 		PBEEncryptor.EncryptionResult ret = encryptor.encrypt(content);
 		byte[] _byteEncrypted = ret.getEncryptedData();
 
@@ -645,7 +719,7 @@ public class AttachmentService {
 				fileAccessEntry.setFileName(StringUtils.bytesToString(byte_filename));
 				logger.fine("\t file name:" + fileAccessEntry.getFileName());
 
-				/* attachment content */
+				/* attachment */
 				vo = readCipherParameter(fileIn, pos);
 				pos = vo.pos;
 				fileAccessEntry.setAlgorithmParameters(vo.algorithmParameters);
@@ -695,8 +769,14 @@ public class AttachmentService {
 		return t;
 	}
 
+	protected byte[] readCompressedFileContent(final int storeVersion, String fileStoreDataFile, FileAccessEntry entry, PBEEncryptor encryptor) {
+		return _readFileContent(false, storeVersion, fileStoreDataFile, entry, encryptor );
+	}
+
+
 	/**
-	 * Read and decrypt the file content based on the mark oin the entry.
+	 * Read and decrypt the file content based on the mark on the entry.
+	 * It is also deflated if was compressed.
 	 * The fileAccessEntry file content and size will be set.
 	 *
 	 * @param fileStoreDataFile
@@ -704,13 +784,30 @@ public class AttachmentService {
 	 * @param encryptor
 	 * @return
 	 */
-	public byte[] readFileContent(String fileStoreDataFile, FileAccessEntry entry, PBEEncryptor encryptor) {
+
+	public byte[] readFileContent(final int storeVersion, String fileStoreDataFile, FileAccessEntry entry, PBEEncryptor encryptor) {
+		return _readFileContent(true, storeVersion, fileStoreDataFile, entry, encryptor );
+	}
+
+
+	private byte[] _readFileContent(boolean decompress,
+			final int storeVersion, String fileStoreDataFile, FileAccessEntry entry, PBEEncryptor encryptor) {
+
+
 		try {
 			RandomAccessFile fileStore = new RandomAccessFile(fileStoreDataFile, "rw");
 			fileStore.seek(entry.getPosOfContent());
 			byte[] _encedBytes = new byte[entry.getEncSize()];
 			fileStore.readFully(_encedBytes);
 			byte[] fileContent = encryptor.decrypt(_encedBytes, entry.getAlgorithmParameters());
+
+			//after decrypt, deflate the compressed data
+			if (decompress && storeVersion>=14) {
+				GZIPInputStream decompressedStream = new GZIPInputStream(
+								new ByteArrayInputStream(fileContent));
+				fileContent = IOUtils.toByteArray(decompressedStream);
+			}
+
 
 			entry.setFileContent(fileContent);
 			entry.setSize(fileContent.length); //decrypted size.
@@ -727,21 +824,35 @@ public class AttachmentService {
 	}
 
 
+
+
+
 	//re-read the attachments from file and refresh the model items.
-	public void reloadAttachments(final String walletFileName, final WalletModel model) {
-		String attFileName = getAttachmentFileName(walletFileName);
-		FileAccessTable t = read(attFileName, model.getEncryptor());
-		if (t != null) {
-			for (FileAccessEntry entry : t.getEntries()) {
-				WalletItem item = model.getWalletItem(entry.getGUID());
-				if (item != null) {
-					item.setAttachmentEntry(entry);
-					item.setNewAttachmentEntry(null);
+	public void reloadAttachments(final String vaultFileName, final WalletModel model) {
+		String attachmetStoreName = getAttachmentFileName(vaultFileName);
+		FileAccessTable t = read(attachmetStoreName, model.getEncryptor());
+
+		//walk through model
+		for (WalletItem walletItem : model.getItemsFlatList()) {
+			if (walletItem.getAttachmentEntry()!=null) {
+
+				//find it in FileAccessTable
+				if (t==null)  {
+					walletItem.setAttachmentEntry(null);
+					walletItem.setNewAttachmentEntry(null);
+				}
+				else {
+
+					for (FileAccessEntry fileAccessEntry : t.getEntries()) {
+						if (fileAccessEntry.getGUID().equals(walletItem.getSysGUID())) {
+							walletItem.setAttachmentEntry(fileAccessEntry);
+							walletItem.setNewAttachmentEntry(null);
+							break;
+						}
+					}
 				}
 			}
-			model.setDeletedEntriesInStore(t.getDeletedEntries());
 		}
-
 	}
 
 

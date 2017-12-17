@@ -28,10 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.IOException;
 import java.io.Serializable;
 
 import org.mhisoft.common.util.ReflectionUtil;
+import org.mhisoft.common.util.Serializer;
 import org.mhisoft.common.util.StringUtils;
+import org.mhisoft.wallet.service.ServiceRegistry;
 
 /**
  * Description:
@@ -544,4 +547,42 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	}
 
 
+
+	public WalletItem clone() {
+		try {
+			Serializer<WalletItem> serializer = new Serializer<WalletItem>();
+			WalletItem ret = serializer.deserialize(serializer.serialize(this));
+
+			//this part is not really a clone. point to the same Attachment Entry for exporting is good enough.
+			if (this.getAttachmentEntry()!=null ) {
+				ret.setAttachmentEntry(  this.getAttachmentEntry() );
+			}
+
+			return ret;
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException("cloneItem() failed", e);
+		}
+	}
+
+
+	public WalletItem findItemInModel() {
+		for (WalletItem walletItem : ServiceRegistry.instance.getWalletModel().getItemsFlatList()) {
+			if (walletItem.getSysGUID().equals(getSysGUID()) || walletItem.getName().equalsIgnoreCase(getName()))
+					return walletItem;
+
+		}
+		return null;
+
+	}
+
+
+	public WalletItem findItemInModel(final WalletModel model) {
+		for (WalletItem walletItem : model.getItemsFlatList()) {
+			if (walletItem.getSysGUID().equals(getSysGUID()) || walletItem.getName().equalsIgnoreCase(getName()))
+				return walletItem;
+
+		}
+		return null;
+
+	}
 }

@@ -40,7 +40,13 @@ import org.mhisoft.common.util.security.PBEEncryptor;
  */
 public class WalletModel {
 
-	static final int LATEST_DATA_VERSION=13;
+	/*
+	Vault database version history:
+	v13
+	v14 -- attachment file is compressed. no changes to the main vault structure.
+
+	 */
+	public static final int LATEST_DATA_VERSION=14;
 
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
@@ -50,6 +56,7 @@ public class WalletModel {
 
 	PBEEncryptor encryptor;
 	PBEEncryptor encryptor_v12; //for reading the v12 data file
+
 	int dataFileVersion=LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
 	private boolean addingNode=false;
@@ -58,7 +65,7 @@ public class WalletModel {
 	private transient PassCombinationVO passPlain;
 	private int deletedEntriesInStore;
 
-	private boolean importing=false;
+	private transient boolean importing=false;
 	private transient WalletModel impModel;
 	private String vaultFileName;
 
@@ -66,6 +73,31 @@ public class WalletModel {
 	public WalletModel() {
 
 	}
+
+	/**
+	 * Get a clone. the encryptor is a pointer ot the same . not a copy.
+	 * @return
+	 */
+	public WalletModel clone() {
+		WalletModel clone = new WalletModel();
+
+		for (WalletItem walletItem : this. itemsFlatList) {
+			clone.itemsFlatList.add(walletItem.clone());
+		}
+		clone.currentItem = this.currentItem;
+		clone.passHash = this.passHash;
+		clone.combinationHash = this.combinationHash;
+		clone.modified = this.modified;
+		clone.encryptor = this.encryptor;
+		clone.encryptor_v12 = this.encryptor_v12;
+		clone.dataFileVersion = this.dataFileVersion;
+		clone.passPlain = this.passPlain==null?null:this.passPlain.clone();
+		clone.deletedEntriesInStore = this.deletedEntriesInStore;
+		clone.vaultFileName = this.vaultFileName;
+		return clone;
+
+	}
+
 
 	public boolean isWalletOpen() {
 		return this.passHash!=null;
@@ -175,7 +207,12 @@ public class WalletModel {
 
 	}
 
-	public int getDataFileVersion() {
+	/**
+	 * The vault version read from the file header. always the current version.
+	 * so may not be the latest.
+	 * @return
+	 */
+	public int getCurrentDataFileVersion() {
 		return dataFileVersion;
 	}
 
