@@ -135,13 +135,13 @@ public class AttachmentServiceTest {
 
 			FileAccessTable t = attachmentService.read(dataFile, model.getEncryptor());
 
-			Assert.assertEquals(t.getSize(), 3);
+			Assert.assertEquals(t.getSize(), 2);
 
 
 			int i = 0;
 
-			FileAccessEntry entry1 = t.getEntries().get(1);
-			FileAccessEntry entry2 = t.getEntries().get(2);
+			FileAccessEntry entry1 = t.getEntries().get(0);
+			FileAccessEntry entry2 = t.getEntries().get(1);
 
 			byte[] bytesEntry1 = attachmentService.readFileContent(14, dataFile, entry1, model.getEncryptor());
 			byte[] orgin1 = FileUtils.readFile(new File("./target/classes/1463467646_61.png"));
@@ -151,13 +151,13 @@ public class AttachmentServiceTest {
 			byte[] orgin2 = FileUtils.readFile(new File("./target/test-classes/LICENSE"));
 			Assert.assertEquals(bytesEntry2, orgin2);
 
-			Assert.assertEquals(guid1,t.getEntries().get(1).getGUID() );
-			Assert.assertEquals(guid2,t.getEntries().get(2).getGUID() );
+			Assert.assertEquals(guid1,t.getEntries().get(0).getGUID() );
+			Assert.assertEquals(guid2,t.getEntries().get(1).getGUID() );
 
-			Assert.assertEquals(t.getEntries().get(1).getSize(), new File(file1).length());
-			Assert.assertEquals(t.getEntries().get(2).getSize(), new File(file2).length());
+			Assert.assertEquals(t.getEntries().get(0).getSize(), new File(file1).length());
+			Assert.assertEquals(t.getEntries().get(1).getSize(), new File(file2).length());
 
-			Assert.assertEquals(t.getEntries().get(1).getFileName(), "1463467646_61.png");
+			Assert.assertEquals(t.getEntries().get(0).getFileName(), "1463467646_61.png");
 			//Assert.assertEquals(t.getEntries().get(1).getFileName(), "LICENSE");
 
 //
@@ -176,7 +176,7 @@ public class AttachmentServiceTest {
 	/* just upgrade, attachment entries in the model is not modified */
 
 	@Test
-	public void testUpgradeStore() {
+	public void testUpgradeStore() throws  IOException {
 		try {
 			saveAttachments(13);
 		} catch (HashingUtils.CannotPerformOperationException e) {
@@ -216,6 +216,17 @@ public class AttachmentServiceTest {
 
 		Assert.assertTrue(model.getItemsFlatList().get(1).getAttachmentEntry().getEncSize()>0);
 		Assert.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
+
+
+		FileAccessTable t = attachmentService.read(attStoreFile, model.getEncryptor());
+		FileAccessEntry entry1 = t.getEntries().get(0);
+		FileAccessEntry entry2 = t.getEntries().get(1);
+
+
+		byte[] bytesEntry1 = attachmentService.readFileContent(WalletModel.LATEST_DATA_VERSION, attStoreFile, entry1, model.getEncryptor());
+		byte[] orgin1 = FileUtils.readFile(new File("./target/classes/1463467646_61.png"));
+		Assert.assertEquals(bytesEntry1, orgin1);
+
 
 
 	}
