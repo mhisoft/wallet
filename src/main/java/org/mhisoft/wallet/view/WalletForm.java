@@ -208,7 +208,8 @@ public class WalletForm {
 
 	JMenuBar menuBar;
 	public JMenu menuFile;
-	public JMenuItem menuOpen, menuNew, menuClose, menuImport,menuExport, popupMenuMove
+	public JMenuItem menuOpen, menuNew, menuClose, menuImport,menuExport
+			, popupMenuMove, popupMenuExport
 			, menuBackup, menuChangePassword, menuOpenRecent;
 	// build poup menu
 	final JPopupMenu popupMenu = new JPopupMenu();
@@ -933,9 +934,10 @@ public class WalletForm {
 	}
 
 	public void	setupPopupContextMenu() {
+		popupMenuExport = new JMenuItem("Export", KeyEvent.VK_E);
 		popupMenuMove = new JMenuItem("Move", KeyEvent.VK_M);
 		//let's try reuse the export menu
-		popupMenu.add(menuExport);
+		popupMenu.add(popupMenuExport);
 		popupMenu.add(popupMenuMove);
 		componentsList.add(popupMenuMove);
 
@@ -1159,11 +1161,11 @@ public class WalletForm {
 	}
 
 
-	public void setMessage(String s) {
-		setMessage(s, true) ;
+	public void showMessage(String s) {
+		showMessage(s, true) ;
 	}
 
-	public void setMessage(String s, boolean clearLater) {
+	public void showMessage(String s, boolean clearLater) {
 		if (labelLastMessage != null) {
 			labelLastMessage.setText(s);
 			labelLastMessage.setVisible(true);
@@ -1394,7 +1396,7 @@ public class WalletForm {
 
 					FileUtils.writeFile(fileContent, saveToFile);
 
-					setMessage("Downloaded the attachment and saved to file:" + saveToFile);
+					showMessage("Downloaded the attachment and saved to file:" + saveToFile);
 				}
 
 			} catch (IOException e) {

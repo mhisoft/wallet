@@ -25,12 +25,14 @@ package org.mhisoft.wallet.action;
 
 import java.io.File;
 
+import org.mhisoft.common.util.security.PBEEncryptor;
+import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
-import org.mhisoft.wallet.service.StoreVO;
 import org.mhisoft.wallet.service.IdleTimerService;
 import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.view.DialogUtils;
+import org.mhisoft.wallet.service.StoreVO;
+import org.mhisoft.wallet.view.WalletForm;
 
 /**
  * Description: Action for loading the wallet.
@@ -39,8 +41,6 @@ import org.mhisoft.wallet.view.DialogUtils;
  * @since Apr, 2016
  */
 public class LoadWalletAction implements Action {
-
-
 
 
 	@Override
@@ -61,6 +61,8 @@ public class LoadWalletAction implements Action {
 
 		WalletModel model  = ServiceRegistry.instance.getWalletModel();
 		model.setVaultFileName(fileName);
+		WalletItem curItem = model.getCurrentItem();
+		WalletForm form = ServiceRegistry.instance.getWalletForm();
 
 
 		if (new File(fileName).isFile()) {
@@ -83,10 +85,22 @@ public class LoadWalletAction implements Action {
 
 				//do the upgrade now.
 				ServiceRegistry.instance.getWalletService().saveVault(fileName, model, model.getEncryptor());
-				DialogUtils.getInstance().info("The vault has been upgrade from version "+ oldVersion+ " to " + WalletModel.LATEST_DATA_VERSION  );
 
-				model = ServiceRegistry.instance.getWalletService().loadVaultIntoModel(fileName, model.getEncryptorForRead());
-				ServiceRegistry.instance.getWalletForm().setModel(model);
+
+				//close the tree view.
+
+				PBEEncryptor encryptor = model.getEncryptorForRead();
+				form.resetForm();
+				//either way it is cleared
+				ServiceRegistry.instance.getWalletModel().reset();
+
+				model = ServiceRegistry.instance.getWalletService().loadVaultIntoModel(fileName, encryptor );
+				form.setModel(model);
+//				if (curItem!=null)
+//					model.setCurrentItem( model.findItem(curItem.getSysGUID()));
+
+				//DialogUtils.getInstance().info("The vault has been upgrade from version "+ oldVersion+ " to " + WalletModel.LATEST_DATA_VERSION  );
+				form.showMessage("The vault has been upgrade from version v"+ oldVersion+ " to v" + WalletModel.LATEST_DATA_VERSION  );
 
 			}
 
@@ -96,6 +110,7 @@ public class LoadWalletAction implements Action {
 			ServiceRegistry.instance.getWalletModel().setModified(true);
 			model.initEncryptor(model.getPassVOForEncryptor());
 		}
+
 		ServiceRegistry.instance.getWalletForm().loadTree();
 		ServiceRegistry.instance.getWalletForm().loadOptionsIntoView();
 

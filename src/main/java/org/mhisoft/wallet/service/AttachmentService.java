@@ -853,38 +853,25 @@ public class AttachmentService {
 
 
 
-
-
 	//re-read the attachments from file and refresh the model items.
 	public void reloadAttachments(final String vaultFileName, final WalletModel model) {
 		String attachmetStoreName = getAttachmentFileName(vaultFileName);
 		FileAccessTable t = read(attachmetStoreName, model.getEncryptor());
 
-		//walk through model
+		// reset first
 		for (WalletItem walletItem : model.getItemsFlatList()) {
-			if (walletItem.getAttachmentEntry()!=null) {
+			walletItem.setAttachmentEntry(null);
+			walletItem.setNewAttachmentEntry(null);
+		}
 
-				//find it in FileAccessTable
-				if (t==null)  {
-					walletItem.setAttachmentEntry(null);
-					walletItem.setNewAttachmentEntry(null);
-				}
-				else {
-					boolean foundit = false;
-					for (FileAccessEntry fileAccessEntry : t.getEntries()) {
-						if (fileAccessEntry.getGUID().equals(walletItem.getSysGUID())) {
-							walletItem.setAttachmentEntry(fileAccessEntry);
-							walletItem.setNewAttachmentEntry(null);
-							foundit = true;
-							break;
-						}
-					}
-					if (!foundit) {
-						walletItem.setAttachmentEntry(null);
-						walletItem.setNewAttachmentEntry(null);
-					}
 
-				}
+		//walk through the  FileAccessTable
+		for (FileAccessEntry fileAccessEntry : t.getEntries()) {
+
+			WalletItem walletItem = model.findItem(fileAccessEntry.getGUID());
+			if (walletItem != null) {
+				walletItem.setAttachmentEntry(fileAccessEntry);
+				walletItem.setNewAttachmentEntry(null);
 			}
 		}
 	}

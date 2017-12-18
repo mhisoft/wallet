@@ -198,12 +198,11 @@ public class WalletService {
 			File newFile = new File(newStoreName);
 			newFile.renameTo(new File(oldStoreName));
 
-			// reload entries into a model, the attment entry  pos points has changed.
-			WalletModel  newModel =  model.clone();
-			newModel.setDataFileVersion(WalletModel.LATEST_DATA_VERSION);
-
-			//re read the new store into newModel
-			attachmentService.reloadAttachments(vaultFileName, newModel );
+// reload entries into a model, the attment entry  pos points has changed.
+//scratch it. doing a full reloadAttachments() at the end
+//			WalletModel  newModel =  model.clone();
+//			newModel.setDataFileVersion(WalletModel.LATEST_DATA_VERSION);
+//			attachmentService.reloadAttachments(vaultFileName, newModel );
 
 			boolean hasNewEntriesTobeCreated = false;
 

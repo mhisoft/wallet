@@ -58,7 +58,7 @@ public class IdleTimerService {
 
 							//close the tree view.
 							ServiceRegistry.instance.getWalletForm().resetForm();
-					ServiceRegistry.instance.getWalletForm() .setMessage("The vault is closed because it has been idling for too long.", false);
+					ServiceRegistry.instance.getWalletForm() .showMessage("The vault is closed because it has been idling for too long.", false);
 //
 //						}
 //					});

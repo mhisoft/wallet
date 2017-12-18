@@ -63,7 +63,7 @@ public class CloseWalletAction extends SaveWalletAction {
 				if (!quiet)
 				   DialogUtils.getInstance().info("Saved to file successfully.");
 				else
-					ServiceRegistry.instance.getWalletForm().setMessage("The file change was saved.");
+					ServiceRegistry.instance.getWalletForm().showMessage("The file change was saved.");
 			}
 
 

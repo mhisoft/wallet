@@ -46,26 +46,26 @@ public class WalletModel {
 	v14 -- attachment file is compressed. no changes to the main vault structure.
 
 	 */
-	public static final int LATEST_DATA_VERSION=14;
+	public static final int LATEST_DATA_VERSION = 14;
 
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
 	String passHash;
 	String combinationHash;
-	boolean modified =false;
+	boolean modified = false;
 
 	PBEEncryptor encryptor;
 	PBEEncryptor encryptor_v12; //for reading the v12 data file
 
-	int dataFileVersion=LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
+	int dataFileVersion = LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
-	private boolean addingNode=false;
+	private boolean addingNode = false;
 
 
 	private transient PassCombinationVO passPlain;
 	private int deletedEntriesInStore;
 
-	private transient boolean importing=false;
+	private transient boolean importing = false;
 	private transient WalletModel impModel;
 	private String vaultFileName;
 
@@ -76,12 +76,13 @@ public class WalletModel {
 
 	/**
 	 * Get a clone. the encryptor is a pointer ot the same . not a copy.
+	 *
 	 * @return
 	 */
 	public WalletModel clone() {
 		WalletModel clone = new WalletModel();
 
-		for (WalletItem walletItem : this. itemsFlatList) {
+		for (WalletItem walletItem : this.itemsFlatList) {
 			clone.itemsFlatList.add(walletItem.clone());
 		}
 		clone.currentItem = this.currentItem;
@@ -91,7 +92,7 @@ public class WalletModel {
 		clone.encryptor = this.encryptor;
 		clone.encryptor_v12 = this.encryptor_v12;
 		clone.dataFileVersion = this.dataFileVersion;
-		clone.passPlain = this.passPlain==null?null:this.passPlain.clone();
+		clone.passPlain = this.passPlain == null ? null : this.passPlain.clone();
 		clone.deletedEntriesInStore = this.deletedEntriesInStore;
 		clone.vaultFileName = this.vaultFileName;
 		return clone;
@@ -100,31 +101,31 @@ public class WalletModel {
 
 
 	public boolean isWalletOpen() {
-		return this.passHash!=null;
+		return this.passHash != null;
 	}
 
 	public void reset() {
 		this.itemsFlatList = new ArrayList<>();
-		this.currentItem=null;
-		this.passHash=null;
-		this.combinationHash=null;
-		this.modified=false;
-		this.encryptor=null;
-		this.addingNode=false;
-		this.importing=false;
-		this.dataFileVersion=LATEST_DATA_VERSION;
-		this.passPlain=null;
-		this.deletedEntriesInStore=0;
+		this.currentItem = null;
+		this.passHash = null;
+		this.combinationHash = null;
+		this.modified = false;
+		this.encryptor = null;
+		this.addingNode = false;
+		this.importing = false;
+		this.dataFileVersion = LATEST_DATA_VERSION;
+		this.passPlain = null;
+		this.deletedEntriesInStore = 0;
 	}
 
-	public PBEEncryptor createNewEncryptor(final PassCombinationVO newPass)   {
+	public PBEEncryptor createNewEncryptor(final PassCombinationVO newPass) {
 		PBEEncryptor enc = new PBEEncryptor(newPass.getPassAndCombination());
 		return enc;
 	}
 
-	public void initEncryptor(final PassCombinationVO pass)   {
+	public void initEncryptor(final PassCombinationVO pass) {
 		encryptor = new PBEEncryptor(pass.getPassAndCombination());
-		if (dataFileVersion==12)
+		if (dataFileVersion == 12)
 			encryptor_v12 = new PBEEncryptor(pass.getPass());
 	}
 
@@ -132,9 +133,11 @@ public class WalletModel {
 	public PBEEncryptor getEncryptor() {
 		return encryptor;
 
-	}public PBEEncryptor getEncryptorForRead() {
-		if (dataFileVersion<=12)
-		     return encryptor_v12;
+	}
+
+	public PBEEncryptor getEncryptorForRead() {
+		if (dataFileVersion <= 12)
+			return encryptor_v12;
 		else
 			return encryptor;
 	}
@@ -203,13 +206,14 @@ public class WalletModel {
 
 	public void setModified(boolean modified) {
 		this.modified = modified;
-		EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ModelChangeEvent, "setModified" , Boolean.valueOf(this.modified) ));
+		EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.ModelChangeEvent, "setModified", Boolean.valueOf(this.modified)));
 
 	}
 
 	/**
 	 * The vault version read from the file header. always the current version.
 	 * so may not be the latest.
+	 *
 	 * @return
 	 */
 	public int getCurrentDataFileVersion() {
@@ -242,7 +246,6 @@ public class WalletModel {
 		WalletItem item4 = new WalletItem(ItemType.item, "Honda");
 
 
-
 		itemsFlatList.add(new WalletItem(ItemType.category, "Bank Info"));
 		itemsFlatList.add(item1);
 		itemsFlatList.add(item2);
@@ -255,7 +258,7 @@ public class WalletModel {
 
 	public void setupEmptyWalletData(String rootName) {
 		//root node
-		itemsFlatList.add(new WalletItem(ItemType.category, rootName==null? "Default eVault" : rootName));
+		itemsFlatList.add(new WalletItem(ItemType.category, rootName == null ? "Default eVault" : rootName));
 		itemsFlatList.add(new WalletItem(ItemType.category, "Category 1"));
 		itemsFlatList.add(new WalletItem(ItemType.item, "Item 1"));
 		setModified(true);
@@ -265,15 +268,15 @@ public class WalletModel {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < itemsFlatList.size(); i++) {
 			WalletItem item = itemsFlatList.get(i);
-			sb.append(i +":").append(item.toStringJson()).append("\n");
+			sb.append(i + ":").append(item.toStringJson()).append("\n");
 		}
 		return sb.toString();
 	}
 
 	public WalletItem getRootItem() {
-		if (itemsFlatList.size()==0)
+		if (itemsFlatList.size() == 0)
 			return null;
-		return itemsFlatList.get(0) ;
+		return itemsFlatList.get(0);
 	}
 
 	/**
@@ -281,10 +284,10 @@ public class WalletModel {
 	 * The parent and children of each item will be set.
 	 */
 	public void buildTreeFromFlatList() {
-		if (itemsFlatList.size()==0)
+		if (itemsFlatList.size() == 0)
 			return;
 
-		WalletItem rootNode =itemsFlatList.get(0) ;
+		WalletItem rootNode = itemsFlatList.get(0);
 
 
 		//reset first
@@ -296,16 +299,16 @@ public class WalletModel {
 
 
 		WalletItem lastParent = rootNode;
-		List<WalletItem>  rootCats = new ArrayList<>();
-		List<WalletItem>  tempChildList = new ArrayList<>();
+		List<WalletItem> rootCats = new ArrayList<>();
+		List<WalletItem> tempChildList = new ArrayList<>();
 		for (int i = 1; i < itemsFlatList.size(); i++) {
 			WalletItem item = itemsFlatList.get(i);
 
-			if (ItemType.category==item.getType()) {
+			if (ItemType.category == item.getType()) {
 				//rootNode.addChild(item);
 				rootCats.add(item);
 
-				if (lastParent!=item) {
+				if (lastParent != item) {
 					//parent changed.
 					Collections.sort(tempChildList);
 
@@ -317,8 +320,7 @@ public class WalletModel {
 				}
 
 
-			}
-			else  {
+			} else {
 				tempChildList.add(item);
 				//lastParent.addChild(item);
 			}
@@ -335,7 +337,6 @@ public class WalletModel {
 		}
 
 
-
 	}
 
 
@@ -350,16 +351,16 @@ public class WalletModel {
 
 	protected void walkTree(WalletItem parent, List<WalletItem> result) {
 		result.add(parent);
-		if (parent.getChildren()!=null) {
+		if (parent.getChildren() != null) {
 			for (WalletItem child : parent.getChildren()) {
-			     walkTree(child, result);
+				walkTree(child, result);
 			}
 		}
 	}
 
 
 	public boolean isRoot(WalletItem item) {
-		return  itemsFlatList.get(0).equals(item);
+		return itemsFlatList.get(0).equals(item);
 	}
 
 
@@ -372,7 +373,7 @@ public class WalletModel {
 			}
 		}
 
-		if (index==-1) {
+		if (index == -1) {
 			throw new RuntimeException("something is wrong, can't find index for the item in the flat list:" + item);
 		}
 
@@ -381,27 +382,24 @@ public class WalletModel {
 
 
 	public void addItem(final WalletItem parentItem, final WalletItem newItem) {
-		if ( isRoot(parentItem) ) {
-			if (newItem.getType()!= ItemType.category)
-			throw new RuntimeException("Can only add category items to the root.");
+		if (isRoot(parentItem)) {
+			if (newItem.getType() != ItemType.category)
+				throw new RuntimeException("Can only add category items to the root.");
 			parentItem.addChild(newItem);
 			itemsFlatList.add(newItem);
 
-		}
-		else {
+		} else {
 
 			int index;
-			if (parentItem.getChildren()==null || parentItem.getChildren().size()==0)  {
+			if (parentItem.getChildren() == null || parentItem.getChildren().size() == 0) {
 				//this parent category is empty, add after it
-				 index = getItemIndex(parentItem);
-			}
-			else {
+				index = getItemIndex(parentItem);
+			} else {
 				//find the last child of the parentItem in the flat list and insert after that
 				WalletItem lastChildren = parentItem.getChildren().get(parentItem.getChildren().size() - 1);
 				index = getItemIndex(lastChildren);
 
 			}
-
 
 
 			if (index == itemsFlatList.size() - 1)
@@ -416,7 +414,7 @@ public class WalletModel {
 		setModified(true);
 	}
 
-	public void  removeItem(final WalletItem item) {
+	public void removeItem(final WalletItem item) {
 		item.getParent().removeChild(item);
 		itemsFlatList.remove(item);
 		setModified(true);
@@ -425,6 +423,7 @@ public class WalletModel {
 
 	/**
 	 * Find the item with the GUID on the tree.
+	 *
 	 * @param GUID
 	 * @return
 	 */
@@ -440,7 +439,7 @@ public class WalletModel {
 
 	public WalletItem getWalletItem(String sysGUID) {
 		for (WalletItem walletItem : itemsFlatList) {
-			if (walletItem.getSysGUID().equals(sysGUID))  {
+			if (walletItem.getSysGUID().equals(sysGUID)) {
 				return walletItem;
 			}
 		}
@@ -449,15 +448,14 @@ public class WalletModel {
 
 
 	/**
-	 *
-	 * @return   PassCombinationEncryptionAdaptor
+	 * @return PassCombinationEncryptionAdaptor
 	 */
-	public PassCombinationVO getUserEnteredPassForVerification(){
+	public PassCombinationVO getUserEnteredPassForVerification() {
 		if (dataFileVersion >= 13) {
 			return passPlain;
 		} else {
 			//v12 format
-			PassCombinationVO ret =  new PassCombinationEncryptionAdaptor();
+			PassCombinationVO ret = new PassCombinationEncryptionAdaptor();
 			ret.setPass(passPlain.spinner2 + passPlain.pass + passPlain.spinner1 + passPlain.spinner3);  //v12 version format
 			return ret;
 		}
@@ -491,5 +489,16 @@ public class WalletModel {
 
 	public void setVaultFileName(String vaultFileName) {
 		this.vaultFileName = vaultFileName;
+	}
+
+
+	public WalletItem findItem(String sysGUID) {
+		for (WalletItem walletItem : itemsFlatList) {
+			if (walletItem.getSysGUID().equals(sysGUID))
+				return walletItem;
+		}
+
+		return null;
+
 	}
 }

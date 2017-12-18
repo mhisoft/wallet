@@ -60,16 +60,20 @@ public class TreeExploreView {
 
 
 	JFrame frame;
-	WalletModel model;
+	//WalletModel model;
 	JTree tree;
 	WalletForm form;
 	DefaultMutableTreeNode rootNode;
 	DefaultTreeModel treeModel;
 
 
+	private WalletModel getModel() {
+		return ServiceRegistry.instance.getWalletModel();
+	}
+
 	public TreeExploreView(JFrame frame, WalletModel model, JTree tree, WalletForm walletForm) {
 		this.frame = frame;
-		this.model = model;
+		//this.model = model;
 		this.tree = tree;
 		this.form = walletForm;
 
@@ -169,22 +173,22 @@ public class TreeExploreView {
 
 
 	/**
-	 * Set up the explorer tree base on flat list in the model.
+	 * Set up the explorer tree base on flat list in the getModel().
 	 * buildTreeFromFlatList will be called.
 	 */
 	public void setupTreeView() {
 
 //		tree.setModel(null);
-//		model.setupTestData();
+//		getModel().setupTestData();
 		//DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new WalletItem(ItemType.category, "My Default Wallet 1"));
 		treeModel = null;
 
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-		model.buildTreeFromFlatList();
+		getModel().buildTreeFromFlatList();
 
 		//set up root node
-		WalletItem rootItem = model.getItemsFlatList().get(0);
+		WalletItem rootItem = getModel().getItemsFlatList().get(0);
 		rootNode = new DefaultMutableTreeNode(rootItem);
 		treeModel = new DefaultTreeModel(rootNode);
 		tree.setModel(treeModel);
@@ -216,12 +220,12 @@ public class TreeExploreView {
 
 	public void changeNode(final DefaultMutableTreeNode oldNode, final DefaultMutableTreeNode node) {
 
-		if (!model.isAddingNode() && !model.isImporting() )
+		if (!getModel().isAddingNode() && !getModel().isImporting() )
 		   form.saveCurrentEdit(true);
 
-		model.setCurrentItem((WalletItem) node.getUserObject());
-		form.displayWalletItemDetails(model.getCurrentItem(), form.getDisplayMode());
-		toggleButton(model.getCurrentItem());
+		getModel().setCurrentItem((WalletItem) node.getUserObject());
+		form.displayWalletItemDetails(getModel().getCurrentItem(), form.getDisplayMode());
+		toggleButton(getModel().getCurrentItem());
 		form.resetHidePassword();
 
 	}
@@ -303,7 +307,7 @@ public class TreeExploreView {
 	// add the new item to the parent to both model and item tree.
 	private DefaultMutableTreeNode addItemAndNode(WalletItem parentItem, WalletItem newItem) {
 
-		model.addItem(parentItem, newItem);
+		getModel().addItem(parentItem, newItem);
 
 
 		DefaultMutableTreeNode parentNode = findNode(rootNode, parentItem);
@@ -324,7 +328,7 @@ public class TreeExploreView {
 
 
 	public void addItem() {
-		model.setAddingNode(true);
+		getModel().setAddingNode(true);
 
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 		WalletItem item = (WalletItem) node.getUserObject();
@@ -338,7 +342,7 @@ public class TreeExploreView {
 
 
 		WalletItem newItem;
-		if (model.isRoot(item)) {
+		if (getModel().isRoot(item)) {
 			//add another category to the  root
 			newItem = new WalletItem(ItemType.category, "New Category - Untitled");
 		} else
@@ -351,7 +355,7 @@ public class TreeExploreView {
 		//Make sure the user can see the lovely new node.
 		tree.scrollPathToVisible(new TreePath(newChildNode.getPath()));
 
-		form.displayWalletItemDetails(model.getCurrentItem(), DisplayMode.add);
+		form.displayWalletItemDetails(getModel().getCurrentItem(), DisplayMode.add);
 
 		//now set selection to this new node
 		//this will fire the changeNode event.
@@ -359,10 +363,10 @@ public class TreeExploreView {
 
 
 //		if (SystemSettings.debug) {
-//			System.out.println(model.dumpFlatList());
+//			System.out.println(getModel().dumpFlatList());
 //		}
 
-		model.setAddingNode(false);
+		getModel().setAddingNode(false);
 
 
 	}
@@ -380,13 +384,13 @@ public class TreeExploreView {
 		treeModel.reload(parentNode);
 
 		//remove from the model
-		model.removeItem(item);
+		getModel().removeItem(item);
 
 	}
 
 
 	public void removeItem() {
-		WalletItem item = model.getCurrentItem();
+		WalletItem item = getModel().getCurrentItem();
 		if (item.getType() == ItemType.category && item.hasChildren())
 			return;
 
@@ -410,7 +414,7 @@ public class TreeExploreView {
 	}
 
 	public void moveItem() {
-		WalletItem item = model.getCurrentItem();
+		WalletItem item = getModel().getCurrentItem();
 		if (item.getType() == ItemType.category && item.hasChildren())
 			return;
 
@@ -453,7 +457,7 @@ public class TreeExploreView {
 
 
 	public void setSelectionToCurrentNode() {
-		DefaultMutableTreeNode node = findNode(rootNode, model.getCurrentItem());
+		DefaultMutableTreeNode node = findNode(rootNode, getModel().getCurrentItem());
 		if (node != null)
 			tree.getSelectionModel().setSelectionPath(new TreePath(node.getPath()));
 
