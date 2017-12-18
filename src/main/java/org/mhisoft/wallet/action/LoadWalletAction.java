@@ -85,7 +85,7 @@ public class LoadWalletAction implements Action {
 				ServiceRegistry.instance.getWalletService().saveVault(fileName, model, model.getEncryptor());
 				DialogUtils.getInstance().info("The vault has been upgrade from version "+ oldVersion+ " to " + WalletModel.LATEST_DATA_VERSION  );
 
-				model = ServiceRegistry.instance.getWalletService().loadVaultIntoModel(fileName,model.getEncryptorForRead());
+				model = ServiceRegistry.instance.getWalletService().loadVaultIntoModel(fileName, model.getEncryptorForRead());
 				ServiceRegistry.instance.getWalletForm().setModel(model);
 
 			}
