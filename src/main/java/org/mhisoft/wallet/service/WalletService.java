@@ -28,7 +28,13 @@ public class WalletService {
 	AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
 
 
-	public StoreVO readFromFile(final String filename, final PBEEncryptor encryptor) {
+	/**
+	 * Load by reading the vault data file.
+	 * @param filename
+	 * @param encryptor
+	 * @return
+	 */
+	public StoreVO loadVault(final String filename, final PBEEncryptor encryptor) {
 		FileContentHeader header = readHeader(filename, true);
 		DataService ds = DataServiceFactory.createDataService(header.getVersion());
 		StoreVO ret =  ds.readFromFile(filename, encryptor);
@@ -52,15 +58,13 @@ public class WalletService {
 
 
 	/**
-	 * Create the model by reading from the vault file.
+	 * Load the model by reading the vault data file.
 	 * @param vaultFileName
 	 * @param encryptor
-	 * @return
+	 * @return a new model.
 	 */
-	public WalletModel createModelByReadVaultFile(final String vaultFileName, final PBEEncryptor encryptor) {
-
-		StoreVO vo = readFromFile(vaultFileName, encryptor);
-
+	public WalletModel loadVaultIntoModel(final String vaultFileName, final PBEEncryptor encryptor) {
+		StoreVO vo = loadVault(vaultFileName, encryptor);
 		WalletModel model = new WalletModel();
 		model.setPassHash(vo.getHeader().getPassHash());
 		model.setCombinationHash(vo.getHeader().getCombinationHash());
@@ -76,12 +80,13 @@ public class WalletService {
 
 
 	/**
-	 *
+	 * Save the vault with the latest version format.
+	 * The attachment data store will be ugpraded if needed.
 	 * @param filename main store filename.
 	 * @param model the model to be saved.
 	 * @param encryptor encrypor to use for write the new store.
 	 */
-	public void saveToFile(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
+	public void saveVault(final String filename, final WalletModel model, final PBEEncryptor encryptor) {
 
 		for (WalletItem item : model.getItemsFlatList()) {
 			int k = item.getName().indexOf("(*)");
@@ -94,17 +99,13 @@ public class WalletService {
 		//save with the latest version of data services.
 		DataServiceFactory.createDataService().saveToFile(filename, model, encryptor);
 
-		//save attachments.
+		/* save attachments. */
 		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
-
 		//upgrade the current store to the lates first.
 		if (model.getCurrentDataFileVersion()!=WalletModel.LATEST_DATA_VERSION) {
 			upgradeAttachmentStore(filename, model, encryptor);
-
-
 		}
 		else {
-			//then save as regular.
 			attachmentService.saveAttachments(attachmentService.getAttachmentFileName(filename), model, encryptor);
 		}
 
@@ -117,7 +118,7 @@ public class WalletService {
 	 * @param expModel
 	 * @param expEncryptor
 	 */
-	public void export(final String existingVaultFileName,
+	public void exportModel(final String existingVaultFileName,
 			final String expVaultName, final WalletModel expModel, final PBEEncryptor expEncryptor) {
 
 
@@ -142,7 +143,7 @@ public class WalletService {
 	 * @param model
 	 * @param newEnc This is the new encryptor with new pass
 	 */
-	public void saveToFileWithNewPassword(final String filename, final WalletModel model, final PBEEncryptor newEnc) {
+	public void saveVaultWithNewPass(final String filename, final WalletModel model, final PBEEncryptor newEnc) {
 
 		for (WalletItem item : model.getItemsFlatList()) {
 			int k = item.getName().indexOf("(*)");
@@ -354,7 +355,7 @@ public class WalletService {
 
 				//save to the export vault.
 				String vaultFileName = ServiceRegistry.instance.getWalletModel().getVaultFileName();
-				export(vaultFileName, exportVaultFilename, expModel, expModel.getEncryptor());
+				exportModel(vaultFileName, exportVaultFilename, expModel, expModel.getEncryptor());
 
 				try {
 					DialogUtils.getInstance().info("The item " + sourceItem.getName() +" has been successfully exported to vault:" + exportVaultFilename);

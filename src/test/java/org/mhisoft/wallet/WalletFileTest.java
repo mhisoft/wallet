@@ -141,7 +141,7 @@ public class WalletFileTest {
 			DataService dataServicev12 = DataServiceFactory.createDataService(12);
 			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptor());
 
-			StoreVO storeVO = walletService.readFromFile("test_v12.dat" , model.getEncryptor());
+			StoreVO storeVO = walletService.loadVault("test_v12.dat" , model.getEncryptor());
 			model.setItemsFlatList(storeVO.getWalletItems());
 			model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
 			assertEquals(7, model.getItemsFlatList().size());

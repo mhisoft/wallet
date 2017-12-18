@@ -59,7 +59,7 @@ public class CloseWalletAction extends SaveWalletAction {
 			if (quiet || confirmRet== Confirmation.YES ) {
 				WalletModel model = ServiceRegistry.instance.getWalletModel();
 				model.buildFlatListFromTree();
-				ServiceRegistry.instance.getWalletService().saveToFile(filename, model, model.getEncryptor());
+				ServiceRegistry.instance.getWalletService().saveVault(filename, model, model.getEncryptor());
 				if (!quiet)
 				   DialogUtils.getInstance().info("Saved to file successfully.");
 				else

@@ -68,10 +68,12 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	private Timestamp lastModifiedDate;
 
 
+	//the item is serialized when writting to the vault.
+	// do not include the attachment entries.
 	private transient WalletItem parent;
 	private transient List<WalletItem> children;
-	private FileAccessEntry attachmentEntry;    //the attachment entry.
-	private FileAccessEntry newAttachmentEntry; //not null when current one is replaced by a new one.
+	private transient FileAccessEntry attachmentEntry;    //the attachment entry.
+	private transient FileAccessEntry newAttachmentEntry; //not null when current one is replaced by a new one.
 
 	@Override
 	public boolean equals(Object o) {
@@ -555,7 +557,8 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 			//this part is not really a clone. point to the same Attachment Entry for exporting is good enough.
 			if (this.getAttachmentEntry()!=null ) {
-				ret.setAttachmentEntry(  this.getAttachmentEntry() );
+				ret.setAttachmentEntry(  this.attachmentEntry );
+				ret.setNewAttachmentEntry( this.newAttachmentEntry );
 			}
 
 			return ret;

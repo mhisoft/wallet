@@ -566,7 +566,7 @@ public class AttachmentService {
 			logger.fine("\t pos: " + pos);
 
 			/* Attachment body */
-			byte[] compressedFileContent;
+			byte[] attachmentBytes;
 
 			if (fileAccessEntry.getAccessFlag() == FileAccessFlag.Merge && fileAccessEntry.getEncSize() > 0) {
 				if (impAttachmentStoreName == null)
@@ -575,13 +575,13 @@ public class AttachmentService {
 				//test case: import an old version data file with attachments.
 				byte[] _impBytes = readCompressedFileContent(  model.getImpModel().getCurrentDataFileVersion(),
 						impAttachmentStoreName, fileAccessEntry, model.getImpModel().getEncryptor());
-				if  (model.getImpModel().getCurrentDataFileVersion()>=14) {
+				if  (model.getImpModel().getCurrentDataFileVersion()>=WalletModel.LATEST_DATA_VERSION) {
 					//it is compressed.
-					compressedFileContent = _impBytes;
+					attachmentBytes = _impBytes;
 				}
 				else {
 					//not compressed, need to compress it.
-					compressedFileContent = CompressionUtil.getCompressedBytes(new ByteArrayInputStream(_impBytes));
+					attachmentBytes = CompressionUtil.getCompressedBytes(new ByteArrayInputStream(_impBytes));
 				}
 
 			}
@@ -589,20 +589,40 @@ public class AttachmentService {
 				// no change, this is an transfer to the new store. need to read the filecontent from the old store.
 				// could be upgrade scenario as well.
 				// should be able to skip the compression-decompression process.
-				compressedFileContent = readCompressedFileContent( model.getCurrentDataFileVersion(),
+				byte[] _bytes =readCompressedFileContent( model.getCurrentDataFileVersion(),
 						oldStoreFileName, fileAccessEntry, oldEncryptorForRead);
+
+				if  (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+					//it was not compressed.
+					attachmentBytes = CompressionUtil.getCompressedBytes(new ByteArrayInputStream(_bytes));
+					logger.fine("\t transfer from old store. compress contennt. before "+ _bytes.length +", after:" + attachmentBytes.length);
+				}
+				else
+					attachmentBytes = _bytes;
+
 			} else {
-				/* for CREATE OR UPDATE */
+				/* for CREATE OR UPDATE or a new store */
 				//read from file
 				//since v14 , start to compress the contents.
 				File f = fileAccessEntry.getFile();
 				FileInputStream sourceInputStream = new FileInputStream(f);
-				compressedFileContent = CompressionUtil.getCompressedBytes(sourceInputStream);
-				logger.fine("\t read from file: " + fileAccessEntry.getFile()+", comrpessed size:" + compressedFileContent.length +", original size:" + fileAccessEntry.getFile().length());
+				if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+					//for testing, write the old version format. un-compressed
+					attachmentBytes = FileUtils.readFile(sourceInputStream);
+					logger.fine("\t write entry by reading from file, not compressed: " + fileAccessEntry.getFile()
+							+ ", original size:" + fileAccessEntry.getFile().length());
+				}
+				else {
+					attachmentBytes = CompressionUtil.getCompressedBytes(sourceInputStream);
+					logger.fine("\t write entry by reading from file: " + fileAccessEntry.getFile()
+							+ ", original size:" + fileAccessEntry.getFile().length()
+							+ ", compressed size:" + attachmentBytes.length
+					);
+				}
 			}
 
 			//encrypted the compressed bytes and write out.
-			pos = writeEncryptedContent(compressedFileContent, encryptor, dataOut, pos);
+			pos = writeEncryptedContent(attachmentBytes, encryptor, dataOut, pos);
 
 		}
 
@@ -628,7 +648,7 @@ public class AttachmentService {
 		/*  cipherParameters size 4 bytes*/
 		byte[] cipherParameters = ret.getCipherParameters();
 		dataOut.writeInt(cipherParameters.length); //length is 100 bytes
-		logger.fine("\t cipherParameters length: " + cipherParameters.length);
+		//logger.fine("\t cipherParameters length: " + cipherParameters.length);
 		pos += 4;
 
 		/* cipherParameters body*/
@@ -700,7 +720,7 @@ public class AttachmentService {
 				String UUID = FileUtils.readString(fileIn);
 				FileAccessEntry fileAccessEntry = new FileAccessEntry(UUID);
 				pos += 40;
-				logger.fine("\tRead entry, UUID:" + UUID);
+				logger.fine("Read entry, UUID:" + UUID);
 
 				/*  accessflag */
 				fileAccessEntry.setAccessFlag(FileAccessFlag.values[fileIn.readInt()]);
@@ -737,6 +757,7 @@ public class AttachmentService {
 
 				fileAccessEntry.setPosOfContent(pos);
 				fileAccessEntry.setEncSize(encSize);
+				logger.fine("\t encSize:" + encSize);
 
 				if (fileAccessEntry.getAccessFlag() != FileAccessFlag.Delete)
 					t.addEntry(fileAccessEntry);
@@ -809,7 +830,7 @@ public class AttachmentService {
 			byte[] fileContent = encryptor.decrypt(_encedBytes, entry.getAlgorithmParameters());
 
 			//after decrypt, deflate the compressed data
-			if (decompress && storeVersion>=14) {
+			if (decompress && storeVersion>=WalletModel.LATEST_DATA_VERSION) {
 				GZIPInputStream decompressedStream = new GZIPInputStream(
 								new ByteArrayInputStream(fileContent));
 				fileContent = IOUtils.toByteArray(decompressedStream);
@@ -849,14 +870,20 @@ public class AttachmentService {
 					walletItem.setNewAttachmentEntry(null);
 				}
 				else {
-
+					boolean foundit = false;
 					for (FileAccessEntry fileAccessEntry : t.getEntries()) {
 						if (fileAccessEntry.getGUID().equals(walletItem.getSysGUID())) {
 							walletItem.setAttachmentEntry(fileAccessEntry);
 							walletItem.setNewAttachmentEntry(null);
+							foundit = true;
 							break;
 						}
 					}
+					if (!foundit) {
+						walletItem.setAttachmentEntry(null);
+						walletItem.setNewAttachmentEntry(null);
+					}
+
 				}
 			}
 		}

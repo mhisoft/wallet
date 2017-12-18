@@ -116,7 +116,7 @@ public class ImportWalletAction implements Action {
 	protected void doTheImport(String impFilename, PassCombinationVO importFilePass, String importFileHash) {
 
 		PBEEncryptor encryptor = new PBEEncryptor(importFilePass.getPassAndCombination());
-		WalletModel impModel =  ServiceRegistry.instance.getWalletService().createModelByReadVaultFile(impFilename, encryptor );
+		WalletModel impModel =  ServiceRegistry.instance.getWalletService().loadVaultIntoModel(impFilename, encryptor );
 
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		WalletItem root  = model.getRootItem();

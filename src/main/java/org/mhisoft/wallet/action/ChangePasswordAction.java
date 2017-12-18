@@ -120,7 +120,7 @@ public class ChangePasswordAction implements Action {
 					PBEEncryptor newEnc = model.createNewEncryptor(newPass);
 
 					//save the file with new password.
-					ServiceRegistry.instance.getWalletService().saveToFileWithNewPassword(  //
+					ServiceRegistry.instance.getWalletService().saveVaultWithNewPass(  //
 							WalletSettings.getInstance().getLastFile() //
 							, model, newEnc);  //
 

@@ -30,6 +30,7 @@ import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.StoreVO;
 import org.mhisoft.wallet.service.IdleTimerService;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.view.DialogUtils;
 
 /**
  * Description: Action for loading the wallet.
@@ -69,15 +70,25 @@ public class LoadWalletAction implements Action {
 
 			/*need getPassVOForEncryptor from model*/
 			model.initEncryptor(model.getPassVOForEncryptor());
-			StoreVO storeVO = ServiceRegistry.instance.getWalletService().readFromFile(fileName,
+			StoreVO storeVO = ServiceRegistry.instance.getWalletService().loadVault(fileName,
 					model.getEncryptorForRead());
 			model.setItemsFlatList(storeVO.getWalletItems());
 			model.setPassHash(storeVO.getHeader().getPassHash());
 			model.setCombinationHash(storeVO.getHeader().getCombinationHash());
 			model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
 			//opened a old version file, need to save to v13 version on close. .
-			if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION)
+			int oldVersion = model.getCurrentDataFileVersion();
+			if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
 				ServiceRegistry.instance.getWalletModel().setModified(true);
+
+				//do the upgrade now.
+				ServiceRegistry.instance.getWalletService().saveVault(fileName, model, model.getEncryptor());
+				DialogUtils.getInstance().info("The vault has been upgrade from version "+ oldVersion+ " to " + WalletModel.LATEST_DATA_VERSION  );
+
+				model = ServiceRegistry.instance.getWalletService().loadVaultIntoModel(fileName,model.getEncryptorForRead());
+				ServiceRegistry.instance.getWalletForm().setModel(model);
+
+			}
 
 
 		} else {

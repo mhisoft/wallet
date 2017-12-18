@@ -185,7 +185,7 @@ public class AttachmentServiceTest {
 
 		WalletModel model = new WalletModel();
 		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
-		model = walletService.createModelByReadVaultFile(storeFileName, model.getEncryptor() );
+		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
 
 		Assert.assertEquals(model.getItemsFlatList().size(), 3);
 		Assert.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
@@ -205,10 +205,10 @@ public class AttachmentServiceTest {
 
 
 		//now save to last store version
-		walletService.saveToFile(storeFileName,model, model.getEncryptor()  );
+		walletService.saveVault(storeFileName,model, model.getEncryptor()  );
 
 		//read back to verify
-		model = walletService.createModelByReadVaultFile(storeFileName, model.getEncryptor() );
+		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
 		Assert.assertEquals(model.getCurrentDataFileVersion(), WalletModel.LATEST_DATA_VERSION);
 		Assert.assertEquals(model.getItemsFlatList().size(), 3);
 		Assert.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
@@ -235,7 +235,7 @@ public class AttachmentServiceTest {
 		/*  attachment entries in the model is  modified */
 
 	@Test
-	public void testUpgradeStore_s2() {
+	public void testUpgradeStore_s2() throws IOException {
 		try {
 			saveAttachments(13);
 		} catch (HashingUtils.CannotPerformOperationException e) {
@@ -244,7 +244,7 @@ public class AttachmentServiceTest {
 
 		WalletModel model = new WalletModel();
 		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
-		model = walletService.createModelByReadVaultFile(storeFileName, model.getEncryptor() );
+		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
 
 		//opened a old version file, need to save to v13 version on close. .
 		if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
@@ -259,16 +259,26 @@ public class AttachmentServiceTest {
 		model.getItemsFlatList().get(1).getAttachmentEntry().setAccessFlag(FileAccessFlag.Delete);
 
 		//now save to last store version
-		walletService.saveToFile(storeFileName,model, model.getEncryptor()  );
+		walletService.saveVault(storeFileName,model, model.getEncryptor()  );
 
 		//read back to verify
-		model = walletService.createModelByReadVaultFile(storeFileName, model.getEncryptor() );
+		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
 		Assert.assertEquals(model.getItemsFlatList().size(), 3);
 
 		Assert.assertNull(model.getItemsFlatList().get(1).getAttachmentEntry());
 		Assert.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
 
 		Assert.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
+
+
+		//validate the file content
+
+		FileAccessEntry entry1 = model.getItemsFlatList().get(1).getAttachmentEntry();
+		FileAccessEntry entry2 = model.getItemsFlatList().get(2).getAttachmentEntry();
+
+		byte[] bytesEntry2 = attachmentService.readFileContent(LATEST_VERSION, attStoreFile, entry2, model.getEncryptor());
+		byte[] orgin2 = FileUtils.readFile(new File("./target/test-classes/LICENSE"));
+		Assert.assertEquals(bytesEntry2, orgin2);
 
 
 	}

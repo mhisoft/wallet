@@ -76,7 +76,7 @@ public class WalletServiceTest extends WalletFileTest {
 			String combinationHash2 = HashingUtils.createHash(passVO2.getCombination());
 			expModel.setHash(hash2, combinationHash2);
 			expModel.initEncryptor(passVO2);
-			StoreVO fc  = walletService.readFromFile(eVaultFileExp, expModel.getEncryptor() );
+			StoreVO fc  = walletService.loadVault(eVaultFileExp, expModel.getEncryptor() );
 
 			model.getItemsFlatList().clear();
 			model.setItemsFlatList(fc.getWalletItems());
