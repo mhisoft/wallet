@@ -1047,6 +1047,10 @@ public class WalletForm {
 
 
 	public void loadTree() {
+		//clear message
+		labelLastMessage.setVisible(false);
+		labelLastMessage.setText("");
+
 		treeExploreView.setupTreeView();
 		listExploreView.setupListView();
 
@@ -1090,6 +1094,8 @@ public class WalletForm {
 		imageViewer.setImage(null);
 		imageViewer.getComponent().setVisible(false);
 		labelAttachmentFileName.setVisible(false);
+
+
 
 
 	}
