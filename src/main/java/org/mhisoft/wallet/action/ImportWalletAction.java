@@ -65,9 +65,10 @@ public class ImportWalletAction implements Action {
 				//see if the current vault password can be used
 				VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
 				PassCombinationVO passVO = model.getUserEnteredPassForVerification();
-				ActionResult result = verifyPasswordAction.execute(passVO, model.getPassHash(),
-						model.getCombinationHash(),
-						Boolean.TRUE
+				ActionResult result = verifyPasswordAction.execute(passVO
+						, importFileHash
+						, combinationHash
+						,Boolean.TRUE
 				);
 				if (result.isSuccess()) {
 
