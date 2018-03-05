@@ -14,14 +14,14 @@ public class PassCombinationVO implements Serializable {
 	String combination;
 	String spinner1, spinner2, spinner3;
 
-	public PassCombinationVO() {
+	protected PassCombinationVO() {
 	}
 
-	public PassCombinationEncryptionAdaptor clone()  {
+	protected PassCombinationEncryptionAdaptor clone()  {
 		throw new RuntimeException("not implemented");
 	}
 
-	public PassCombinationVO(String pass, String combination) {
+	protected PassCombinationVO(String pass, String combination) {
 		this.pass = pass;
 		this.combination = combination;
 	}

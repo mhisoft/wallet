@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.model.WalletSettings;
 
@@ -38,17 +37,16 @@ public class VaultNameDialog extends JDialog {
 		setContentPane(contentPane);
 		setModal(true);
 		setTitle(title);
-		if (label!=null)
+		if (label != null)
 			this.labelTitle.setText(label);
 
 
 		getRootPane().setDefaultButton(buttonOK);
 		//ViewHelper.setUIManagerFontSize();
 		ViewHelper.setFontSize(contentPane, WalletSettings.getInstance().getFontSize());
-		contentPane.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX()/3
-				, WalletSettings.getInstance().getDimensionY()/6
+		contentPane.setPreferredSize(new Dimension(WalletSettings.getInstance().getDimensionX() / 3
+				, WalletSettings.getInstance().getDimensionY() / 6
 		));
-
 
 
 		buttonOK.addActionListener(new ActionListener() {
@@ -82,24 +80,20 @@ public class VaultNameDialog extends JDialog {
 
 	private void onOK() {
 
-		String fname  = fldNewFileName.getText().trim() ;
+		String fname = fldNewFileName.getText().trim();
 		if (StringUtils.hasValue(fname)) {
 
 			if (!fname.startsWith(WalletSettings.userHome))
-			     fname = WalletSettings.userHome + fname;
+				fname = WalletSettings.userHome + fname;
 			if (!fname.endsWith(WalletSettings.fileExt))
 				fname = fname + WalletSettings.fileExt;
 
 
-			if (FileUtils.fileExists(fname))  {
-				DialogUtils.getInstance().error("File with this name already exists. Please use a different name.");
-			}
-			else {
-				//hand it off to the caller
-				setVisible(false);
-				callback.onOK(fname);
-				dispose();
-			}
+			//hand it off to the caller
+			setVisible(false);
+			callback.onOK(fname);
+			dispose();
+
 		}
 	}
 
@@ -111,15 +105,13 @@ public class VaultNameDialog extends JDialog {
 	}
 
 
-
-
 	/**
 	 * Display the dialog
 	 */
-	public static void display( String title, String label, String defaultFileNamePattern, NewVaultCallback callback) {
+	public static void display(String title, String label, String defaultFileNamePattern, NewVaultCallback callback) {
 
 		//create a new dialog every time.
-		VaultNameDialog dialog = new VaultNameDialog(title, label, defaultFileNamePattern );
+		VaultNameDialog dialog = new VaultNameDialog(title, label, defaultFileNamePattern);
 		dialog.callback = callback;
 		dialog.setFilename(defaultFileNamePattern);
 
@@ -143,7 +135,7 @@ public class VaultNameDialog extends JDialog {
 		if (filename == null) {
 			filename = "eVault-" + System.currentTimeMillis();
 		}
-		filename = WalletSettings.userHome+filename +".dat";
+		filename = WalletSettings.userHome + filename + ".dat";
 		return filename;
 
 	}
@@ -167,8 +159,6 @@ public class VaultNameDialog extends JDialog {
 		public void onCancel();
 
 	}
-
-
 
 
 }

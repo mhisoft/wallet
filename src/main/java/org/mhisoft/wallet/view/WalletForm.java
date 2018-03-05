@@ -939,7 +939,17 @@ public class WalletForm {
 		//let's try reuse the export menu
 		popupMenu.add(popupMenuExport);
 		popupMenu.add(popupMenuMove);
+		componentsList.add(popupMenuExport);
 		componentsList.add(popupMenuMove);
+
+		popupMenuExport.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "popupMenuExport", null));
+				ExportItemsAction exportItemsAction = ServiceRegistry.instance.getService(BeanType.singleton, ExportItemsAction.class);
+				exportItemsAction.execute();
+			}
+		});
 
 		popupMenuMove.addActionListener(new ActionListener() {
 			@Override

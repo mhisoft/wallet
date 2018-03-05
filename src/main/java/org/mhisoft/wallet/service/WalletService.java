@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
 
+import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.wallet.model.FileAccessEntry;
@@ -116,22 +117,38 @@ public class WalletService {
 	 * And if there are attachments on the item, we need to read the content out from the old attachment store and transfer to a new one.
 	 * @param expVaultName
 	 * @param expModel
-	 * @param expEncryptor
 	 */
-	public void exportModel(final String existingVaultFileName,
-			final String expVaultName, final WalletModel expModel, final PBEEncryptor expEncryptor) {
+	public void exportModel(
+			final String existingVaultFileName,
+			final String expVaultName
+			, final WalletModel model
+			, final WalletModel expModel) {
 
 
-		DataServiceFactory.createDataService().saveToFile(expVaultName, expModel, expEncryptor);
+		DataServiceFactory.createDataService().saveToFile(expVaultName, expModel, expModel.getEncryptor());
 
 		//save attachments.
 		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
-		attachmentService.transferAttachmentStore(
-				 attachmentService.getAttachmentFileName(existingVaultFileName)
-				,attachmentService.getAttachmentFileName(expVaultName)
-				,ServiceRegistry.instance.getWalletModel()
-				,expModel, expEncryptor
-				, false); //no change to original model
+
+		String expAttStoreName = attachmentService.getAttachmentFileName(expVaultName);
+
+		if (!new File(expAttStoreName).exists()) {
+
+			attachmentService.transferAttachmentStore(
+					attachmentService.getAttachmentFileName(existingVaultFileName)
+					, attachmentService.getAttachmentFileName(expVaultName)
+					, ServiceRegistry.instance.getWalletModel()
+					, expModel
+					, expModel.getEncryptor()
+					, false); //no change to original model
+		}
+		else {
+		   //import the entry from current model to the exp vault. use the merge
+			expModel.setImpModel(model);
+			attachmentService.appendAttachmentStore( attachmentService.getAttachmentFileName(expVaultName)
+					, expModel
+					, expModel.getEncryptor()  );
+		}
 
 	}
 
@@ -319,10 +336,13 @@ public class WalletService {
 	 * @param exportVaultFilename The new vault name.
 	 */
 	public void exportItem(final WalletItem sourceItem
-	      ,final PassCombinationVO exportVaultPassVO
-			, final String exportVaultFilename ) {
+	      ,final PassCombinationVO exportVaultPassVO , final String exportVaultFilename
+		//	,final PBEEncryptor expEncryptor
+	) {
 		try {
 
+			boolean isExistingVault = new File(exportVaultFilename).exists();
+			WalletModel model =ServiceRegistry.instance.getWalletModel();
 
 			if (sourceItem.getType()==ItemType.category) {
 				//not suporoted. now.
@@ -331,30 +351,61 @@ public class WalletService {
 			else {
 				//get its parent.
 
-
-				WalletModel expModel = new WalletModel();
-				String hash2 = HashingUtils.createHash(exportVaultPassVO.getPass());
-				String combinationHash2 = HashingUtils.createHash(exportVaultPassVO.getCombination());
-				expModel.setHash(hash2, combinationHash2);
-				expModel.initEncryptor(exportVaultPassVO);
-
+				WalletModel expModel= new WalletModel(); ;
+				WalletItem root;
 				WalletItem newParent=null;
 				WalletItem newItem = sourceItem.clone();
+
+
+				/*export to existing vault*/
+				if (isExistingVault) {
+					expModel.initEncryptor(exportVaultPassVO);
+					expModel = loadVaultIntoModel(exportVaultFilename, expModel.getEncryptor());
+					//root = expModel.getRootItem();
+					if (newItem.getAttachmentEntry()!=null)
+						newItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Merge);
+				}
+				else {
+					String hash2 = HashingUtils.createHash(exportVaultPassVO.getPass());
+					String combinationHash2 = HashingUtils.createHash(exportVaultPassVO.getCombination());
+					expModel.setHash(hash2, combinationHash2);
+					expModel.initEncryptor(exportVaultPassVO);
+					root = new WalletItem(ItemType.category, "export");
+					expModel.getItemsFlatList().add(root);
+				}
+
+
+				//find if item exists in the export model already
+				WalletItem foundItem = expModel.findItem(newItem.getSysGUID());
+				if (foundItem!=null) {
+					if (foundItem.isSame(sourceItem)) {
+						DialogUtils.getInstance().info("The Item is not exported because it already exists in the target vault.");
+						return;
+					}
+					else {
+						//not the same, change the GUID so it is imported as a new item
+						newItem.setSysGUID( StringUtils.getGUID() );
+					}
+				}
+
+
 				if (sourceItem.getParent()!=null) {
-					newParent =sourceItem.getParent().clone();
+					//find existing parent in the export model
+					newParent = expModel.getWalletItem(sourceItem.getParent().getSysGUID());
+					if (newParent==null) {
+						newParent = sourceItem.getParent().clone();
+						expModel.getItemsFlatList().add(newParent);
+					}
 					newParent.addChild(newItem);
 				}
 
 
-				WalletItem root = new WalletItem(ItemType.category, "export");
-				expModel.getItemsFlatList().add(root);
-				if (newParent!=null)
-					expModel.getItemsFlatList().add(newParent);
 				expModel.getItemsFlatList().add(newItem);
 
 				//save to the export vault.
 				String vaultFileName = ServiceRegistry.instance.getWalletModel().getVaultFileName();
-				exportModel(vaultFileName, exportVaultFilename, expModel, expModel.getEncryptor());
+				exportModel(vaultFileName, exportVaultFilename
+						, model, expModel);
 
 				try {
 					DialogUtils.getInstance().info("The item " + sourceItem.getName() +" has been successfully exported to vault:" + exportVaultFilename);

@@ -53,6 +53,7 @@ public class WalletModel {
 	String passHash;
 	String combinationHash;
 	boolean modified = false;
+	private String vaultFileName;
 
 	PBEEncryptor encryptor;
 	PBEEncryptor encryptor_v12; //for reading the v12 data file
@@ -67,7 +68,10 @@ public class WalletModel {
 
 	private transient boolean importing = false;
 	private transient WalletModel impModel;
-	private String vaultFileName;
+	private transient PassCombinationVO exportVaultPass;
+	private transient String exportVaultFileName;
+
+
 
 
 	public WalletModel() {
@@ -501,4 +505,22 @@ public class WalletModel {
 		return null;
 
 	}
+
+	public PassCombinationVO getExportVaultPass() {
+		return exportVaultPass;
+	}
+
+	public void setExportVaultPass(PassCombinationVO exportVaultPass) {
+		this.exportVaultPass = exportVaultPass;
+	}
+
+	public String getExportVaultFileName() {
+		return exportVaultFileName;
+	}
+
+	public void setExportVaultFileName(String exportVaultFileName) {
+		this.exportVaultFileName = exportVaultFileName;
+	}
+
+
 }

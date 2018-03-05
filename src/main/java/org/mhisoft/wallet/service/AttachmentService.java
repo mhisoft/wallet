@@ -147,15 +147,15 @@ public class AttachmentService {
 	 *
 	 * @param oldStoreName      The old store name, needed to read the attachment content out.
 	 * @param model             The old model, need the encryptor from it to read old attachment for transfer.
-	 * @param newModel          the new store model, items list is from the new model.
-	 * @param newStoreEncryptor The encryptor for writing the new attachment store.
+	 * @param expModel          the new store model, items list is from the new model.
+	 * @param expModelEncryptor The encryptor for writing the new attachment store.
 	 * @param resetModelAttachmentEntries  do not reset for upgrade scenario.
 	 */
 
 	public boolean transferAttachmentStore(final String oldStoreName, String newStoreName
 			, final WalletModel model
-			, final WalletModel newModel
-			, final PBEEncryptor newStoreEncryptor
+			, final WalletModel expModel
+			, final PBEEncryptor expModelEncryptor
 			, final boolean resetModelAttachmentEntries) {
 
 		logger.fine("transferAttachmentStore()");
@@ -170,7 +170,7 @@ public class AttachmentService {
 
 		FileAccessTable t = new FileAccessTable();
 		double deleteCount = 0, totalCount = 0;
-		for (WalletItem item : newModel.getItemsFlatList()) {
+		for (WalletItem item : expModel.getItemsFlatList()) {
 			if (item.getAttachmentEntry() != null) {
 				totalCount++;
 
@@ -186,7 +186,7 @@ public class AttachmentService {
 		}
 
 		//delete count need to add the orphan records (marked as DELETE) in the attachment store.
-		deleteCount += newModel.getDeletedEntriesInStore();
+		deleteCount += expModel.getDeletedEntriesInStore();
 
 		if (deleteCount == totalCount) {
 			//all deleted or updated.
@@ -208,7 +208,7 @@ public class AttachmentService {
 				dataOut.writeInt(t.getEntries().size());
 				//itemStartPos = 4;
 
-				writeFileEntries(newModel, true, oldStoreName, 4, dataOut, t, model.getEncryptorForRead(), newStoreEncryptor);
+				writeFileEntries(expModel, true, oldStoreName, 4, dataOut, t, model.getEncryptorForRead(), expModelEncryptor);
 
 				dataOut.flush();
 				dataOut.close();
@@ -701,13 +701,14 @@ public class AttachmentService {
 	public FileAccessTable read(String dataFile, final PBEEncryptor encryptor) {
 		logger.fine("\n\nread attachment file:" + dataFile);
 		FileAccessTable t = null;
+		RandomAccessFile fileIn=null;
 		try {
 			File fIn = new File(dataFile);
 			if (!fIn.exists()) {
 				return t;
 			}
 
-			RandomAccessFile fileIn = new RandomAccessFile(dataFile, "rw");
+			fileIn = new RandomAccessFile(dataFile, "rw");
 			int numberOfEntries = fileIn.readInt();
 			t = new FileAccessTable();
 			long pos = 4;
@@ -782,10 +783,19 @@ public class AttachmentService {
 			}
 
 			fileIn.close();
+			fileIn=null;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			DialogUtils.getInstance().error("Error occurred in reading attachments.", e.getMessage());
+		}
+		finally {
+			if (fileIn!=null)
+				try {
+					fileIn.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 
 

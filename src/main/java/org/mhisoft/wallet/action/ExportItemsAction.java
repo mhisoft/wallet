@@ -51,66 +51,77 @@ public class ExportItemsAction implements Action {
 		//validate
 
 
-		WalletItem sourceItem =   ServiceRegistry.instance.getWalletModel().getCurrentItem();
-		if (sourceItem==null || sourceItem.getType()!= ItemType.item) {
+		WalletItem sourceItem = ServiceRegistry.instance.getWalletModel().getCurrentItem();
+
+		if (sourceItem == null || sourceItem.getType() != ItemType.item) {
 			DialogUtils.getInstance().error("Error", "Select the item to export.");
 			return new ActionResult(false);
 		}
 
+		/*reuse the same export vault in the session*/
+		if (ServiceRegistry.instance.getWalletModel().getExportVaultFileName() != null) {
 
-		VaultNameDialog.display("Export " + sourceItem.getName(), "Location of the new of existing Vault to export to:",
-				"eVault-export-" + System.currentTimeMillis()
-				,new VaultNameDialog.NewVaultCallback() {
-					@Override
-					public void onOK(String fileName) {
-						newVaultFileName = fileName;
-					}
+			ServiceRegistry.instance.getWalletService().exportItem(sourceItem
+					, ServiceRegistry.instance.getWalletModel().getExportVaultPass()
+					, ServiceRegistry.instance.getWalletModel().getExportVaultFileName()
+			);
+			return new ActionResult(true);
+		}
 
-					@Override
-					public void onCancel() {
-						newVaultFileName = null;
-					}
-				});
+		else {
 
 
-		if (newVaultFileName == null)
-			return new ActionResult(false);
-
-		//todo detect file exist so we know it is existing vault or new vault.
-
-
-
-		//2. for a new vault , get the password
-
-
-		/*Delegate to the password form the create password*/
-		WalletForm form = ServiceRegistry.instance.getWalletForm();
-		PasswordForm passwordForm = new PasswordForm("Creating a new wallet for export");
-		passwordForm.showPasswordForm(form,
-				new PasswordForm.PasswordFormActionListener(null) {
-
-					/*when Ok button is clicked*/
-					@Override
-					public void actionPerformed(ActionEvent e) {
-
-						PassCombinationVO pass = passwordForm.getUserEnteredPassForVerification();
-
-						if (pass == null) {
-							//user input is not good. try again.
-						} else {
-
-							//close the password form
-							passwordForm.exitPasswordForm();
-
-							ServiceRegistry.instance.getWalletService().exportItem(sourceItem, pass, newVaultFileName );
-
-
+			VaultNameDialog.display("Export " + sourceItem.getName(), "Location of the new of existing Vault to export to:",
+					"eVault-export-" + System.currentTimeMillis()
+					, new VaultNameDialog.NewVaultCallback() {
+						@Override
+						public void onOK(String fileName) {
+							newVaultFileName = fileName;
 						}
 
-					}
-				}, null);
+						@Override
+						public void onCancel() {
+							newVaultFileName = null;
+						}
+					});
 
-		return new ActionResult(false);
+
+			if (newVaultFileName == null)
+				return new ActionResult(false);
+
+
+			//2. for a new vault , get the password
+	  	    /*Delegate to the password form the create password*/
+			WalletForm form = ServiceRegistry.instance.getWalletForm();
+			PasswordForm passwordForm = new PasswordForm("Enter password for the vault for the export");
+			passwordForm.showPasswordForm(form,
+					new PasswordForm.PasswordFormActionListener(null) {
+
+						/*when Ok button is clicked*/
+						@Override
+						public void actionPerformed(ActionEvent e) {
+
+							PassCombinationVO pass = passwordForm.getUserEnteredPassForVerification();
+
+							if (pass == null) {
+								//user input is not good. try again.
+							}
+							else {
+
+								//close the password form
+								passwordForm.exitPasswordForm();
+
+								ServiceRegistry.instance.getWalletService().exportItem(sourceItem, pass, newVaultFileName);
+								ServiceRegistry.instance.getWalletModel().setExportVaultFileName(newVaultFileName);
+								ServiceRegistry.instance.getWalletModel().setExportVaultPass(pass);
+
+							}
+
+						}
+					}, null);
+
+			return new ActionResult(true);
+		}
 	}
 
 

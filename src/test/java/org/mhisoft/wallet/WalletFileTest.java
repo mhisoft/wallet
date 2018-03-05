@@ -29,17 +29,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.ItemType;
+import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.DataService;
 import org.mhisoft.wallet.service.DataServiceFactory;
-import org.mhisoft.wallet.service.StoreVO;
 import org.mhisoft.wallet.service.ServiceRegistry;
+import org.mhisoft.wallet.service.StoreVO;
 import org.mhisoft.wallet.service.WalletService;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Description: WalletModelTest
@@ -50,6 +51,7 @@ import static org.junit.Assert.*;
 public class WalletFileTest {
 	WalletModel model;
 	WalletItem root;
+	WalletItem bNode;
 	WalletItem eNode;
 	WalletItem fNode;
 	WalletItem gNode;
@@ -83,7 +85,8 @@ public class WalletFileTest {
 		//root node
 		root = new WalletItem(ItemType.category, "root");
 		model.getItemsFlatList().add(root);
-		model.getItemsFlatList().add(new WalletItem(ItemType.category, "b"));
+		bNode = new WalletItem(ItemType.category, "b");
+		model.getItemsFlatList().add(bNode);
 		 cNode = new WalletItem(ItemType.category, "c");
 		model.getItemsFlatList().add(cNode);
 		dNode = new WalletItem(ItemType.item, "d");
@@ -109,7 +112,7 @@ public class WalletFileTest {
 			model.setupTestData();
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setPassHash(hash);
-			model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+			model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%", "112233"));
 			//protype model is used in test
 			ServiceRegistry.instance.getWalletForm().setModel(model);
 			DataServiceFactory.createDataService(11).saveToFile("testv11.dat", model, model.getEncryptor());
@@ -134,7 +137,7 @@ public class WalletFileTest {
 			model.setPassHash(hash);
 			String combinationHash = HashingUtils.createHash("034509");
 			model.setCombinationHash(combinationHash);
-			model.initEncryptor(new PassCombinationVO("testPa!ss213%", "034509"));
+			model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%", "034509"));
 
 
 			//walletService.saveToFile("test_v12.dat", model, model.getEncryptor());
@@ -165,7 +168,7 @@ public class WalletFileTest {
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setPassHash(hash);
-			model.initEncryptor(new PassCombinationVO("testPa!ss213%","112233"));
+			model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%","112233"));
 
 			DataService dataServicev10 = DataServiceFactory.createDataService(10);
 			//save
@@ -186,7 +189,7 @@ public class WalletFileTest {
 
 	public void testReadFilev11() {
 		try {
-			model.initEncryptor(new PassCombinationVO("12Abc12334&5AB1310","112233"));
+			model.initEncryptor(new PassCombinationEncryptionAdaptor("12Abc12334&5AB1310","112233"));
 
 			DataService dataServicev11 = DataServiceFactory.createDataService(11);
 			StoreVO storeVO = dataServicev11.readFromFile("test_DefaultWallet_v11.dat",model.getEncryptor());
@@ -225,7 +228,7 @@ public class WalletFileTest {
 
 			String hash = HashingUtils.createHash("testPa!ss213%");
 			model.setDataFileVersion(12);
-			model.initEncryptor(new PassCombinationVO("testPa!ss213%","112233"));
+			model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%","112233"));
 			model.setPassHash(hash);
 			DataService dataServicev10 = DataServiceFactory.createDataService(10);
 
@@ -264,7 +267,7 @@ public class WalletFileTest {
 			//protype model is used in test
 			ServiceRegistry.instance.getWalletForm().setModel(model);
 
-			PassCombinationVO passVO = new PassCombinationVO("testPa!ss213%","112233") ;
+			PassCombinationVO passVO = new PassCombinationEncryptionAdaptor("testPa!ss213%","112233") ;
 			String hash = HashingUtils.createHash(passVO.getPass());
 			model.setDataFileVersion(12);
 			model.initEncryptor(passVO);

@@ -32,7 +32,7 @@ import org.mhisoft.wallet.model.FileAccessEntry;
 import org.mhisoft.wallet.model.FileAccessFlag;
 import org.mhisoft.wallet.model.FileAccessTable;
 import org.mhisoft.wallet.model.ItemType;
-import org.mhisoft.wallet.model.PassCombinationVO;
+import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.AttachmentService;
@@ -92,7 +92,7 @@ public class AttachmentServiceTest {
 		model.setPassHash(hash);
 		String combinationHash = HashingUtils.createHash("112233");
 		model.setCombinationHash(combinationHash);
-		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+		model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%", "112233"));
 
 		WalletItem cat1 = new WalletItem(ItemType.category, "cat1");
 		model.getItemsFlatList().add(cat1);
@@ -131,7 +131,7 @@ public class AttachmentServiceTest {
 			String dataFile = attStoreFile;
 			WalletModel model = new WalletModel();
 			model.setDataFileVersion(version);
-			model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+			model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%", "112233"));
 
 			FileAccessTable t = attachmentService.read(dataFile, model.getEncryptor());
 
@@ -184,7 +184,7 @@ public class AttachmentServiceTest {
 		}
 
 		WalletModel model = new WalletModel();
-		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+		model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%", "112233"));
 		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
 
 		Assert.assertEquals(model.getItemsFlatList().size(), 3);
@@ -243,7 +243,7 @@ public class AttachmentServiceTest {
 		}
 
 		WalletModel model = new WalletModel();
-		model.initEncryptor(new PassCombinationVO("testPa!ss213%", "112233"));
+		model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%", "112233"));
 		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
 
 		//opened a old version file, need to save to v13 version on close. .
