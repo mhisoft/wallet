@@ -29,7 +29,7 @@ import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.DialogUtils;
 
 /**
- * Description:   action for verifying  the password.
+ * Description:  Verifying the password against the stored hash which were obtained from the header.
  *
  * @author Tony Xue
  * @since Apr, 2016
@@ -41,9 +41,13 @@ public class VerifyPasswordAction implements Action {
 		PassCombinationVO passVO = (PassCombinationVO)params[0];
 		String hash = (String)params[1];
 		String combinationHash = (String)params[2];
+		boolean quiet=false;
+		if (params.length>3)
+			quiet= ((Boolean)params[3]).booleanValue();
 		try {
 			boolean verify = HashingUtils.verifyPassword(passVO.getPass(), hash );
 			if (!verify) {
+				if (!quiet)
 				DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
 				return new ActionResult(false);
 			}
@@ -53,6 +57,7 @@ public class VerifyPasswordAction implements Action {
 					) {
 				 verify = HashingUtils.verifyPassword(passVO.getCombination(), combinationHash);
 				if (!verify) {
+					if (!quiet)
 					DialogUtils.getInstance().warn("Error", "Can not confirm your password. Please try again.");
 					return new ActionResult(false);
 				}
@@ -61,7 +66,7 @@ public class VerifyPasswordAction implements Action {
 			return new ActionResult(true);
 
 		} catch (HashingUtils.CannotPerformOperationException | HashingUtils.InvalidHashException e) {
-			e.printStackTrace();
+			DialogUtils.getInstance().error("An error occured:" + e.getMessage());
 			return new ActionResult(false);
 		}
 	}

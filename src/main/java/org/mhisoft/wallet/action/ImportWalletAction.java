@@ -58,53 +58,60 @@ public class ImportWalletAction implements Action {
 			if (new File(importFile).isFile()) {
 				FileContentHeader header = ServiceRegistry.instance.getWalletService().readHeader(importFile, true);
 				String importFileHash = header.getPassHash();
-				String combinationHash = header. getCombinationHash();
+				String combinationHash = header.getCombinationHash();
 
-				//now show password form to enter the password.
-				PasswordForm passwordForm = new PasswordForm("Opening file: " + importFile);
-				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm()
-						, new PasswordForm.PasswordFormActionListener(null) {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						PassCombinationVO passVO = passwordForm.getUserEnteredPassForVerification();
+				WalletModel model = ServiceRegistry.instance.getWalletModel();
 
-						VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype,
-								VerifyPasswordAction.class);
-						ActionResult result = verifyPasswordAction.execute(passVO, importFileHash, combinationHash);
-						if (result.isSuccess()) {
-							//close the password form
-							passwordForm.exitPasswordForm();
-
-							try {
-								ServiceRegistry.instance.getWalletModel().setImporting(true);
-								doTheImport(importFile, passVO, importFileHash);
-								//reload the view.
-								ServiceRegistry.instance.getWalletModel().setModified(true);
-
-								//reload the tree and trigger change node.
-								ServiceRegistry.instance.getWalletForm().loadTree();
-								DialogUtils.getInstance().info("Import successfully. It has not been saved yet. Make sure to save after validating the import.");
-								ServiceRegistry.instance.getWalletModel().setImporting(false);
-							} catch (Exception e1) {
-								DialogUtils.getInstance().error(e1.getMessage());
-							}
-
-
-
-						}
-					}
-				}, null
-
-
+				//see if the current vault password can be used
+				VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype, VerifyPasswordAction.class);
+				PassCombinationVO passVO = model.getUserEnteredPassForVerification();
+				ActionResult result = verifyPasswordAction.execute(passVO, model.getPassHash(),
+						model.getCombinationHash(),
+						Boolean.TRUE
 				);
+				if (result.isSuccess()) {
 
-				//hand off to the OK listener , actionPerformed() below to do VerifyPasswordAction
+					_doImport(passVO, importFile, importFileHash);
+					return new ActionResult(true);
 
-				return new ActionResult(true);
 
+				} else {
+
+
+					//now show password form to enter the password.
+					PasswordForm passwordForm = new PasswordForm("Opening file: " + importFile);
+					passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm()
+							, new PasswordForm.PasswordFormActionListener(null) {
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									PassCombinationVO passVO = passwordForm.getUserEnteredPassForVerification();
+
+									VerifyPasswordAction verifyPasswordAction = ServiceRegistry.instance.getService(BeanType.prototype,
+											VerifyPasswordAction.class);
+									ActionResult result = verifyPasswordAction.execute(passVO, importFileHash, combinationHash);
+									if (result.isSuccess()) {
+										//close the password form
+										passwordForm.exitPasswordForm();
+
+										_doImport(passVO, importFile, importFileHash);
+
+
+									}
+								}
+							}, null
+
+
+					);
+
+					//hand off to the OK listener , actionPerformed() below to do VerifyPasswordAction
+
+					return new ActionResult(true);
+
+				}
 			} else {
 				DialogUtils.getInstance().error("Error", "Can not open file " + importFile);
 			}
+
 
 		}
 
@@ -112,59 +119,75 @@ public class ImportWalletAction implements Action {
 		return new ActionResult(false);
 	}
 
+	private void _doImport(PassCombinationVO passVO, String importFile, String importFileHash) {
+		try {
+			ServiceRegistry.instance.getWalletModel().setImporting(true);
+			doTheImport(importFile, passVO, importFileHash);
+			//reload the view.
+			ServiceRegistry.instance.getWalletModel().setModified(true);
+
+			//reload the tree and trigger change node.
+			ServiceRegistry.instance.getWalletForm().loadTree();
+			DialogUtils.getInstance().info("Import successfully. It has not been saved yet. Make sure to save after validating the import.");
+			ServiceRegistry.instance.getWalletModel().setImporting(false);
+		} catch (Exception e1) {
+			DialogUtils.getInstance().error(e1.getMessage());
+		}
+	}
+
 
 	protected void doTheImport(String impFilename, PassCombinationVO importFilePass, String importFileHash) {
 
 		PBEEncryptor encryptor = new PBEEncryptor(importFilePass.getPassAndCombination());
-		WalletModel impModel =  ServiceRegistry.instance.getWalletService().loadVaultIntoModel(impFilename, encryptor );
+		WalletModel impModel = ServiceRegistry.instance.getWalletService().loadVaultIntoModel(impFilename, encryptor);
 
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
-		WalletItem root  = model.getRootItem();
+		WalletItem root = model.getRootItem();
 
 		//refer to the imp model so that we have the encryptor and store file name
 		//when need to save the current model.
-		model.setImpModel( impModel);
+		model.setImpModel(impModel);
 
 
 		//prepare to be merged attachment entries , mark them as Merge
 		for (WalletItem impItem : impModel.getItemsFlatList()) {
-			if (impItem.getAttachmentEntry()!=null) {
+			if (impItem.getAttachmentEntry() != null) {
 				impItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Merge);
 			}
-		};
+		}
+		;
 
 
-	    //will change the tree structure
+		//will change the tree structure
 		try {
-			int i=1;
-			while ( i < impModel.getItemsFlatList().size() ) {
+			int i = 1;
+			while (i < impModel.getItemsFlatList().size()) {
 
 				WalletItem impItem = impModel.getItemsFlatList().get(i);
 				WalletItem modelItem = impItem.findItemInModel();
-				if (modelItem!=null) {
+				if (modelItem != null) {
 					if (!modelItem.isSame(impItem)) {
 						modelItem.mergeFrom(impItem);
-						modelItem.setName( modelItem.getName() +"(*)");
+						modelItem.setName(modelItem.getName() + "(*)");
 					}
 
 					//merge the attachment, only when the target is empty
-					if (modelItem.getAttachmentEntry()==null && impItem.getAttachmentEntry()!=null) {
+					if (modelItem.getAttachmentEntry() == null && impItem.getAttachmentEntry() != null) {
 						modelItem.setAttachmentEntry(impItem.getAttachmentEntry());
 						modelItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Merge);
-						modelItem.setName( modelItem.getName() +"(*)");
+						modelItem.setName(modelItem.getName() + "(*)");
 					}
 
-				}
-				else {
+				} else {
 					if (impItem.getType().equals(ItemType.category)) {
 						//found a new category which does not have a match
 						//add it and all its children
 						root.addChild(impItem);
-						impItem.setName( impItem.getName() +"(*)");
+						impItem.setName(impItem.getName() + "(*)");
 						//jump to next cat
 						i++;
-						while (i<impModel.getItemsFlatList().size()) {
-							if (impModel.getItemsFlatList().get(i).getType()==ItemType.category ) {
+						while (i < impModel.getItemsFlatList().size()) {
+							if (impModel.getItemsFlatList().get(i).getType() == ItemType.category) {
 								i--; ////need to stay on this item i, after break i++ will be called.
 								break;
 							}
@@ -172,16 +195,15 @@ public class ImportWalletAction implements Action {
 						}
 
 
-					}
-					else {
+					} else {
 						//it is an item, locate its parent and find a match in the current model
 						WalletItem modelCat = impItem.getParent().findItemInModel();
-						if (modelCat==null) {
+						if (modelCat == null) {
 							//not matches cat can't happen here
 							throw new IllegalStateException("not matches cat can't happen here, impItem: " + impItem);
 						}
 						modelCat.addChild(impItem);
-						impItem.setName( impItem.getName() +"(*)");
+						impItem.setName(impItem.getName() + "(*)");
 
 					}
 				}
@@ -199,7 +221,6 @@ public class ImportWalletAction implements Action {
 
 
 	}
-
 
 
 }

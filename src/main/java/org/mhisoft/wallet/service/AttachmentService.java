@@ -876,12 +876,14 @@ public class AttachmentService {
 
 
 		//walk through the  FileAccessTable
-		for (FileAccessEntry fileAccessEntry : t.getEntries()) {
+		if ( t!=null && t.getEntries()!=null) {
+			for (FileAccessEntry fileAccessEntry : t.getEntries()) {
 
-			WalletItem walletItem = model.findItem(fileAccessEntry.getGUID());
-			if (walletItem != null) {
-				walletItem.setAttachmentEntry(fileAccessEntry);
-				walletItem.setNewAttachmentEntry(null);
+				WalletItem walletItem = model.findItem(fileAccessEntry.getGUID());
+				if (walletItem != null) {
+					walletItem.setAttachmentEntry(fileAccessEntry);
+					walletItem.setNewAttachmentEntry(null);
+				}
 			}
 		}
 	}
