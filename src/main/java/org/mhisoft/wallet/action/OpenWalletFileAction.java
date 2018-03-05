@@ -59,6 +59,7 @@ public class OpenWalletFileAction implements Action {
 		if (fileName != null) {
 
 			WalletModel model = ServiceRegistry.instance.getWalletForm().getModel();
+			model.reset();
 
 			if (new File(fileName).isFile()) {
 				WalletSettings.getInstance().setLastFile(fileName);

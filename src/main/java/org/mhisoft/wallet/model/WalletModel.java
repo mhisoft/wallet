@@ -120,6 +120,9 @@ public class WalletModel {
 		this.dataFileVersion = LATEST_DATA_VERSION;
 		this.passPlain = null;
 		this.deletedEntriesInStore = 0;
+		this.exportVaultFileName=null;
+		this.impModel=null;
+		this.exportVaultPass=null;
 	}
 
 	public PBEEncryptor createNewEncryptor(final PassCombinationVO newPass) {

@@ -38,11 +38,11 @@ public class WalletMain {
 	 //three places to update the version number,
 	//here  in the code
 	// pom.xml and build.xml
-	public static final String version = "1.3.5";
+	public static final String version = "1.3.6";
 
 
-	public static final String build = "659 12/27/2017";
-	public static final String BUILD_DETAIL = "MHISoft eVault " + version +" build " +  build;
+	public static final String build = "[51f62ed] 3/4/2017";
+	public static final String BUILD_DETAIL = "MHISoft eVault " + version +" build" +  build;
 
 
 	public static void main(String[] args) {

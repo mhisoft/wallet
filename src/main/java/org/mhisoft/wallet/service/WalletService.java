@@ -362,8 +362,12 @@ public class WalletService {
 					expModel.initEncryptor(exportVaultPassVO);
 					expModel = loadVaultIntoModel(exportVaultFilename, expModel.getEncryptor());
 					//root = expModel.getRootItem();
-					if (newItem.getAttachmentEntry()!=null)
-						newItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Merge);
+
+					File expAttVault = new File(attachmentService.getAttachmentFileName(exportVaultFilename));
+					if (expAttVault.exists()) {
+						if (newItem.getAttachmentEntry() != null)
+							newItem.getAttachmentEntry().setAccessFlag(FileAccessFlag.Merge);
+					}
 				}
 				else {
 					String hash2 = HashingUtils.createHash(exportVaultPassVO.getPass());
@@ -394,13 +398,21 @@ public class WalletService {
 					newParent = expModel.getWalletItem(sourceItem.getParent().getSysGUID());
 					if (newParent==null) {
 						newParent = sourceItem.getParent().clone();
+						newParent.addChild(newItem);
 						expModel.getItemsFlatList().add(newParent);
+						expModel.getItemsFlatList().add(newItem);
 					}
-					newParent.addChild(newItem);
+					else {
+						//add node to the existing parent.
+						newParent.addChild(newItem);
+						expModel.buildFlatListFromTree();
+					}
+
+
 				}
 
 
-				expModel.getItemsFlatList().add(newItem);
+
 
 				//save to the export vault.
 				String vaultFileName = ServiceRegistry.instance.getWalletModel().getVaultFileName();
