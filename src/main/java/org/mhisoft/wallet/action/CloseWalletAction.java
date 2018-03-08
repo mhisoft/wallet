@@ -50,10 +50,13 @@ public class CloseWalletAction extends SaveWalletAction {
 			|| ServiceRegistry.instance.getWalletModel().isModified()
 				) {
 
-			Confirmation confirmRet = DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
-					, "Save the changes before close?") ;
-			if (confirmRet == Confirmation.QUIT) {
-			    return false;
+			Confirmation confirmRet  =Confirmation.YES;
+			if (!quiet ) {
+				confirmRet = DialogUtils.getConfirmation(ServiceRegistry.instance.getWalletForm().getFrame()
+						, "Save the changes before close?");
+				if (confirmRet == Confirmation.QUIT) {
+					return false;
+				}
 			}
 
 			if (quiet || confirmRet== Confirmation.YES ) {
