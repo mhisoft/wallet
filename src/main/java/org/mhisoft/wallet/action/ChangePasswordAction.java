@@ -110,7 +110,7 @@ public class ChangePasswordAction implements Action {
 					model.setHash(hash, combinationHash);
 
 
-					model.setPassPlain(newPass);
+					model.setPassVO(newPass);
 					passwordForm2.exitPasswordForm();
 
 

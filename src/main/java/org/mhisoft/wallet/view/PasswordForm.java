@@ -373,7 +373,7 @@ public class PasswordForm implements ActionListener {
 		}
 
 
-		model.setPassPlain(passVO);
+		model.setPassVO(passVO);
 
 		return model.getUserEnteredPassForVerification();
 

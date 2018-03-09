@@ -137,6 +137,7 @@ public class PassCombinationEncryptionAdaptor extends PassCombinationVO {
 		internal.spinner2=spinner2;
 		internal.spinner3=spinner3;
 		saveEncryptInternal(internal);
+
 	}
 
 	@Override

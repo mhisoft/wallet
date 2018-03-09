@@ -51,10 +51,10 @@ public class SaveWalletAction implements Action {
 				//to be saved to the latest v13 version , prepare the new hashes.
 				// and need the combination hash set
 				//model.setDataFileVersion(WalletModel.LATEST_DATA_VERSION);
-				String combinationHash = HashingUtils.createHash(model.getPassPlain().getCombination());
+				String combinationHash = HashingUtils.createHash(model.getPassVO().getCombination());
 				model.setCombinationHash(combinationHash);
-				model.setPassHash(HashingUtils.createHash(model.getPassPlain().getPass()));
-				model.initEncryptor(model.getPassPlain());
+				model.setPassHash(HashingUtils.createHash(model.getPassVO().getPass()));
+				model.initEncryptor(model.getPassVO());
 
 			}
 		} catch (HashingUtils.CannotPerformOperationException e) {

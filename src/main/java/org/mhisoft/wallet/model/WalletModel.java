@@ -63,7 +63,7 @@ public class WalletModel {
 	private boolean addingNode = false;
 
 
-	private transient PassCombinationVO passPlain;
+	private transient PassCombinationVO passVO;
 	private int deletedEntriesInStore;
 
 	private transient boolean importing = false;
@@ -96,7 +96,7 @@ public class WalletModel {
 		clone.encryptor = this.encryptor;
 		clone.encryptor_v12 = this.encryptor_v12;
 		clone.dataFileVersion = this.dataFileVersion;
-		clone.passPlain = this.passPlain == null ? null : this.passPlain.clone();
+		clone.passVO = this.passVO == null ? null : this.passVO.clone();
 		clone.deletedEntriesInStore = this.deletedEntriesInStore;
 		clone.vaultFileName = this.vaultFileName;
 		return clone;
@@ -118,7 +118,7 @@ public class WalletModel {
 		this.addingNode = false;
 		this.importing = false;
 		this.dataFileVersion = LATEST_DATA_VERSION;
-		this.passPlain = null;
+		this.passVO = null;
 		this.deletedEntriesInStore = 0;
 		this.exportVaultFileName=null;
 		this.impModel=null;
@@ -231,12 +231,12 @@ public class WalletModel {
 		this.dataFileVersion = dataFileVersion;
 	}
 
-	public PassCombinationVO getPassPlain() {
-		return passPlain;
+	public PassCombinationVO getPassVO() {
+		return passVO;
 	}
 
-	public void setPassPlain(PassCombinationVO passPlain) {
-		this.passPlain = passPlain;
+	public void setPassVO(PassCombinationVO passVO) {
+		this.passVO = passVO;
 	}
 
 	public void setupTestData() {
@@ -459,11 +459,13 @@ public class WalletModel {
 	 */
 	public PassCombinationVO getUserEnteredPassForVerification() {
 		if (dataFileVersion >= 13) {
-			return passPlain;
+			return passVO;
 		} else {
 			//v12 format
 			PassCombinationVO ret = new PassCombinationEncryptionAdaptor();
-			ret.setPass(passPlain.spinner2 + passPlain.pass + passPlain.spinner1 + passPlain.spinner3);  //v12 version format
+
+			//use getter. passPlain.spinner2 should have been cleared.
+			ret.setPass(passVO.getSpinner2() + passVO.getPass() + passVO.getSpinner1() + passVO.getSpinner3());  //v12 version format
 			return ret;
 		}
 	}
