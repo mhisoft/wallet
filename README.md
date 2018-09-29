@@ -6,11 +6,11 @@ It is suitable to store password , private document and any personal information
 
 One master password and a set of combination code is required to open the eVault. The master password  and combination code are stored as one-way-Hash and can't be reverse engineered. They are used to decrypt the database. 
 
-I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source. I believe a password manager vault should never be clound-based. So the MHISoft eVault does not use network at all by design. You can rest asure that not a single bit of data is transmitted over the network and is not under your control.  
+I just don't trust any online or third party vault for storing my personal information and passwords.  So I created this open source. I believe a password manager vault should never be clound-based. So the MHISoft eVault does not use network at all by design. You can rest asure that not a single bit of data is transmitted over the network. You are in total control.  
 
 Though the MHISoft eVault encrypted database is local, you can choose to share it on Google Drive or Dropbox.. etc. So you can share the same database across multiple devices. If somebody gets a hand on the encrypted data vault file, they won't be able to decrypt. 
 
-The password once lost can't be recovered, which is by design. Even he author of this code can't recover the lost password. And without the password and combination, the vault can't be opened, so please keep the master password and combination key in a safe place, such as in your head only. 
+The password once lost can't be recovered, which is by design. Even the author of this code can't recover the lost password. And without the password and combination, the vault can't be opened, so please keep the master password and combination key in a safe place, such as in your head only. 
 
 Download
 ========
