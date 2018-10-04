@@ -55,7 +55,7 @@ Some technical details
  
  
  ## How to build from the source code
-The parent or shell project is here : [evault-app](https://github.com/mhisoft/eVault/wiki/How-to-build-from-the-source-code).
+The parent or shell project is here : [evault-project](https://github.com/mhisoft/evault-app)
 
 https://github.com/mhisoft/eVault/wiki/How-to-build-from-the-source-code
  
