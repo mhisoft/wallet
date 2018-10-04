@@ -48,6 +48,18 @@ Some technical details
 * The app runs offline by design so rest ensure there is absolutely no network connection used by the app. 
  While using other similar product which connects to the network, I have always been worried about the data could be secretly transmitted to somewhere across the network without my knowledge, either intentionally or unintentionally due to malware or virus.   The author decided to design the eVault by not using any kind of network activities (i.e. no port is opended on local and not remote port is reached from eVault either). The encrypted database is local unless you share it across the network.
  
+ ## WIKI
+
+ Check out the WIKI for additional information:
+ https://github.com/mhisoft/eVault/wiki
+ 
+ 
+ ## How to build from the source code
+The parent or shell project is here : [evault-app](https://github.com/mhisoft/eVault/wiki/How-to-build-from-the-source-code).
+
+https://github.com/mhisoft/eVault/wiki/How-to-build-from-the-source-code
+ 
+ 
  ## License
 Apache License 2.0, January 2004 http://www.apache.org/licenses/
 
