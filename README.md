@@ -1,3 +1,15 @@
+Bounty Hunt
+==============
+Collect $50 US dollars if you crack open a test vault at https://github.com/mhisoft/eVault/blob/master/bountyhunt/eVault-crackme.dat
+send me the message I put in the vault and how you did it. 
+I will send you the reward! 
+Happy cracking. 
+
+7/25/2020
+
+
+
+
 MHISoft eVault 
 ======================================================
 MHISoft eVault is a open source password manager and password vault, i.e a secured eVault. 
