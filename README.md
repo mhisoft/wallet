@@ -1,4 +1,4 @@
-Bounty Hunt
+Bounty Hunt - crack the vault to get 50 US dollars. 
 ==============
 Collect $50 US dollars if you crack open a test vault at https://github.com/mhisoft/eVault/blob/master/bountyhunt/eVault-crackme.dat
 send me the message I put in the vault and how you did it. 
