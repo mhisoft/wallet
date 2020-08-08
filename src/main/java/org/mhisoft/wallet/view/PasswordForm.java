@@ -23,25 +23,23 @@
 
 package org.mhisoft.wallet.view;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
 
 import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.action.ActionResult;
@@ -64,11 +62,8 @@ import org.mhisoft.wallet.service.ServiceRegistry;
 public class PasswordForm implements ActionListener {
 	private JPanel mainPanel;
 	private JPasswordField fldPassword;
-	private JSpinner spinner1;
 	private JButton btnCancel;
 	private JButton btnOk;
-	private JSpinner spinner2;
-	private JSpinner spinner3;
 	private JLabel labelPassword;
 	private JLabel labelSafeCombination;
 	private JLabel labelInst1;
@@ -76,6 +71,9 @@ public class PasswordForm implements ActionListener {
 	private JLabel labelInst3;
 	private JLabel labelMsg;
 	private JButton button1;
+	private JComboBox comboBox1;
+	private JComboBox comboBox2;
+	private JComboBox comboBox3;
 	JDialog dialog;
 
 	String title;
@@ -97,92 +95,22 @@ public class PasswordForm implements ActionListener {
 
 	}
 
-	class SpinnerFocusAdapter extends FocusAdapter {
-
-		JSpinner spinner;
-
-		public SpinnerFocusAdapter(JSpinner spinner) {
-			this.spinner = spinner;
-		}
-
-		/* The jspinner focus listener events*/
-		public void focusGained(FocusEvent e) {
-
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-
-					if (spinner1 == spinner && spinner1Value != null) {
-						//spinner1.setValue(spinner1Value);
-						//System.out.println("focus gained on spinner 1");
-						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						int v = (Integer) spinner1.getValue();
-						editor.getTextField().setText(v == 1 ? "" : spinner1.getValue().toString());
-
-					} else if (spinner2 == spinner && spinner2Value != null) {
-						//	spinner2.setValue(spinner2Value);
-						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						int v = (Integer) spinner2.getValue();
-						editor.getTextField().setText(v == 1 ? "" : spinner2.getValue().toString());
-						//System.out.println("focus gained on spinner 2");
-					} else if (spinner3 == spinner && spinner3Value != null) {
-						//spinner3.setValue(spinner3Value);
-						JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-						int v = (Integer) spinner3.getValue();
-						editor.getTextField().setText(v == 1 ? "" : spinner3.getValue().toString());
-						//System.out.println("focus gained on spinner 3");
-					}
-				}
-			});
-
-
-		}
-
-		public void focusLost(FocusEvent e) {
-			if (spinner1 == spinner) {
-				spinner1Value = spinner1.getValue();
-				//System.out.println("focus lost on spinner 1");
-			} else if (spinner2 == spinner) {
-				spinner2Value = spinner2.getValue();
-				//System.out.println("focus lost on spinner 2");
-			} else if (spinner3 == spinner) {
-				spinner3Value = spinner3.getValue();
-				//System.out.println("focus lost on spinner 3");
-			}
-
-			SwingUtilities.invokeLater(new Runnable() {
-
-				@Override
-				public void run() {
-					JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-					editor.getTextField().setText("*");
-				}
-			});
-
-
-		}
-	}
-
 
 	/* place custom component creation code here*/
 	private void createUIComponents() {
 
-		spinner1 = new JSpinner(new SpinnerNumberModel(1, 1, 99, 1));
-		spinner2 = new JSpinner(new SpinnerNumberModel(1, 1, 99, 1));
-		spinner3 = new JSpinner(new SpinnerNumberModel(1, 1, 99, 1));
-
-
-		JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner1.getEditor();
-		editor.getTextField().addFocusListener(new SpinnerFocusAdapter(spinner1));
-
-		JSpinner.DefaultEditor editor2 = (JSpinner.DefaultEditor) spinner2.getEditor();
-		editor2.getTextField().addFocusListener(new SpinnerFocusAdapter(spinner2));
-
-		JSpinner.DefaultEditor editor3 = (JSpinner.DefaultEditor) spinner3.getEditor();
-		editor3.getTextField().addFocusListener(new SpinnerFocusAdapter(spinner3));
-
+		Integer[] items = new Integer[100];  //0..99
+		for (int i = 1; i < 99; i++) {
+			items[i] = i;
+		}
+		ComboBoxModel model1 = new DefaultComboBoxModel(items);
+		ComboBoxModel model2 = new DefaultComboBoxModel(items);
+		ComboBoxModel model3 = new DefaultComboBoxModel(items);
+		comboBox1 = new JComboBox(model1);
+		comboBox2 = new JComboBox(model2);
+		comboBox3 = new JComboBox(model3);
 	}
+
 
 	private class IndexedFocusTraversalPolicy extends
 			FocusTraversalPolicy {
@@ -223,7 +151,7 @@ public class PasswordForm implements ActionListener {
 
 		@Override
 		public Component getDefaultComponent(Container aContainer) {
-			return spinner1;
+			return comboBox1;
 		}
 	}
 
@@ -281,13 +209,6 @@ public class PasswordForm implements ActionListener {
 
 		dialog.getRootPane().setDefaultButton(btnOk);
 
-		//set up spinner to be blank
-		JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner1.getEditor();
-		editor.getTextField().setText("");
-		editor = (JSpinner.DefaultEditor) spinner2.getEditor();
-		editor.getTextField().setText("");
-		editor = (JSpinner.DefaultEditor) spinner3.getEditor();
-		editor.getTextField().setText("");
 
 		dialog.pack();
 
@@ -318,7 +239,7 @@ public class PasswordForm implements ActionListener {
 		dialog.setVisible(true);
 
 
-		spinner1.requestFocusInWindow();
+		comboBox1.requestFocusInWindow();
 
 	}
 
@@ -334,7 +255,7 @@ public class PasswordForm implements ActionListener {
 
 
 	public String getCombinationDisplay() {
-		return spinner1.getValue() + "-" + spinner2.getValue() + "-" + spinner3.getValue();
+		return comboBox1.getSelectedItem() + "-" + comboBox2.getSelectedItem() + "-" + comboBox3.getSelectedItem();
 	}
 
 
@@ -348,12 +269,17 @@ public class PasswordForm implements ActionListener {
 
 		if (!SystemSettings.isDevMode) {
 
-			if (!passwordValidator.validate(fldPassword.getText())) {
-				DialogUtils.getInstance().info("Please use a password following the above rules.");
+			Integer safeValue1 = (Integer) comboBox1.getSelectedItem();
+			Integer safeValue2 = (Integer) comboBox2.getSelectedItem();
+			Integer safeValue3 = (Integer) comboBox3.getSelectedItem();
+
+			if (safeValue1.equals(safeValue2) && safeValue2.equals(safeValue3)) {
+				DialogUtils.getInstance().info("Cant' use the same numbers for the safe combination.");
 				return null;
 			}
-			if (spinner1.getValue() == spinner2.getValue() && spinner2.getValue() == spinner3.getValue()) {
-				DialogUtils.getInstance().info("Cant' use the same nubmers for the combinations.");
+
+			if (!passwordValidator.validate(fldPassword.getText())) {
+				DialogUtils.getInstance().info("Please use a password following the above rules.");
 				return null;
 			}
 		}
@@ -369,7 +295,10 @@ public class PasswordForm implements ActionListener {
 		}
 		else {
 			passVO.setPass(fldPassword.getText());
-			passVO.setCombination(spinner1.getValue().toString(), spinner2.getValue().toString(), spinner3.getValue().toString());
+			passVO.setCombination(comboBox1.getSelectedItem().toString()
+					, comboBox2.getSelectedItem().toString()
+					, comboBox3.getSelectedItem().toString()
+					);
 		}
 
 
