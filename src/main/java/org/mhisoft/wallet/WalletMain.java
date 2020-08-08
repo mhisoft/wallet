@@ -41,7 +41,7 @@ public class WalletMain {
 	public static final String version = "1.3.7";
 
 
-	public static final String build = "Aug 2020 []";
+	public static final String build = "Aug 2020 [fabff18]";
 	public static final String BUILD_DETAIL = "MHISoft eVault " + version +" build " +  build;
 
 
