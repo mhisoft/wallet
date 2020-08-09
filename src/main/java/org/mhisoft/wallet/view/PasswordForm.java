@@ -23,14 +23,18 @@
 
 package org.mhisoft.wallet.view;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Vector;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -40,6 +44,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 
 import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.action.ActionResult;
@@ -59,6 +64,7 @@ import org.mhisoft.wallet.service.ServiceRegistry;
  * @author Tony Xue
  * @since Mar, 2016
  */
+@SuppressWarnings("rawtypes")
 public class PasswordForm implements ActionListener {
 	private JPanel mainPanel;
 	private JPasswordField fldPassword;
@@ -71,9 +77,9 @@ public class PasswordForm implements ActionListener {
 	private JLabel labelInst3;
 	private JLabel labelMsg;
 	private JButton button1;
-	private JComboBox comboBox1;
-	private JComboBox comboBox2;
-	private JComboBox comboBox3;
+	private JComboBox<Item> comboBox1;
+	private JComboBox<Item> comboBox2;
+	private JComboBox<Item> comboBox3;
 	JDialog dialog;
 
 	String title;
@@ -85,7 +91,7 @@ public class PasswordForm implements ActionListener {
 
 	PasswordValidator passwordValidator = ServiceRegistry.instance.getService(BeanType.singleton, PasswordValidator.class);
 
-	Object spinner1Value = 1, spinner2Value = 1, spinner3Value = 1;
+	transient Item spinner1Item, spinner2Item, spinner3Item;
 
 
 	public PasswordForm(String title) {
@@ -96,19 +102,72 @@ public class PasswordForm implements ActionListener {
 	}
 
 
+	class Item {
+		Integer value;
+		String text;
+
+		public Item(Integer value, String text) {
+			this.value = value;
+			this.text = text;
+		}
+
+		public Integer getValue() {
+			return value;
+		}
+
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		public void setText(String text) {
+			this.text = text;
+		}
+
+		@Override
+		public String toString() {
+			return getText();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Item item = (Item) o;
+			return Objects.equals(value, item.value);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(value);
+		}
+	}
+
+
 	/* place custom component creation code here*/
 	private void createUIComponents() {
 
-		Integer[] items = new Integer[100];  //0..99
-		for (int i = 1; i < 99; i++) {
-			items[i] = i;
+		Vector<Item> model = new Vector<>();
+		model.addElement( new Item(-1, "*")); //pos zero item is -1 and shows *
+
+		//pos 1 to 99
+		for (int i = 1; i <=99; i++) {
+			model.addElement( new Item(i, Integer.valueOf(i).toString()));
 		}
-		ComboBoxModel model1 = new DefaultComboBoxModel(items);
-		ComboBoxModel model2 = new DefaultComboBoxModel(items);
-		ComboBoxModel model3 = new DefaultComboBoxModel(items);
-		comboBox1 = new JComboBox(model1);
-		comboBox2 = new JComboBox(model2);
-		comboBox3 = new JComboBox(model3);
+		ComboBoxModel<Item> model1 = new DefaultComboBoxModel<>(model);
+		ComboBoxModel<Item> model2 = new DefaultComboBoxModel<>(model);
+		ComboBoxModel<Item> model3 = new DefaultComboBoxModel<>(model);
+		comboBox1 = new JComboBox<>(model1);
+		comboBox2 = new JComboBox<>(model2);
+		comboBox3 = new JComboBox<>(model3);
+
+		comboBox1.addFocusListener(new MyFocusAdapter(comboBox1));
+		comboBox2.addFocusListener(new MyFocusAdapter(comboBox2));
+		comboBox3.addFocusListener(new MyFocusAdapter(comboBox3));
+
 	}
 
 
@@ -156,15 +215,15 @@ public class PasswordForm implements ActionListener {
 	}
 
 
-	public  interface Callback {
-		void setResult (ActionResult result);
+	public interface Callback {
+		void setResult(ActionResult result);
 
 	}
 
-	public static abstract  class PasswordFormActionListener implements ActionListener {
+	public static abstract class PasswordFormActionListener implements ActionListener {
 		private Callback callback;
 
-		public PasswordFormActionListener(Callback  callback) {
+		public PasswordFormActionListener(Callback callback) {
 			this.callback = callback;
 		}
 
@@ -173,7 +232,7 @@ public class PasswordForm implements ActionListener {
 	/**
 	 *
 	 */
-	public static  class PasswordFormCancelActionListener extends  PasswordFormActionListener {
+	public static class PasswordFormCancelActionListener extends PasswordFormActionListener {
 		PasswordForm passwordForm;
 
 		public PasswordFormCancelActionListener(Callback callback, PasswordForm passwordForm) {
@@ -185,16 +244,10 @@ public class PasswordForm implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			passwordForm.exitPasswordForm();
 		}
-	};
-
+	}
 
 
 	public PasswordFormCancelActionListener defaultCancelListener = new PasswordFormCancelActionListener(null, this);
-
-
-
-
-	//entry point
 
 	/**
 	 * @param walletForm
@@ -202,7 +255,7 @@ public class PasswordForm implements ActionListener {
 	 */
 	public void showPasswordForm(WalletForm walletForm, PasswordFormActionListener okListener, PasswordFormActionListener cancelListener) {
 		this.walletForm = walletForm;
-		dialog = new JDialog(walletForm.frame, this.title!=null?this.title:"Please enter password", true);
+		dialog = new JDialog(walletForm.frame, this.title != null ? this.title : "Please enter password", true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.getContentPane().add(mainPanel);
 		dialog.setPreferredSize(new Dimension(800, 400));
@@ -266,12 +319,12 @@ public class PasswordForm implements ActionListener {
 
 	//set the user entered pass and combination to the PassCombinationVO
 	public PassCombinationVO getUserEnteredPassForVerification() {
+		Integer safeValue1 = spinner1Item.getValue();
+		Integer safeValue2 = spinner2Item.getValue();
+		Integer safeValue3 = spinner3Item.getValue();
 
 		if (!SystemSettings.isDevMode) {
 
-			Integer safeValue1 = (Integer) comboBox1.getSelectedItem();
-			Integer safeValue2 = (Integer) comboBox2.getSelectedItem();
-			Integer safeValue3 = (Integer) comboBox3.getSelectedItem();
 
 			if (safeValue1.equals(safeValue2) && safeValue2.equals(safeValue3)) {
 				DialogUtils.getInstance().info("Cant' use the same numbers for the safe combination.");
@@ -283,7 +336,6 @@ public class PasswordForm implements ActionListener {
 				return null;
 			}
 		}
-		//
 
 		PassCombinationVO passVO = new PassCombinationEncryptionAdaptor();
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
@@ -292,23 +344,21 @@ public class PasswordForm implements ActionListener {
 		if (SystemSettings.isDevMode) {
 			passVO.setPass("Test123!");
 			passVO.setCombination("1", "2", "3");
-		}
-		else {
+		} else {
 			passVO.setPass(fldPassword.getText());
-			passVO.setCombination(comboBox1.getSelectedItem().toString()
-					, comboBox2.getSelectedItem().toString()
-					, comboBox3.getSelectedItem().toString()
-					);
+			passVO.setCombination(safeValue1.toString(), safeValue2.toString(), safeValue3.toString());
 		}
-
 
 		model.setPassVO(passVO);
-
 		return model.getUserEnteredPassForVerification();
-
 
 	}
 
+	/**
+	 * Default ok button listener
+	 *
+	 * @param e
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		boolean createHash = ServiceRegistry.instance.getWalletModel().getPassHash() == null;
@@ -337,6 +387,79 @@ public class PasswordForm implements ActionListener {
 				}
 			}
 		}
+	}
+
+	/**
+	 * class for capture fcocus related actions on the safe combination controls
+	 * in order to mask the control.
+	 */
+	class MyFocusAdapter extends FocusAdapter {
+
+		JComboBox ctl;
+
+		public MyFocusAdapter(JComboBox ctl) {
+			this.ctl = ctl;
+		}
+
+		public void focusLost(FocusEvent e) {
+			Item ctlValue =  (Item) ctl.getSelectedItem();
+//			if (SystemSettings.debug)
+//				System.out.println("focus lost on comboBox1" + ctl.getName() + ", value" + ctlValue);
+
+			if (ctlValue != null && ctlValue.getValue() >= 1) {
+				if (comboBox1 == ctl) {
+					spinner1Item = ctlValue;
+				} else if (comboBox2 == ctl) {
+					spinner2Item = ctlValue;
+				} else if (comboBox3 == ctl) {
+					spinner3Item = ctlValue;
+				}
+			}
+
+
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					ctl.setSelectedIndex(0); // position zero is reserved with "*"
+				}
+			});
+		}
+
+		/*
+		The focus listener events
+		on focus, we need to reselect the value saved in the spinner1 to 3. 
+		*/
+		public void focusGained(FocusEvent e) {
+
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+
+					if (comboBox1 == ctl && spinner1Item != null) {
+//						if (SystemSettings.debug)
+//							System.out.println("focus gained on comboBox1");
+
+						comboBox1.setSelectedItem(spinner1Item);
+					} else if (comboBox2 == ctl && spinner2Item != null) {
+//						if (SystemSettings.debug)
+//							System.out.println("focus gained on comboBox2");
+
+						comboBox2.setSelectedItem(spinner2Item);
+					} else if (comboBox3 == ctl && spinner3Item != null) {
+//						if (SystemSettings.debug)
+//							System.out.println("focus gained on comboBox3");
+						comboBox3.setSelectedItem(spinner3Item);
+					}
+
+				}
+			});
+
+
+		}
+
+
 	}
 
 

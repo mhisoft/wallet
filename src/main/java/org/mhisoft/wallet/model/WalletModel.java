@@ -50,13 +50,13 @@ public class WalletModel {
 
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
-	String passHash;
-	String combinationHash;
+	transient  String passHash;
+	transient String combinationHash;
 	boolean modified = false;
 	private String vaultFileName;
 
-	PBEEncryptor encryptor;
-	PBEEncryptor encryptor_v12; //for reading the v12 data file
+	transient PBEEncryptor encryptor;
+	transient PBEEncryptor encryptor_v12; //for reading the v12 data file
 
 	int dataFileVersion = LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
@@ -72,10 +72,8 @@ public class WalletModel {
 	private transient String exportVaultFileName;
 
 
-
-
 	public WalletModel() {
-
+	   //
 	}
 
 	/**

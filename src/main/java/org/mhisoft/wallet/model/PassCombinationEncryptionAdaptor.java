@@ -31,15 +31,16 @@ import org.mhisoft.common.util.Serializer;
 import org.mhisoft.common.util.security.JceEncryption;
 
 /**
- * Description:
+ * Description: PassCombination Encryption Adaptor
+ * encrypts the  PassCombinationVO internally
  *
  * @author Tony Xue
  * @since Dec, 2017
  */
-public class PassCombinationEncryptionAdaptor extends PassCombinationVO {
+public final class PassCombinationEncryptionAdaptor extends PassCombinationVO {
 	private transient Serializer<PassCombinationVO> sesrializer = new Serializer<PassCombinationVO>();
-	private byte[] encryptedPass;
-	transient JceEncryption  engine;
+	private transient byte[] encryptedPass;
+	private transient JceEncryption engine;
 
 	public PassCombinationEncryptionAdaptor clone() {
 		PassCombinationEncryptionAdaptor clone = new PassCombinationEncryptionAdaptor();
@@ -57,12 +58,12 @@ public class PassCombinationEncryptionAdaptor extends PassCombinationVO {
 	public PassCombinationEncryptionAdaptor(String pass, String combination)  {
 		    this();
 			PassCombinationVO internal = new PassCombinationVO();
-			internal.pass = pass;
-			internal.combination = combination;
+			internal.setPass( pass );
+			internal.setCombination(combination);
 			saveEncryptInternal(internal);
 	}
 
-	private PassCombinationVO getInternal() {
+	private final  PassCombinationVO getInternal() {
 		try {
 			if (encryptedPass ==null)
 				return null;
@@ -73,7 +74,6 @@ public class PassCombinationEncryptionAdaptor extends PassCombinationVO {
 			throw new RuntimeException(e);
 		}
 	}
-
 
 	private void saveEncryptInternal(final PassCombinationVO internal) {
 		try {
@@ -126,16 +126,12 @@ public class PassCombinationEncryptionAdaptor extends PassCombinationVO {
 	}
 
 
-
-
 	@Override
 	public void setCombination(String spinner1, String spinner2, String spinner3) {
 		PassCombinationVO internal =getInternal();
 		if (internal==null)
 			internal = new PassCombinationVO();
-		internal.spinner1=spinner1;
-		internal.spinner2=spinner2;
-		internal.spinner3=spinner3;
+		internal.setCombination(spinner1, spinner2, spinner3);
 		saveEncryptInternal(internal);
 
 	}

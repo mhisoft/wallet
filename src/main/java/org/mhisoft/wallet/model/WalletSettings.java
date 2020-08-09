@@ -25,12 +25,10 @@ package org.mhisoft.wallet.model;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
 import java.io.Serializable;
 
-import org.mhisoft.wallet.SystemSettings;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.WalletForm;
 
@@ -183,9 +181,9 @@ public class WalletSettings implements Serializable {
 		if (form!=null)
 			form.addRecentFile(fileName);
 
-		if (SystemSettings.debug) {
-			logger.log(Level.FINE, this.toString());
-		}
+//		if (SystemSettings.debug) {
+//			logger.log(Level.FINE, this.toString());
+//		}
 
 	}
 

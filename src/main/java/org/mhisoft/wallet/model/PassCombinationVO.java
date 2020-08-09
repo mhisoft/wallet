@@ -10,9 +10,9 @@ import java.io.Serializable;
  */
 public class PassCombinationVO implements Serializable {
 	private static final long serialVersionUID = 1L;
-	String pass;
-	String combination;
-	String spinner1, spinner2, spinner3;
+	private String pass;
+	private String combination;
+	private String spinner1, spinner2, spinner3;
 
 	protected PassCombinationVO() {
 	}
@@ -62,6 +62,9 @@ public class PassCombinationVO implements Serializable {
 		this.spinner3 = spinner3;
 	}
 
+	public void setCombination(String combination) {
+		this.combination = combination;
+	}
 
 	public String getPassAndCombination() {
 		return pass+(getCombination()==null?"":getCombination());
