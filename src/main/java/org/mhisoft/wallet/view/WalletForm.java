@@ -268,6 +268,8 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnEditForm", null));
+				//if in the search mode need to switch it back
+				clearFilter();
 				itemDetailView.editDetailAction();
 			}
 		});
@@ -299,6 +301,7 @@ public class WalletForm {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				EventDispatcher.instance.dispatchEvent(new MHIEvent(EventType.UserCheckInEvent, "btnAttach", null));
+				clearFilter();
 //				String imageFile = ViewHelper.chooseFile(VFSJFileChooser.SELECTION_MODE.FILES_ONLY
 //						,"png", "gif", "jpg", "jpeg", "doc", "docx", "txt", "pdf", "csv", "xls");
 				String imageFile = ViewHelper.chooseFile(         VFSJFileChooser.SELECTION_MODE.FILES_ONLY,

@@ -50,8 +50,11 @@ public class BackupAction implements Action {
 
 		try {
 			FileUtils.copyFile( new File(WalletSettings.getInstance().getLastFile()), new File(targetFile.toString()));
-			FileUtils.copyFile( new File( WalletSettings.getInstance().getAttachmentStoreFileName()  )
-					, new File(targetAttachmeSoteName));
+			//attaments is optional so may not have it. 
+			File attFile = new File( WalletSettings.getInstance().getAttachmentStoreFileName());
+			if (attFile.exists()) {
+				FileUtils.copyFile(attFile, new File(targetAttachmeSoteName));
+			}
 			DialogUtils.getInstance().info("The data file is backed up at :" + targetFile.toString());
 		} catch (IOException e) {
 			logger.severe(e.toString());

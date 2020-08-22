@@ -319,12 +319,13 @@ public class PasswordForm implements ActionListener {
 
 	//set the user entered pass and combination to the PassCombinationVO
 	public PassCombinationVO getUserEnteredPassForVerification() {
-		Integer safeValue1 = spinner1Item.getValue();
-		Integer safeValue2 = spinner2Item.getValue();
-		Integer safeValue3 = spinner3Item.getValue();
+		Integer safeValue1, safeValue2 , safeValue3;
+
 
 		if (!SystemSettings.isDevMode) {
-
+			 safeValue1 = spinner1Item.getValue();
+			 safeValue2 = spinner2Item.getValue();
+			 safeValue3 = spinner3Item.getValue();
 
 			if (safeValue1.equals(safeValue2) && safeValue2.equals(safeValue3)) {
 				DialogUtils.getInstance().info("Cant' use the same numbers for the safe combination.");
@@ -336,17 +337,22 @@ public class PasswordForm implements ActionListener {
 				return null;
 			}
 		}
+		else {
+			//dev mode
+			safeValue1 =1;
+			safeValue2 = 2;
+			safeValue3 = 3;
+		}
+
 
 		PassCombinationVO passVO = new PassCombinationEncryptionAdaptor();
 		WalletModel model = ServiceRegistry.instance.getWalletModel();
 		//set the raw data only, do not add logic here. or later we can't get the raw pass
-		//	if (model.getDataFileVersion() == 13) {
+		passVO.setCombination(safeValue1.toString(), safeValue2.toString(), safeValue3.toString());
 		if (SystemSettings.isDevMode) {
 			passVO.setPass("Test123!");
-			passVO.setCombination("1", "2", "3");
 		} else {
 			passVO.setPass(fldPassword.getText());
-			passVO.setCombination(safeValue1.toString(), safeValue2.toString(), safeValue3.toString());
 		}
 
 		model.setPassVO(passVO);

@@ -559,7 +559,7 @@
                             <constraints/>
                             <properties>
                               <icon value="attachment.png"/>
-                              <text value="Attach"/>
+                              <text value="Upload File"/>
                               <toolTipText value="Attach image or file"/>
                             </properties>
                           </component>
@@ -567,7 +567,7 @@
                             <constraints/>
                             <properties>
                               <icon value="close1463468299_46.png"/>
-                              <text value="Sign &amp;Out"/>
+                              <text value="&amp;Quit"/>
                             </properties>
                           </component>
                         </children>
