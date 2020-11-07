@@ -44,6 +44,9 @@ also add the entry to the MANIFEST.MF
 
     <property environment="env"/>
 
+    <!-- adjust to your location -->
+    <property name="launch4j.home.dir" value="c:/bin/Launch4j"/>
+
     <!--
          PROPERTY FILE HIERARCHY:
             first declared properties wins!
