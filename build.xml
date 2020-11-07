@@ -109,6 +109,15 @@ also add the entry to the MANIFEST.MF
         </sequential>
     </macrodef>
 
+    <target name="build" description="build the project">
+        <antcall target="update-version"></antcall>
+
+        <maven dir="../parent-pom" argline="install"/>
+        <maven dir="../common-utils" argline="clean install -DskipTests=true"/>
+        <maven dir=".." argline="package -DskipTests=true"/>
+
+    </target>
+
 
 
     <target name="dist" description="package and distribute">
@@ -116,12 +125,7 @@ also add the entry to the MANIFEST.MF
         <delete file="dist/${ARTIFACT_NAME}.exe"/>
         <delete file="dist/${ARTIFACT_NAME}.jar"/>
 
-
-        <antcall target="update-version"></antcall>
-
-
-        <maven dir="../common-utils" argline="clean install -DskipTests=true"/>
-        <maven dir=".." argline="package -DskipTests=true"/>
+        <antcall target="build"/>
 
         <!--copy the jar to the dist folder -->
         <copy file="target/${ARTIFACT_NAME}.jar" todir="dist" overwrite="true" failonerror="true"/>
