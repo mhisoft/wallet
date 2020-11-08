@@ -23,24 +23,15 @@
 
 package org.mhisoft.wallet;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mhisoft.common.util.security.HashingUtils;
+import org.mhisoft.wallet.model.*;
+import org.mhisoft.wallet.service.*;
+
 import java.io.File;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mhisoft.common.util.security.HashingUtils;
-import org.mhisoft.wallet.model.ItemType;
-import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
-import org.mhisoft.wallet.model.PassCombinationVO;
-import org.mhisoft.wallet.model.WalletItem;
-import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.DataService;
-import org.mhisoft.wallet.service.DataServiceFactory;
-import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.service.StoreVO;
-import org.mhisoft.wallet.service.WalletService;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Description: WalletModelTest
@@ -65,7 +56,7 @@ public class WalletFileTest {
 
 	WalletService walletService;
 
-	@Before
+	@BeforeEach
 	public  void setup() {
 
 		/*
@@ -147,8 +138,8 @@ public class WalletFileTest {
 			StoreVO storeVO = walletService.loadVault("test_v12.dat" , model.getEncryptor());
 			model.setItemsFlatList(storeVO.getWalletItems());
 			model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
-			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, storeVO.getHeader().getPassHash());
+			Assertions.assertEquals(7, model.getItemsFlatList().size());
+			Assertions.assertEquals(hash, storeVO.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -177,8 +168,8 @@ public class WalletFileTest {
 			StoreVO storeVO = dataServicev10.readFromFile("test_v10.dat",model.getEncryptor());
 
 			model.setItemsFlatList(storeVO.getWalletItems());
-			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, storeVO.getHeader().getPassHash());
+			Assertions.assertEquals(7, model.getItemsFlatList().size());
+			Assertions.assertEquals(hash, storeVO.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -248,8 +239,8 @@ public class WalletFileTest {
 			model.setItemsFlatList(storeVO.getWalletItems());
 
 			model.setItemsFlatList(storeVO.getWalletItems());
-			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, storeVO.getHeader().getPassHash());
+			Assertions.assertEquals(7, model.getItemsFlatList().size());
+			Assertions.assertEquals(hash, storeVO.getHeader().getPassHash());
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
 		}
@@ -278,8 +269,8 @@ public class WalletFileTest {
 			dataServicev12.saveToFile("test_v12.dat", model, model.getEncryptorForRead()); //v12 encryptor
 			//read the file using v12 service impl
 			StoreVO storeVO = dataServicev12.readFromFile("test_v12.dat",model.getEncryptorForRead());
-			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, storeVO.getHeader().getPassHash());
+			Assertions.assertEquals(7, model.getItemsFlatList().size());
+			Assertions.assertEquals(hash, storeVO.getHeader().getPassHash());
 
 			//write to v13 file format.
 			model.setDataFileVersion(13);
@@ -291,9 +282,9 @@ public class WalletFileTest {
 			dataServicev13.saveToFile("test_v13.dat", model, model.getEncryptor());
 			//read it back.
 			storeVO = dataServicev13.readFromFile("test_v13.dat",model.getEncryptorForRead());
-			assertEquals(7, model.getItemsFlatList().size());
-			assertEquals(hash, storeVO.getHeader().getPassHash());
-			assertEquals(combinationHash, storeVO.getHeader().getCombinationHash());
+			Assertions.assertEquals(7, model.getItemsFlatList().size());
+			Assertions.assertEquals(hash, storeVO.getHeader().getPassHash());
+			Assertions.assertEquals(combinationHash, storeVO.getHeader().getCombinationHash());
 
 			 f = new File("test_v13.dat");
 			f.delete();

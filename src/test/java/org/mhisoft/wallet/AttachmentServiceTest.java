@@ -23,25 +23,14 @@
 
 package org.mhisoft.wallet;
 
-import java.io.File;
-import java.io.IOException;
-
+import org.junit.jupiter.api.*;
 import org.mhisoft.common.util.FileUtils;
 import org.mhisoft.common.util.security.HashingUtils;
-import org.mhisoft.wallet.model.FileAccessEntry;
-import org.mhisoft.wallet.model.FileAccessFlag;
-import org.mhisoft.wallet.model.FileAccessTable;
-import org.mhisoft.wallet.model.ItemType;
-import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
-import org.mhisoft.wallet.model.WalletItem;
-import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.AttachmentService;
-import org.mhisoft.wallet.service.DataService;
-import org.mhisoft.wallet.service.DataServiceFactory;
-import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.service.WalletService;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.mhisoft.wallet.model.*;
+import org.mhisoft.wallet.service.*;
+
+import java.io.File;
+import java.io.IOException;
 
 
 /**
@@ -55,7 +44,7 @@ import org.testng.annotations.Test;
 //to set logger level
 // -Djava.util.logging.config.file="logging.properties"
 
-
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
 public class AttachmentServiceTest {
 
 	AttachmentService attachmentService = new AttachmentService();
@@ -84,7 +73,7 @@ public class AttachmentServiceTest {
 		fileEntry2.setFileName(file2);
 		guid2 = fileEntry2.getGUID();
 
-		Assert.assertEquals(t.getSize(), 2);
+		Assertions.assertEquals(t.getSize(), 2);
 
 		WalletModel model = new WalletModel();
 		model.setDataFileVersion(version);
@@ -114,7 +103,8 @@ public class AttachmentServiceTest {
 		attachmentService.saveAttachments(attStoreFile, model, model.getEncryptor());
 	}
 
-	@Test()
+
+	@BeforeEach
 	public void testWriteFileAcccessTable() {
 		try {
 			saveAttachments(WalletModel.LATEST_DATA_VERSION);
@@ -124,7 +114,8 @@ public class AttachmentServiceTest {
 
 	}
 
-	@Test(dependsOnMethods = {"testWriteFileAcccessTable"})
+	@Test
+	@Order(1)
 	public void testReadFileAccessTable() {
 		try {
 
@@ -135,7 +126,7 @@ public class AttachmentServiceTest {
 
 			FileAccessTable t = attachmentService.read(dataFile, model.getEncryptor());
 
-			Assert.assertEquals(t.getSize(), 2);
+			Assertions.assertEquals(t.getSize(), 2);
 
 
 			int i = 0;
@@ -145,20 +136,20 @@ public class AttachmentServiceTest {
 
 			byte[] bytesEntry1 = attachmentService.readFileContent(14, dataFile, entry1, model.getEncryptor());
 			byte[] orgin1 = FileUtils.readFile(new File("./target/classes/1463467646_61.png"));
-			Assert.assertEquals(bytesEntry1, orgin1);
+			Assertions.assertArrayEquals(bytesEntry1, orgin1);
 
 			byte[] bytesEntry2 = attachmentService.readFileContent(LATEST_VERSION, dataFile, entry2, model.getEncryptor());
 			byte[] orgin2 = FileUtils.readFile(new File("./target/test-classes/LICENSE"));
-			Assert.assertEquals(bytesEntry2, orgin2);
+			Assertions.assertArrayEquals(bytesEntry2, orgin2);
 
-			Assert.assertEquals(guid1,t.getEntries().get(0).getGUID() );
-			Assert.assertEquals(guid2,t.getEntries().get(1).getGUID() );
+			Assertions.assertEquals(guid1,t.getEntries().get(0).getGUID() );
+			Assertions.assertEquals(guid2,t.getEntries().get(1).getGUID() );
 
-			Assert.assertEquals(t.getEntries().get(0).getSize(), new File(file1).length());
-			Assert.assertEquals(t.getEntries().get(1).getSize(), new File(file2).length());
+			Assertions.assertEquals(t.getEntries().get(0).getSize(), new File(file1).length());
+			Assertions.assertEquals(t.getEntries().get(1).getSize(), new File(file2).length());
 
-			Assert.assertEquals(t.getEntries().get(0).getFileName(), "1463467646_61.png");
-			//Assert.assertEquals(t.getEntries().get(1).getFileName(), "LICENSE");
+			Assertions.assertEquals(t.getEntries().get(0).getFileName(), "1463467646_61.png");
+			//Assertions.assertEquals(t.getEntries().get(1).getFileName(), "LICENSE");
 
 //
 //			FileOutputStream out = new FileOutputStream(
@@ -176,6 +167,7 @@ public class AttachmentServiceTest {
 	/* just upgrade, attachment entries in the model is not modified */
 
 	@Test
+	@Order(2)
 	public void testUpgradeStore() throws  IOException {
 		try {
 			saveAttachments(13);
@@ -187,12 +179,12 @@ public class AttachmentServiceTest {
 		model.initEncryptor(new PassCombinationEncryptionAdaptor("testPa!ss213%", "112233"));
 		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
 
-		Assert.assertEquals(model.getItemsFlatList().size(), 3);
-		Assert.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
-		Assert.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
+		Assertions.assertEquals(model.getItemsFlatList().size(), 3);
+		Assertions.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
+		Assertions.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
 
-		Assert.assertTrue(model.getItemsFlatList().get(1).getAttachmentEntry().getEncSize()>0);
-		Assert.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
+		Assertions.assertTrue(model.getItemsFlatList().get(1).getAttachmentEntry().getEncSize()>0);
+		Assertions.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
 
 
 		//opened a old version file, need to save to v13 version on close. .
@@ -209,13 +201,13 @@ public class AttachmentServiceTest {
 
 		//read back to verify
 		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
-		Assert.assertEquals(model.getCurrentDataFileVersion(), WalletModel.LATEST_DATA_VERSION);
-		Assert.assertEquals(model.getItemsFlatList().size(), 3);
-		Assert.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
-		Assert.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
+		Assertions.assertEquals(model.getCurrentDataFileVersion(), WalletModel.LATEST_DATA_VERSION);
+		Assertions.assertEquals(model.getItemsFlatList().size(), 3);
+		Assertions.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
+		Assertions.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
 
-		Assert.assertTrue(model.getItemsFlatList().get(1).getAttachmentEntry().getEncSize()>0);
-		Assert.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
+		Assertions.assertTrue(model.getItemsFlatList().get(1).getAttachmentEntry().getEncSize()>0);
+		Assertions.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
 
 
 		FileAccessTable t = attachmentService.read(attStoreFile, model.getEncryptor());
@@ -225,7 +217,7 @@ public class AttachmentServiceTest {
 
 		byte[] bytesEntry1 = attachmentService.readFileContent(WalletModel.LATEST_DATA_VERSION, attStoreFile, entry1, model.getEncryptor());
 		byte[] orgin1 = FileUtils.readFile(new File("./target/classes/1463467646_61.png"));
-		Assert.assertEquals(bytesEntry1, orgin1);
+		Assertions.assertArrayEquals(bytesEntry1, orgin1);
 
 
 
@@ -235,6 +227,7 @@ public class AttachmentServiceTest {
 		/*  attachment entries in the model is  modified */
 
 	@Test
+	@Order(3)
 	public void testUpgradeStore_s2() throws IOException {
 		try {
 			saveAttachments(13);
@@ -263,12 +256,12 @@ public class AttachmentServiceTest {
 
 		//read back to verify
 		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
-		Assert.assertEquals(model.getItemsFlatList().size(), 3);
+		Assertions.assertEquals(model.getItemsFlatList().size(), 3);
 
-		Assert.assertNull(model.getItemsFlatList().get(1).getAttachmentEntry());
-		Assert.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
+		Assertions.assertNull(model.getItemsFlatList().get(1).getAttachmentEntry());
+		Assertions.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
 
-		Assert.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
+		Assertions.assertTrue(model.getItemsFlatList().get(2).getAttachmentEntry().getEncSize()>0);
 
 
 		//validate the file content
@@ -278,7 +271,7 @@ public class AttachmentServiceTest {
 
 		byte[] bytesEntry2 = attachmentService.readFileContent(LATEST_VERSION, attStoreFile, entry2, model.getEncryptor());
 		byte[] orgin2 = FileUtils.readFile(new File("./target/test-classes/LICENSE"));
-		Assert.assertEquals(bytesEntry2, orgin2);
+		Assertions.assertArrayEquals(bytesEntry2, orgin2);
 
 
 	}

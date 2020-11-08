@@ -23,9 +23,8 @@
 
 package org.mhisoft.wallet;
 
-import java.io.File;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
 import org.mhisoft.wallet.model.PassCombinationVO;
@@ -33,7 +32,8 @@ import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.StoreVO;
 
-import static org.junit.Assert.assertEquals;
+import java.io.File;
+
 
 /**
  * Description:
@@ -95,12 +95,12 @@ public class WalletServiceTest extends WalletFileTest {
 			         --dNode
 			         --eNode
 			 */
-			assertEquals(4, fc.getWalletItems().size()); //root and dnote
-			assertEquals(fc.getWalletItems().get(1), cNode);
-			assertEquals(fc.getWalletItems().get(2), dNode);
-			assertEquals(fc.getWalletItems().get(3), eNode);
-			assertEquals(dNode.getParent(), cNode);
-			assertEquals(eNode.getParent(), cNode);
+			Assertions.assertEquals(4, fc.getWalletItems().size()); //root and dnote
+			Assertions.assertEquals(fc.getWalletItems().get(1), cNode);
+			Assertions.assertEquals(fc.getWalletItems().get(2), dNode);
+			Assertions.assertEquals(fc.getWalletItems().get(3), eNode);
+			Assertions.assertEquals(dNode.getParent(), cNode);
+			Assertions.assertEquals(eNode.getParent(), cNode);
 
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();

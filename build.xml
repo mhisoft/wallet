@@ -118,8 +118,6 @@ also add the entry to the MANIFEST.MF
 
     </target>
 
-
-
     <target name="dist" description="package and distribute">
 
         <delete file="dist/${ARTIFACT_NAME}.exe"/>
