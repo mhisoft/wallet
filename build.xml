@@ -38,7 +38,10 @@ also add the entry to the MANIFEST.MF
 
         -->
 
-
+<!--
+build the project in intelliJ first to build the forms
+then ant dist to build the distribution
+-->
 
 <project name="eWallet build" default="dist" >
 
@@ -114,7 +117,7 @@ also add the entry to the MANIFEST.MF
 
         <maven dir="../parent-pom" argline="install"/>
         <maven dir="../common-utils" argline="clean install -DskipTests=true"/>
-        <maven dir=".." argline="package -DskipTests=true"/>
+        <maven dir="../wallet" argline="package -DskipTests=true"/>
 
     </target>
 
