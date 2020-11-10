@@ -53,7 +53,7 @@ public class VerifyPasswordAction implements Action {
 			}
 
 			//v12 data file has no combination Hash
-			if (ServiceRegistry.instance.getWalletModel().getCurrentDataFileVersion()>=13  //v13 data file can't have null combinations.
+			if (ServiceRegistry.instance.getWalletModel().getDataFileVersion()>=13  //v13 data file can't have null combinations.
 					) {
 				 verify = HashingUtils.verifyPassword(passVO.getCombination(), combinationHash);
 				if (!verify) {

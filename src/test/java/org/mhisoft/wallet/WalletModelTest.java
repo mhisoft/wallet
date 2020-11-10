@@ -23,7 +23,11 @@
 
 package org.mhisoft.wallet;
 
-import org.junit.jupiter.api.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -196,5 +200,18 @@ public class WalletModelTest {
 		Assertions.assertEquals(model.getItemsFlatList().get(8).getName(), "h-empty parent node");
 	}
 
+
+	@Test
+	public void whenSerializeAndDeserializeUsingJson(){
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String jsonStr = mapper.writeValueAsString(model);
+			System.out.println(jsonStr);
+			WalletModel newModel =  mapper.readValue(jsonStr, WalletModel.class);
+			Assertions.assertEquals(model, newModel);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

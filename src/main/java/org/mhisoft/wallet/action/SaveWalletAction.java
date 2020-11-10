@@ -46,7 +46,7 @@ public class SaveWalletAction implements Action {
 		model.buildFlatListFromTree();
 
 		try {
-			if (model.getCurrentDataFileVersion() < WalletModel.LATEST_DATA_VERSION) {
+			if (model.getDataFileVersion() < WalletModel.LATEST_DATA_VERSION) {
 				//data conversion.
 				//to be saved to the latest v13 version , prepare the new hashes.
 				// and need the combination hash set

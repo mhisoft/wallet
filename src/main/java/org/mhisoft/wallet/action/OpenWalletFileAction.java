@@ -23,9 +23,6 @@
 
 package org.mhisoft.wallet.action;
 
-import java.util.logging.Logger;
-import java.io.File;
-
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.FileContentHeader;
@@ -33,6 +30,9 @@ import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.view.DialogUtils;
 import org.mhisoft.wallet.view.PasswordForm;
 import org.mhisoft.wallet.view.ViewHelper;
+
+import java.io.File;
+import java.util.logging.Logger;
 
 /**
  * Description:
@@ -74,7 +74,7 @@ public class OpenWalletFileAction implements Action {
 				PasswordForm passwordForm = new PasswordForm("Opening file:"+ fileName);
 				passwordForm.showPasswordForm(ServiceRegistry.instance.getWalletForm(), null,null);
 				logger.info("Open file: " + fileName);
-				logger.info("\t version: " + model.getCurrentDataFileVersion());
+				logger.info("\t version: " + model.getDataFileVersion());
 
 				//hand off to the OK listener and
 

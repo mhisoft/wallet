@@ -23,14 +23,15 @@
 
 package org.mhisoft.wallet.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.mhisoft.common.event.EventDispatcher;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
 import org.mhisoft.common.util.security.PBEEncryptor;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Description: The model for the wallet view.
@@ -47,28 +48,45 @@ public class WalletModel {
 
 	 */
 	public static final int LATEST_DATA_VERSION = 14;
+	int dataFileVersion = LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
 	List<WalletItem> itemsFlatList = new ArrayList<>();
 	WalletItem currentItem;
+
+	@JsonIgnore
 	transient  String passHash;
+
+	@JsonIgnore
 	transient String combinationHash;
+
+	@JsonIgnore
 	boolean modified = false;
+
+	@JsonIgnore
 	private String vaultFileName;
 
+	@JsonIgnore
 	transient PBEEncryptor encryptor;
+
+	@JsonIgnore
 	transient PBEEncryptor encryptor_v12; //for reading the v12 data file
 
-	int dataFileVersion = LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
+	@JsonIgnore
 	private boolean addingNode = false;
 
-
+	@JsonIgnore
 	private transient PassCombinationVO passVO;
+	@JsonIgnore
 	private int deletedEntriesInStore;
 
+	@JsonIgnore
 	private transient boolean importing = false;
+	@JsonIgnore
 	private transient WalletModel impModel;
+	@JsonIgnore
 	private transient PassCombinationVO exportVaultPass;
+	@JsonIgnore
 	private transient String exportVaultFileName;
 
 
@@ -102,6 +120,7 @@ public class WalletModel {
 	}
 
 
+	@JsonIgnore
 	public boolean isWalletOpen() {
 		return this.passHash != null;
 	}
@@ -140,6 +159,7 @@ public class WalletModel {
 
 	}
 
+	@JsonIgnore
 	public PBEEncryptor getEncryptorForRead() {
 		if (dataFileVersion <= 12)
 			return encryptor_v12;
@@ -221,7 +241,7 @@ public class WalletModel {
 	 *
 	 * @return
 	 */
-	public int getCurrentDataFileVersion() {
+	public int getDataFileVersion() {
 		return dataFileVersion;
 	}
 
@@ -278,6 +298,7 @@ public class WalletModel {
 		return sb.toString();
 	}
 
+	@JsonIgnore
 	public WalletItem getRootItem() {
 		if (itemsFlatList.size() == 0)
 			return null;
@@ -455,6 +476,7 @@ public class WalletModel {
 	/**
 	 * @return PassCombinationEncryptionAdaptor
 	 */
+	@JsonIgnore
 	public PassCombinationVO getUserEnteredPassForVerification() {
 		if (dataFileVersion >= 13) {
 			return passVO;
@@ -468,12 +490,14 @@ public class WalletModel {
 		}
 	}
 
+	@JsonIgnore
 	public PassCombinationVO getPassVOForEncryptor() {
 		//ret.setPass(passPlain.spinner2 + passPlain.pass + passPlain.spinner1 + passPlain.spinner3);  //v12 version format
 		return getUserEnteredPassForVerification();
 	}
 
 
+	@JsonIgnore
 	public int getDeletedEntriesInStore() {
 		return deletedEntriesInStore;
 	}
@@ -523,6 +547,24 @@ public class WalletModel {
 
 	public void setExportVaultFileName(String exportVaultFileName) {
 		this.exportVaultFileName = exportVaultFileName;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		WalletModel that = (WalletModel) o;
+
+		if (itemsFlatList.size()!=that.itemsFlatList.size())
+			return false;
+
+		for (int i = 0; i < itemsFlatList.size(); i++) {
+			WalletItem walletItem = itemsFlatList.get(i);
+			if (!walletItem.compareContent(that.itemsFlatList.get(i))) //calls wallet item compare
+				return false;
+		}
+
+		return true;
 	}
 
 

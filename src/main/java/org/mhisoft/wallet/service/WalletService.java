@@ -103,7 +103,7 @@ public class WalletService {
 		/* save attachments. */
 		AttachmentService attachmentService = ServiceRegistry.instance.getService(BeanType.singleton, AttachmentService.class);
 		//upgrade the current store to the lates first.
-		if (model.getCurrentDataFileVersion()!=WalletModel.LATEST_DATA_VERSION) {
+		if (model.getDataFileVersion()!=WalletModel.LATEST_DATA_VERSION) {
 			upgradeAttachmentStore(filename, model, encryptor);
 		}
 		else {

@@ -188,7 +188,7 @@ public class AttachmentServiceTest {
 
 
 		//opened a old version file, need to save to v13 version on close. .
-		if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+		if (model.getDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
 			ServiceRegistry.instance.getWalletModel().setModified(true);
 			//the data file version in the model is the old version. do not set to latest.
 			//upgrade will happen if not the latest.
@@ -201,7 +201,7 @@ public class AttachmentServiceTest {
 
 		//read back to verify
 		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
-		Assertions.assertEquals(model.getCurrentDataFileVersion(), WalletModel.LATEST_DATA_VERSION);
+		Assertions.assertEquals(model.getDataFileVersion(), WalletModel.LATEST_DATA_VERSION);
 		Assertions.assertEquals(model.getItemsFlatList().size(), 3);
 		Assertions.assertNotNull(model.getItemsFlatList().get(1).getAttachmentEntry());
 		Assertions.assertNotNull(model.getItemsFlatList().get(2).getAttachmentEntry());
@@ -240,7 +240,7 @@ public class AttachmentServiceTest {
 		model = walletService.loadVaultIntoModel(storeFileName, model.getEncryptor() );
 
 		//opened a old version file, need to save to v13 version on close. .
-		if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+		if (model.getDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
 			ServiceRegistry.instance.getWalletModel().setModified(true);
 			//the data file version in the model is the old version. do not set to latest.
 			//upgrade will happen if not the latest.
