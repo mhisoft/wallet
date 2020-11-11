@@ -71,8 +71,7 @@ public class WalletServiceTest extends WalletFileTest {
 			f.delete();
 
 
-			walletService.exportItem(dNode, passVO2, eVaultFileExp );
-			walletService.exportItem(eNode, passVO2, eVaultFileExp );
+			walletService.exportItem(cNode, passVO2, eVaultFileExp );
 
 
 		   //rest read it back

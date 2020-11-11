@@ -525,5 +525,23 @@ public class WalletModel {
 		this.exportVaultFileName = exportVaultFileName;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		WalletModel that = (WalletModel) o;
+
+		if (itemsFlatList.size()!=that.itemsFlatList.size())
+			return false;
+
+		for (int i = 0; i < itemsFlatList.size(); i++) {
+			WalletItem walletItem = itemsFlatList.get(i);
+			if (!walletItem.compareContent(that.itemsFlatList.get(i))) //calls wallet item compare
+				return false;
+		}
+
+		return true;
+	}
+
 
 }
