@@ -45,9 +45,10 @@ public class WalletModel {
 	Vault database version history:
 	v13
 	v14 -- attachment file is compressed. no changes to the main vault structure.
+	v20 -- encryption related changes and java upgraded to 11.
 
 	 */
-	public static final int LATEST_DATA_VERSION = 14;
+	public static final int LATEST_DATA_VERSION = 20;
 	int dataFileVersion = LATEST_DATA_VERSION;  //version read from exist data file.   default to 13 for the new action.
 
 	List<WalletItem> itemsFlatList = new ArrayList<>();

@@ -62,9 +62,11 @@ public class WalletFileTest {
 		/*
 		     root
 		        --b
-		        --c --d
+		        --c
+		        	--d
 		            --e
-		        --f --g
+		        --f
+		        	--g
 
 		 */
 

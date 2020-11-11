@@ -44,6 +44,8 @@ public class DataServiceFactory {
 			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv13.class);
 		else if (version==14)
 			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv14.class);
+		else if (version==20)
+			return ServiceRegistry.instance.getService(BeanType.singleton, DataServiceImplv20.class);
 
 		throw new RuntimeException("version " + version + " not supported.");
 

@@ -82,13 +82,14 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	private transient FileAccessEntry newAttachmentEntry; //not null when current one is replaced by a new one.
 
 	public WalletItem() {
+		this.sysGUID = StringUtils.getGUID();
+		this.createdDate = new Timestamp(System.currentTimeMillis());
 	}
 
 	public WalletItem(ItemType type, String name) {
-		this.sysGUID = StringUtils.getGUID();
+		this();
 		this.type = type;
 		this.name = name;
-		this.createdDate = new Timestamp(System.currentTimeMillis());
 	}
 
 	public String getSysGUID() {

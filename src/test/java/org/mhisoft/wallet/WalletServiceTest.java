@@ -71,8 +71,7 @@ public class WalletServiceTest extends WalletFileTest {
 			f.delete();
 
 
-			walletService.exportItem(dNode, passVO2, eVaultFileExp );
-			walletService.exportItem(eNode, passVO2, eVaultFileExp );
+			walletService.exportItem(cNode, passVO2, eVaultFileExp );
 
 
 		   //rest read it back
@@ -96,11 +95,11 @@ public class WalletServiceTest extends WalletFileTest {
 			         --eNode
 			 */
 			Assertions.assertEquals(4, fc.getWalletItems().size()); //root and dnote
-			Assertions.assertEquals(fc.getWalletItems().get(1), cNode);
-			Assertions.assertEquals(fc.getWalletItems().get(2), dNode);
-			Assertions.assertEquals(fc.getWalletItems().get(3), eNode);
-			Assertions.assertEquals(dNode.getParent(), cNode);
-			Assertions.assertEquals(eNode.getParent(), cNode);
+			Assertions.assertTrue(fc.getWalletItems().get(1).isSame(cNode));
+			Assertions.assertTrue(fc.getWalletItems().get(2).isSame(dNode));
+			Assertions.assertTrue(fc.getWalletItems().get(3).isSame(eNode));
+			Assertions.assertTrue(dNode.getParent().isSame(cNode));
+			Assertions.assertTrue(eNode.getParent().isSame(cNode));
 
 		} catch (HashingUtils.CannotPerformOperationException e) {
 			e.printStackTrace();
