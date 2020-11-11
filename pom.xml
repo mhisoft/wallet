@@ -26,10 +26,11 @@
             <version>1.0</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
+                    <artifactId>vfsjfilechooser2</artifactId>
+                    <groupId>com.github.fracpete</groupId>
                 </exclusion>
             </exclusions>
+
         </dependency>
         <dependency>
             <groupId>com.fifesoft</groupId>
