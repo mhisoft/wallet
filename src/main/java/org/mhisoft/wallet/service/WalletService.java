@@ -341,7 +341,15 @@ public class WalletService {
 
 
         try {
+
+
             if (isExportToExistingVault) {
+
+                if ( model.isRoot( sourceItem )) {
+                    DialogUtils.getInstance().error("The root can not be exported to an existing vault. choose a new vault file");
+                    return;
+                }
+
                 exportModel.initEncryptor(exportVaultPassVO);
                 exportModel = loadVaultIntoModel(exportVaultFilename, exportModel.getEncryptor());
                 expRoot = exportModel.getRootItem();
@@ -352,19 +360,41 @@ public class WalletService {
                 String combinationHash2 = HashingUtils.createHash(exportVaultPassVO.getCombination());
                 exportModel.setHash(hash2, combinationHash2);
                 exportModel.initEncryptor(exportVaultPassVO);
-                expRoot = new WalletItem();
-                expRoot.setType(ItemType.category);
-                expRoot.setName("export-"+expRoot.getSysGUID());
+
+                if (model.isRoot( sourceItem )) {
+                    WalletItem newExportItem = sourceItem.clone();
+                    expRoot = newExportItem;
+                }
+                else {
+                    //need to create a new root
+                    expRoot = new WalletItem(ItemType.category, "export");
+
+                }
+                //add to the export model a root
                 exportModel.getItemsFlatList().add(expRoot);
+                exportModel.buildTreeFromFlatList();;
 
             }
 
 
             if (sourceItem.getType() == ItemType.category) {
+
                 //export this item and iterate the children
-                exportSingleItem(sourceItem, exportModel,  exportAttachmentVault);
-                for (WalletItem child:sourceItem.getChildren()) {
-                    exportSingleItem(child, exportModel,  exportAttachmentVault);
+                if (  !model.isRoot( sourceItem ) )
+                    //the root has been created above. don't need to export.
+                    exportSingleItem(sourceItem, exportModel,  exportAttachmentVault);
+
+                if (sourceItem.hasChildren()) {
+                    for (WalletItem child : sourceItem.getChildren()) {
+                        exportSingleItem(child, exportModel, exportAttachmentVault);
+
+                        //two levels only. so don't need to recursive
+                        if (child.getType() == ItemType.category && child.hasChildren()) {
+                            for (WalletItem grandChild : child.getChildren())
+                                exportSingleItem(grandChild, exportModel, exportAttachmentVault);
+                        }
+
+                    }
                 }
 
             } else {
