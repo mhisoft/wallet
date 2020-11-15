@@ -74,7 +74,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 	//   need Encryptor to be intialized first.
 	@Override
-	public StoreVO readFromFile(final String filename, final PBEEncryptor encryptor) {
+    public StoreVO readFromFile(final String filename, final PBEEncryptor encryptor) throws WalletServiceException {
 		//ByteArrayInputStream input = null;
 		//byte[] readBuf = new byte[DELIMITER_bytes.length];
 		StoreVO ret  = new StoreVO();
@@ -83,6 +83,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 
 		Serializer<WalletItem> serializer  = new Serializer<WalletItem>();
 		int readBytes = 0;
+        DataInputStream dataIn = null;
 		try {
 			//Encryptor encryptor = Encryptor.createInstance("testit&(9938447");
 
@@ -90,7 +91,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 			//don't read the whole file
 			//byte[] bytesWholeFile = FileUtils.readFile(filename);
 			FileInputStream fileIn = new FileInputStream( new File(filename));
-			DataInputStream dataIn = new DataInputStream(fileIn);
+            dataIn = new DataInputStream(fileIn);
 
 			readHeader(ret.getHeader(), fileIn, dataIn);
 
@@ -121,8 +122,7 @@ public class DataServiceImplv12 extends AbstractDataService {
 					WalletItem item = serializer.deserialize(byteItem);
 					walletItems.add(item);
 					k++;
-				}
-				else {
+                } else {
 					throw new RuntimeException("read " + readBytes +" bytes only, expected  objectSize:"+ objectSize);
 				}
 
@@ -131,7 +131,15 @@ public class DataServiceImplv12 extends AbstractDataService {
 			//end
 			e.printStackTrace();
 			DialogUtils.getInstance().error("Error occurred in readFromFile()", e.getMessage());
+            throw new WalletServiceException("Error occurred in readFromFile()", e);
+        } finally {
+            if (dataIn != null)
+                try {
+                    dataIn.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
 		}
+        }
 
 		return ret;
 

@@ -53,7 +53,7 @@ public class ExportItemsAction implements Action {
 
 		WalletItem sourceItem = ServiceRegistry.instance.getWalletModel().getCurrentItem();
 
-		if (sourceItem == null || sourceItem.getType() != ItemType.item) {
+		if (sourceItem == null) {
 			DialogUtils.getInstance().error("Error", "Select the item to export.");
 			return new ActionResult(false);
 		}
@@ -71,7 +71,7 @@ public class ExportItemsAction implements Action {
 		else {
 
 
-			VaultNameDialog.display("Export " + sourceItem.getName(), "Location of the new of existing Vault to export to:",
+			VaultNameDialog.display("Exporting" , "Export item '"+ sourceItem.getName() + "' to this eVault:",
 					"eVault-export-" + System.currentTimeMillis()
 					, new VaultNameDialog.NewVaultCallback() {
 						@Override
@@ -93,7 +93,7 @@ public class ExportItemsAction implements Action {
 			//2. for a new vault , get the password
 	  	    /*Delegate to the password form the create password*/
 			WalletForm form = ServiceRegistry.instance.getWalletForm();
-			PasswordForm passwordForm = new PasswordForm("Enter password for the vault for the export");
+			PasswordForm passwordForm = new PasswordForm("Enter the password for the target Vault:" + newVaultFileName);
 			passwordForm.showPasswordForm(form,
 					new PasswordForm.PasswordFormActionListener(null) {
 
@@ -114,6 +114,7 @@ public class ExportItemsAction implements Action {
 								ServiceRegistry.instance.getWalletService().exportItem(sourceItem, pass, newVaultFileName);
 								ServiceRegistry.instance.getWalletModel().setExportVaultFileName(newVaultFileName);
 								ServiceRegistry.instance.getWalletModel().setExportVaultPass(pass);
+								form.cancelEdit();
 
 							}
 

@@ -303,12 +303,12 @@ public class PasswordForm implements ActionListener {
 
 
 	public String getUserInputPass() {
-		return fldPassword.getText();
+		return new String(fldPassword.getPassword());
 	}
 
 
 	public String getCombinationDisplay() {
-		return comboBox1.getSelectedItem() + "-" + comboBox2.getSelectedItem() + "-" + comboBox3.getSelectedItem();
+		return spinner1Item.getValue() + "-" + spinner2Item.getValue() + "-" + spinner3Item.getValue();
 	}
 
 
@@ -332,7 +332,7 @@ public class PasswordForm implements ActionListener {
 				return null;
 			}
 
-			if (!passwordValidator.validate(fldPassword.getText())) {
+			if (!passwordValidator.validate( String.valueOf(fldPassword.getPassword()))) {
 				DialogUtils.getInstance().info("Please use a password following the above rules.");
 				return null;
 			}
@@ -352,7 +352,7 @@ public class PasswordForm implements ActionListener {
 		if (SystemSettings.isDevMode) {
 			passVO.setPass("Test123!");
 		} else {
-			passVO.setPass(fldPassword.getText());
+			passVO.setPass(String.valueOf(fldPassword.getPassword()));
 		}
 
 		model.setPassVO(passVO);

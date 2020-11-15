@@ -33,12 +33,7 @@ import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
-import org.mhisoft.wallet.service.BeanType;
-import org.mhisoft.wallet.service.DataService;
-import org.mhisoft.wallet.service.DataServiceFactory;
-import org.mhisoft.wallet.service.ServiceRegistry;
-import org.mhisoft.wallet.service.StoreVO;
-import org.mhisoft.wallet.service.WalletService;
+import org.mhisoft.wallet.service.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -151,7 +146,7 @@ public class WalletFileTest {
 			model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
 			assertEquals(7, model.getItemsFlatList().size());
 			assertEquals(hash, storeVO.getHeader().getPassHash());
-		} catch (HashingUtils.CannotPerformOperationException e) {
+		} catch (HashingUtils.CannotPerformOperationException | WalletServiceException e) {
 			e.printStackTrace();
 		}
 
@@ -181,7 +176,7 @@ public class WalletFileTest {
 			model.setItemsFlatList(storeVO.getWalletItems());
 			assertEquals(7, model.getItemsFlatList().size());
 			assertEquals(hash, storeVO.getHeader().getPassHash());
-		} catch (HashingUtils.CannotPerformOperationException e) {
+		} catch (HashingUtils.CannotPerformOperationException | WalletServiceException e) {
 			e.printStackTrace();
 		}
 
@@ -252,7 +247,7 @@ public class WalletFileTest {
 			model.setItemsFlatList(storeVO.getWalletItems());
 			assertEquals(7, model.getItemsFlatList().size());
 			assertEquals(hash, storeVO.getHeader().getPassHash());
-		} catch (HashingUtils.CannotPerformOperationException e) {
+		} catch (HashingUtils.CannotPerformOperationException | WalletServiceException  e) {
 			e.printStackTrace();
 		}
 
@@ -301,7 +296,7 @@ public class WalletFileTest {
 			f.delete();
 
 
-		} catch (HashingUtils.CannotPerformOperationException e) {
+		} catch (HashingUtils.CannotPerformOperationException | WalletServiceException  e) {
 			e.printStackTrace();
 		}
 

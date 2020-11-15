@@ -246,12 +246,10 @@ public class TreeExploreView {
 				form.btnAddNode.setEnabled(true);
 				form.btnDeleteNode.setEnabled(!currentItem.hasChildren());
 				form.btnMoveNode.setEnabled(false);
-				form.menuExport.setEnabled(false); //todo support in the future.
 			} else {
 				form.btnAddNode.setEnabled(true);
 				form.btnDeleteNode.setEnabled(true);
 				form.btnMoveNode.setEnabled(true);
-				form.menuExport.setEnabled(true);
 			}
 		}
 	}

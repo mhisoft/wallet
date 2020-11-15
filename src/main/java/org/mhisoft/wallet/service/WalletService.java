@@ -30,7 +30,7 @@ public class WalletService {
      * @param encryptor
      * @return
      */
-    public StoreVO loadVault(final String filename, final PBEEncryptor encryptor) {
+    public StoreVO loadVault(final String filename, final PBEEncryptor encryptor) throws WalletServiceException {
         FileContentHeader header = readHeader(filename, true);
         DataService ds = DataServiceFactory.createDataService(header.getVersion());
         StoreVO ret = ds.readFromFile(filename, encryptor);
@@ -61,6 +61,7 @@ public class WalletService {
      * @return a new model.
      */
     public WalletModel loadVaultIntoModel(final String vaultFileName, final PBEEncryptor encryptor) {
+        try {
         StoreVO vo = loadVault(vaultFileName, encryptor);
         WalletModel model = new WalletModel();
         model.setPassHash(vo.getHeader().getPassHash());
@@ -72,7 +73,11 @@ public class WalletService {
         model.buildTreeFromFlatList();
         model.setVaultFileName(vaultFileName);
         return model;
-
+        } catch (WalletServiceException e) {
+            e.printStackTrace();
+            DialogUtils.getInstance().error("Can not open Vault:" + vaultFileName, e.getMessage());
+        }
+        return null;
     }
 
 
@@ -342,6 +347,10 @@ public class WalletService {
 
         try {
             if (isExportToExistingVault) {
+                if ( model.isRoot( sourceItem )) {
+                    DialogUtils.getInstance().error("The root can not be exported to an existing vault. choose a new vault file");
+                    return;
+                }
                 exportModel.initEncryptor(exportVaultPassVO);
                 exportModel = loadVaultIntoModel(exportVaultFilename, exportModel.getEncryptor());
                 expRoot = exportModel.getRootItem();
@@ -352,19 +361,31 @@ public class WalletService {
                 String combinationHash2 = HashingUtils.createHash(exportVaultPassVO.getCombination());
                 exportModel.setHash(hash2, combinationHash2);
                 exportModel.initEncryptor(exportVaultPassVO);
-                expRoot = new WalletItem();
-                expRoot.setType(ItemType.category);
-                expRoot.setName("export-"+expRoot.getSysGUID());
+                if (model.isRoot( sourceItem )) {
+                    WalletItem newExportItem = sourceItem.clone();
+                    expRoot = newExportItem;
+                }
+                else {
+                    expRoot = new WalletItem(ItemType.category, "export");
+                }
                 exportModel.getItemsFlatList().add(expRoot);
+                exportModel.buildTreeFromFlatList();;
 
             }
 
 
             if (sourceItem.getType() == ItemType.category) {
                 //export this item and iterate the children
+                if (  !model.isRoot( sourceItem ) )
                 exportSingleItem(sourceItem, exportModel,  exportAttachmentVault);
+                if (sourceItem.hasChildren()) {
                 for (WalletItem child:sourceItem.getChildren()) {
                     exportSingleItem(child, exportModel,  exportAttachmentVault);
+                        if (child.getType() == ItemType.category && child.hasChildren()) {
+                            for (WalletItem grandChild : child.getChildren())
+                                exportSingleItem(grandChild, exportModel, exportAttachmentVault);
+                        }
+                    }
                 }
 
             } else {

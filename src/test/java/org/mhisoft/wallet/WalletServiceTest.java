@@ -32,6 +32,7 @@ import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.StoreVO;
+import org.mhisoft.wallet.service.WalletServiceException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -101,7 +102,7 @@ public class WalletServiceTest extends WalletFileTest {
 			assertEquals(dNode.getParent(), cNode);
 			assertEquals(eNode.getParent(), cNode);
 
-		} catch (HashingUtils.CannotPerformOperationException e) {
+		} catch (HashingUtils.CannotPerformOperationException | WalletServiceException e) {
 			e.printStackTrace();
 		}
 		finally {

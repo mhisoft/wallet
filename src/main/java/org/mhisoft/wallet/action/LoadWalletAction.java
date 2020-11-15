@@ -23,8 +23,6 @@
 
 package org.mhisoft.wallet.action;
 
-import java.io.File;
-
 import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -32,7 +30,10 @@ import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.IdleTimerService;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.StoreVO;
+import org.mhisoft.wallet.service.WalletServiceException;
 import org.mhisoft.wallet.view.WalletForm;
+
+import java.io.File;
 
 /**
  * Description: Action for loading the wallet.
@@ -43,83 +44,86 @@ import org.mhisoft.wallet.view.WalletForm;
 public class LoadWalletAction implements Action {
 
 
-	@Override
-	public ActionResult execute(Object... params) {
-		//PassCombinationVO pass = (PassCombinationVO) params[0];
+    @Override
+    public ActionResult execute(Object... params) {
+        //PassCombinationVO pass = (PassCombinationVO) params[0];
 
-		String fileName=null;
-		if (params.length>=3)
-			fileName = (String) params[2];
+        String fileName = null;
+        if (params.length >= 3)
+            fileName = (String) params[2];
 
-		if (fileName==null)
-		   fileName = WalletSettings.getInstance().getLastFile();
-		else {
-			WalletSettings.getInstance().setLastFile(fileName); //save will use this
-		}
-
-
-
-		WalletModel model  = ServiceRegistry.instance.getWalletModel();
-		model.setVaultFileName(fileName);
-		WalletItem curItem = model.getCurrentItem();
-		WalletForm form = ServiceRegistry.instance.getWalletForm();
+        if (fileName == null)
+            fileName = WalletSettings.getInstance().getLastFile();
+        else {
+            WalletSettings.getInstance().setLastFile(fileName); //save will use this
+        }
 
 
-		if (new File(fileName).isFile()) {
-			//read tree from the existing file
-			WalletSettings.getInstance().setLastFile(fileName);
-			WalletSettings.getInstance().addRecentFile(fileName);
-
-			/*need getPassVOForEncryptor from model*/
-			model.initEncryptor(model.getPassVOForEncryptor());
-			StoreVO storeVO = ServiceRegistry.instance.getWalletService().loadVault(fileName,
-					model.getEncryptorForRead());
-			model.setItemsFlatList(storeVO.getWalletItems());
-			model.setPassHash(storeVO.getHeader().getPassHash());
-			model.setCombinationHash(storeVO.getHeader().getCombinationHash());
-			model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
-			//opened a old version file, need to save to v13 version on close. .
-			int oldVersion = model.getCurrentDataFileVersion();
-			if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
-				ServiceRegistry.instance.getWalletModel().setModified(true);
-
-				//do the upgrade now.
-				ServiceRegistry.instance.getWalletService().saveVault(fileName, model, model.getEncryptor());
+        WalletModel model = ServiceRegistry.instance.getWalletModel();
+        model.setVaultFileName(fileName);
+        WalletItem curItem = model.getCurrentItem();
+        WalletForm form = ServiceRegistry.instance.getWalletForm();
 
 
-				//close the tree view.
+        try {
+            if (new File(fileName).isFile()) {
+                //read tree from the existing file
+                WalletSettings.getInstance().setLastFile(fileName);
+                WalletSettings.getInstance().addRecentFile(fileName);
 
-				PBEEncryptor encryptor = model.getEncryptorForRead();
-				form.resetForm();
-				//either way it is cleared
-				ServiceRegistry.instance.getWalletModel().reset();
+                /*need getPassVOForEncryptor from model*/
+                model.initEncryptor(model.getPassVOForEncryptor());
+                StoreVO storeVO = ServiceRegistry.instance.getWalletService().loadVault(fileName,
+                        model.getEncryptorForRead());
+                model.setItemsFlatList(storeVO.getWalletItems());
+                model.setPassHash(storeVO.getHeader().getPassHash());
+                model.setCombinationHash(storeVO.getHeader().getCombinationHash());
+                model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
+                //opened a old version file, need to save to v13 version on close. .
+                int oldVersion = model.getCurrentDataFileVersion();
+                if (model.getCurrentDataFileVersion() < WalletModel.LATEST_DATA_VERSION) {
+                    ServiceRegistry.instance.getWalletModel().setModified(true);
 
-				model = ServiceRegistry.instance.getWalletService().loadVaultIntoModel(fileName, encryptor );
-				form.setModel(model);
+                    //do the upgrade now.
+                    ServiceRegistry.instance.getWalletService().saveVault(fileName, model, model.getEncryptor());
+
+
+                    //close the tree view.
+
+                    PBEEncryptor encryptor = model.getEncryptorForRead();
+                    form.resetForm();
+                    //either way it is cleared
+                    ServiceRegistry.instance.getWalletModel().reset();
+
+                    model = ServiceRegistry.instance.getWalletService().loadVaultIntoModel(fileName, encryptor);
+                    form.setModel(model);
 //				if (curItem!=null)
 //					model.setCurrentItem( model.findItem(curItem.getSysGUID()));
 
-				//DialogUtils.getInstance().info("The vault has been upgrade from version "+ oldVersion+ " to " + WalletModel.LATEST_DATA_VERSION  );
-				form.showMessage("The vault has been upgrade from version v"+ oldVersion+ " to v" + WalletModel.LATEST_DATA_VERSION  );
+                    //DialogUtils.getInstance().info("The vault has been upgrade from version "+ oldVersion+ " to " + WalletModel.LATEST_DATA_VERSION  );
+                    form.showMessage("The vault has been upgrade from version v" + oldVersion + " to v" + WalletModel.LATEST_DATA_VERSION);
 
-			}
-
-
-		} else {
-			//new file, needs to be saved on close.
-			ServiceRegistry.instance.getWalletModel().setModified(true);
-			model.initEncryptor(model.getPassVOForEncryptor());
-		}
-
-		ServiceRegistry.instance.getWalletForm().loadTree();
-		ServiceRegistry.instance.getWalletForm().loadOptionsIntoView();
-
-		//start the idle count down timer
-		IdleTimerService.instance.start();
+                }
 
 
-		return new ActionResult(true);
+            } else {
+                //new file, needs to be saved on close.
+                ServiceRegistry.instance.getWalletModel().setModified(true);
+                model.initEncryptor(model.getPassVOForEncryptor());
+            }
 
-	}
+            ServiceRegistry.instance.getWalletForm().loadTree();
+            ServiceRegistry.instance.getWalletForm().loadOptionsIntoView();
+
+            //start the idle count down timer
+            IdleTimerService.instance.start();
+        } catch (WalletServiceException e) {
+            return new ActionResult(false);
+        }
+
+
+        return new ActionResult(true);
+
+    }
 
 }
