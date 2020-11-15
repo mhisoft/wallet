@@ -23,9 +23,9 @@
 
 package org.mhisoft.wallet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
-import org.testng.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Description:
@@ -38,17 +38,17 @@ public class PassCombinationEncryptionAdaptorTest {
 	@Test
 	public void test1() {
 		PassCombinationEncryptionAdaptor pass = new PassCombinationEncryptionAdaptor("Test123!","123");
-		Assert.assertEquals(pass.getCombination(),"123");
-		Assert.assertEquals(pass.getPass(),"Test123!");
-		Assert.assertEquals(pass.getPassAndCombination(),"Test123!123");
+		Assertions.assertEquals(pass.getCombination(),"123");
+		Assertions.assertEquals(pass.getPass(),"Test123!");
+		Assertions.assertEquals(pass.getPassAndCombination(),"Test123!123");
 
 		pass.setCombination("2","3","4");
-		Assert.assertEquals(pass.getSpinner1(),"2");
-		Assert.assertEquals(pass.getSpinner2(),"3");
-		Assert.assertEquals(pass.getSpinner3(),"4");
+		Assertions.assertEquals(pass.getSpinner1(),"2");
+		Assertions.assertEquals(pass.getSpinner2(),"3");
+		Assertions.assertEquals(pass.getSpinner3(),"4");
 
 		pass.setPass("newPa&!@@");
-		Assert.assertEquals(pass.getPass(),"newPa&!@@");
+		Assertions.assertEquals(pass.getPass(),"newPa&!@@");
 
 
 	}

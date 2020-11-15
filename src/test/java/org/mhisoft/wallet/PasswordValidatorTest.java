@@ -23,10 +23,10 @@
 
 package org.mhisoft.wallet;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mhisoft.wallet.model.PasswordValidator;
+import  org.junit.jupiter.api.Assertions;
 
 /**
  * Description:
@@ -37,7 +37,7 @@ import org.mhisoft.wallet.model.PasswordValidator;
 public class PasswordValidatorTest {
 	private static PasswordValidator passwordValidator;
 
-	@BeforeClass
+	@BeforeAll
 	public static void initData(){
 		passwordValidator = new PasswordValidator();
 	}
@@ -49,7 +49,7 @@ public class PasswordValidatorTest {
 		for(String temp : passwords){
 			boolean valid = passwordValidator.validate(temp);
 			System.out.println("Password is valid : " + temp + " , " + valid);
-			Assert.assertEquals(true, valid);
+			Assertions.assertEquals(true, valid);
 		}
 
 	}
@@ -64,7 +64,7 @@ public class PasswordValidatorTest {
 		for(String temp : passwords){
 			boolean valid = passwordValidator.validate(temp);
 			System.out.println("Password is valid : " + temp + " , " + valid);
-			Assert.assertEquals(false, valid);
+			Assertions.assertEquals(false, valid);
 		}
 	}
 }

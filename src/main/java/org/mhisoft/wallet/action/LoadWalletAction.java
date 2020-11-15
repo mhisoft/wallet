@@ -23,8 +23,6 @@
 
 package org.mhisoft.wallet.action;
 
-import java.io.File;
-
 import org.mhisoft.common.util.security.PBEEncryptor;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -33,6 +31,8 @@ import org.mhisoft.wallet.service.IdleTimerService;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.StoreVO;
 import org.mhisoft.wallet.view.WalletForm;
+
+import java.io.File;
 
 /**
  * Description: Action for loading the wallet.
@@ -79,8 +79,8 @@ public class LoadWalletAction implements Action {
 			model.setCombinationHash(storeVO.getHeader().getCombinationHash());
 			model.setDeletedEntriesInStore(storeVO.getDeletedEntriesInStore());
 			//opened a old version file, need to save to v13 version on close. .
-			int oldVersion = model.getCurrentDataFileVersion();
-			if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+			int oldVersion = model.getDataFileVersion();
+			if (model.getDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
 				ServiceRegistry.instance.getWalletModel().setModified(true);
 
 				//do the upgrade now.

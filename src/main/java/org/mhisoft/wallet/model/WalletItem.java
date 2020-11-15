@@ -23,18 +23,20 @@
 
 package org.mhisoft.wallet.model;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.io.IOException;
-import java.io.Serializable;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.mhisoft.common.util.ReflectionUtil;
 import org.mhisoft.common.util.Serializer;
 import org.mhisoft.common.util.StringUtils;
 import org.mhisoft.wallet.service.ServiceRegistry;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Description:
@@ -70,25 +72,24 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 
 	//the item is serialized when writting to the vault.
 	// do not include the attachment entries.
+	@JsonIgnore
 	private transient WalletItem parent;
+	@JsonIgnore
 	private transient List<WalletItem> children;
+	@JsonIgnore
 	private transient FileAccessEntry attachmentEntry;    //the attachment entry.
+	@JsonIgnore
 	private transient FileAccessEntry newAttachmentEntry; //not null when current one is replaced by a new one.
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		WalletItem that = (WalletItem) o;
-
-		return sysGUID.equals(that.sysGUID);
-
+	public WalletItem() {
+		this.sysGUID = StringUtils.getGUID();
+		this.createdDate = new Timestamp(System.currentTimeMillis());
 	}
 
-	@Override
-	public int hashCode() {
-		return sysGUID.hashCode();
+	public WalletItem(ItemType type, String name) {
+		this();
+		this.type = type;
+		this.name = name;
 	}
 
 	public String getSysGUID() {
@@ -253,12 +254,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		this.detail3 = detail3;
 	}
 
-	public WalletItem(ItemType type, String name) {
-		this.sysGUID = StringUtils.getGUID();
-		this.type = type;
-		this.name = name;
-		this.createdDate = new Timestamp(System.currentTimeMillis());
-	}
+
 
 	public WalletItem getParent() {
 		return parent;
@@ -314,6 +310,36 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 		return this.name.compareTo(o.getName());
 	}
 
+
+	public boolean compareContent(WalletItem that) {
+		if (this == that) return true;
+		if (that == null || getClass() != that.getClass()) return false;
+		return sysGUID.equals(that.sysGUID) &&
+				type == that.type &&
+				Objects.equals(name, that.name) &&
+				Objects.equals(URL, that.URL) &&
+				Objects.equals(userName, that.userName) &&
+				Objects.equals(accountNumber, that.accountNumber) &&
+				Objects.equals(password, that.password) &&
+				Objects.equals(expMonth, that.expMonth) &&
+				Objects.equals(expYear, that.expYear) &&
+				Objects.equals(pin, that.pin) &&
+				Objects.equals(cvc, that.cvc) &&
+				Objects.equals(accountType, that.accountType) &&
+				Objects.equals(phone, that.phone) &&
+				Objects.equals(detail1, that.detail1) &&
+				Objects.equals(detail2, that.detail2) &&
+				Objects.equals(detail3, that.detail3) &&
+				Objects.equals(notes, that.notes) &&
+				Objects.equals(createdDate, that.createdDate) &&
+				Objects.equals(lastViewdDate, that.lastViewdDate) &&
+				Objects.equals(lastModifiedDate, that.lastModifiedDate);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(sysGUID, type, name, URL, userName, accountNumber, password, expMonth, expYear, pin, cvc, accountType, phone, detail1, detail2, detail3, notes, createdDate, lastViewdDate, lastModifiedDate);
+	}
 
 	public String toStringJson() {
 		return "WalletItem{" +
@@ -476,6 +502,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 				;
 	}
 
+	@JsonIgnore
 	public FileAccessEntry getOrCreateAttachmentEntry() {
 		if (attachmentEntry==null) {
 			this.attachmentEntry =  new FileAccessEntry(this.sysGUID);
@@ -536,6 +563,7 @@ public class WalletItem implements Serializable, Comparable<WalletItem> {
 	 * return either the entry or the updated one
 	 * @return
 	 */
+	@JsonIgnore
 	public FileAccessEntry getFileAccessEntryForDisplay() {
 		if (attachmentEntry==null || attachmentEntry.getAccessFlag()==null)
 			return attachmentEntry;

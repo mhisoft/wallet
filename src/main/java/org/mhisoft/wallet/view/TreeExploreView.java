@@ -23,20 +23,6 @@
 
 package org.mhisoft.wallet.view;
 
-import java.util.Enumeration;
-import java.util.logging.Logger;
-
-import javax.swing.JFrame;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
 import org.mhisoft.common.event.EventDispatcher;
 import org.mhisoft.common.event.EventType;
 import org.mhisoft.common.event.MHIEvent;
@@ -47,6 +33,13 @@ import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.model.WalletSettings;
 import org.mhisoft.wallet.service.BeanType;
 import org.mhisoft.wallet.service.ServiceRegistry;
+
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.*;
+import java.util.Enumeration;
+import java.util.logging.Logger;
 
 /**
  * Description: TreeExploreView
@@ -246,12 +239,10 @@ public class TreeExploreView {
 				form.btnAddNode.setEnabled(true);
 				form.btnDeleteNode.setEnabled(!currentItem.hasChildren());
 				form.btnMoveNode.setEnabled(false);
-				form.menuExport.setEnabled(false); //todo support in the future.
 			} else {
 				form.btnAddNode.setEnabled(true);
 				form.btnDeleteNode.setEnabled(true);
 				form.btnMoveNode.setEnabled(true);
-				form.menuExport.setEnabled(true);
 			}
 		}
 	}

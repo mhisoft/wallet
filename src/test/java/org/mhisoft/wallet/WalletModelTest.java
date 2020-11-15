@@ -23,9 +23,11 @@
 
 package org.mhisoft.wallet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.model.WalletModel;
@@ -36,6 +38,7 @@ import org.mhisoft.wallet.model.WalletModel;
  * @author Tony Xue
  * @since Mar, 2016
  */
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WalletModelTest {
 	WalletModel model;
 	WalletItem root;
@@ -47,7 +50,7 @@ public class WalletModelTest {
 	WalletItem hNode;
 
 
-	@Before
+	@BeforeEach
 	public void setup() {
 
 		/*
@@ -90,7 +93,7 @@ public class WalletModelTest {
 	public void testAddItem() {
 		try {
 			model.addItem(root, new WalletItem(ItemType.item, "root-child-item-1"));
-			Assert.fail("should not be able to add item to the root");
+			Assertions.fail("should not be able to add item to the root");
 		} catch (Exception e) {
 			//good
 		}
@@ -105,30 +108,30 @@ public class WalletModelTest {
 		WalletItem hChild = new WalletItem(ItemType.item, "hChild");
 		model.addItem(hNode, hChild);
 
-		Assert.assertEquals(5, root.getChildren().size());
-		Assert.assertEquals(3, dNode.getParent().getChildren().size());
-		Assert.assertEquals(2, gNode.getParent().getChildren().size());
-		Assert.assertEquals(1, hNode.getChildren().size());
+		Assertions.assertEquals(5, root.getChildren().size());
+		Assertions.assertEquals(3, dNode.getParent().getChildren().size());
+		Assertions.assertEquals(2, gNode.getParent().getChildren().size());
+		Assertions.assertEquals(1, hNode.getChildren().size());
 
 
 		//veriry the flat list
 
 		model.buildFlatListFromTree();
 		//last node now is root child 1
-		Assert.assertEquals(rootChild1, model.getItemsFlatList().get(model.getItemsFlatList().size() - 1));
+		Assertions.assertEquals(rootChild1, model.getItemsFlatList().get(model.getItemsFlatList().size() - 1));
 		//fNode's last children is the  fChild1.
-		Assert.assertEquals(fChild1, fNode.getChildren().get(fNode.getChildren().size() - 1));
+		Assertions.assertEquals(fChild1, fNode.getChildren().get(fNode.getChildren().size() - 1));
 	}
 
 	@Test
 	public void testRemoveItem() {
 		model.removeItem(gNode);
-		Assert.assertEquals(0, fNode.getChildren().size());
+		Assertions.assertEquals(0, fNode.getChildren().size());
 
 		model.removeItem(eNode);
-		Assert.assertEquals(1, cNode.getChildren().size());
-		Assert.assertEquals(dNode, model.getItemsFlatList().get(3));
-		Assert.assertEquals(fNode, model.getItemsFlatList().get(4));
+		Assertions.assertEquals(1, cNode.getChildren().size());
+		Assertions.assertEquals(dNode, model.getItemsFlatList().get(3));
+		Assertions.assertEquals(fNode, model.getItemsFlatList().get(4));
 	}
 
 	@Test
@@ -136,21 +139,21 @@ public class WalletModelTest {
 
 
 		WalletItem root = model.getItemsFlatList().get(0);
-		Assert.assertEquals(4, root.getChildren().size());
+		Assertions.assertEquals(4, root.getChildren().size());
 		WalletItem cNode = model.getNodeByGUID(model.getItemsFlatList().get(2).getSysGUID());
-		Assert.assertEquals(2, cNode.getChildren().size());
-		Assert.assertEquals(cNode.getParent(), root);
+		Assertions.assertEquals(2, cNode.getChildren().size());
+		Assertions.assertEquals(cNode.getParent(), root);
 
 
 		//to flat list again.
 		model.buildFlatListFromTree();
-		Assert.assertEquals(model.getItemsFlatList().get(0).getName(), "root");
-		Assert.assertEquals(model.getItemsFlatList().get(1).getName(), "b");
-		Assert.assertEquals(model.getItemsFlatList().get(2).getName(), "c");
-		Assert.assertEquals(model.getItemsFlatList().get(3).getName(), "d");
-		Assert.assertEquals(model.getItemsFlatList().get(4).getName(), "e");
-		Assert.assertEquals(model.getItemsFlatList().get(5).getName(), "f");
-		Assert.assertEquals(model.getItemsFlatList().get(6).getName(), "g");
+		Assertions.assertEquals(model.getItemsFlatList().get(0).getName(), "root");
+		Assertions.assertEquals(model.getItemsFlatList().get(1).getName(), "b");
+		Assertions.assertEquals(model.getItemsFlatList().get(2).getName(), "c");
+		Assertions.assertEquals(model.getItemsFlatList().get(3).getName(), "d");
+		Assertions.assertEquals(model.getItemsFlatList().get(4).getName(), "e");
+		Assertions.assertEquals(model.getItemsFlatList().get(5).getName(), "f");
+		Assertions.assertEquals(model.getItemsFlatList().get(6).getName(), "g");
 
 	}
 
@@ -185,17 +188,30 @@ public class WalletModelTest {
 
 		model.buildFlatListFromTree();
 
-		Assert.assertEquals(model.getItemsFlatList().get(0).getName(), "root");
-		Assert.assertEquals(model.getItemsFlatList().get(1).getName(), "b");
-		Assert.assertEquals(model.getItemsFlatList().get(2).getName(), "c");
-		Assert.assertEquals(model.getItemsFlatList().get(3).getName(), "d");
-		Assert.assertEquals(model.getItemsFlatList().get(4).getName(), "e");
-		Assert.assertEquals(model.getItemsFlatList().get(5).getName(), "c2");
+		Assertions.assertEquals(model.getItemsFlatList().get(0).getName(), "root");
+		Assertions.assertEquals(model.getItemsFlatList().get(1).getName(), "b");
+		Assertions.assertEquals(model.getItemsFlatList().get(2).getName(), "c");
+		Assertions.assertEquals(model.getItemsFlatList().get(3).getName(), "d");
+		Assertions.assertEquals(model.getItemsFlatList().get(4).getName(), "e");
+		Assertions.assertEquals(model.getItemsFlatList().get(5).getName(), "c2");
 
-		Assert.assertEquals(model.getItemsFlatList().get(6).getName(), "f");
-		Assert.assertEquals(model.getItemsFlatList().get(7).getName(), "g");
-		Assert.assertEquals(model.getItemsFlatList().get(8).getName(), "h-empty parent node");
+		Assertions.assertEquals(model.getItemsFlatList().get(6).getName(), "f");
+		Assertions.assertEquals(model.getItemsFlatList().get(7).getName(), "g");
+		Assertions.assertEquals(model.getItemsFlatList().get(8).getName(), "h-empty parent node");
 	}
 
+
+	@Test
+	public void whenSerializeAndDeserializeUsingJson(){
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String jsonStr = mapper.writeValueAsString(model);
+			System.out.println(jsonStr);
+			WalletModel newModel =  mapper.readValue(jsonStr, WalletModel.class);
+			Assertions.assertEquals(model, newModel);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

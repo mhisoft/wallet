@@ -23,9 +23,6 @@
 
 package org.mhisoft.wallet.action;
 
-import java.awt.event.ActionEvent;
-
-import org.mhisoft.wallet.model.ItemType;
 import org.mhisoft.wallet.model.PassCombinationVO;
 import org.mhisoft.wallet.model.WalletItem;
 import org.mhisoft.wallet.service.ServiceRegistry;
@@ -33,6 +30,8 @@ import org.mhisoft.wallet.view.DialogUtils;
 import org.mhisoft.wallet.view.PasswordForm;
 import org.mhisoft.wallet.view.VaultNameDialog;
 import org.mhisoft.wallet.view.WalletForm;
+
+import java.awt.event.ActionEvent;
 
 /**
  * Description: Action for creating a new Vault.
@@ -53,7 +52,7 @@ public class ExportItemsAction implements Action {
 
 		WalletItem sourceItem = ServiceRegistry.instance.getWalletModel().getCurrentItem();
 
-		if (sourceItem == null || sourceItem.getType() != ItemType.item) {
+		if (sourceItem == null) {
 			DialogUtils.getInstance().error("Error", "Select the item to export.");
 			return new ActionResult(false);
 		}
@@ -71,7 +70,7 @@ public class ExportItemsAction implements Action {
 		else {
 
 
-			VaultNameDialog.display("Export " + sourceItem.getName(), "Location of the new of existing Vault to export to:",
+			VaultNameDialog.display("Exporting" , "Export item '"+ sourceItem.getName() + "' to this eVault:",
 					"eVault-export-" + System.currentTimeMillis()
 					, new VaultNameDialog.NewVaultCallback() {
 						@Override

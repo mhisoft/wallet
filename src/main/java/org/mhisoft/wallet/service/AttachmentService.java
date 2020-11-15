@@ -573,9 +573,9 @@ public class AttachmentService {
 					throw new IOException("impAttachmentStoreName is not set.");
 				//depends on the import model version, it might or might not be compressed
 				//test case: import an old version data file with attachments.
-				byte[] _impBytes = readCompressedFileContent(  model.getImpModel().getCurrentDataFileVersion(),
+				byte[] _impBytes = readCompressedFileContent(  model.getImpModel().getDataFileVersion(),
 						impAttachmentStoreName, fileAccessEntry, model.getImpModel().getEncryptor());
-				if  (model.getImpModel().getCurrentDataFileVersion()>=WalletModel.LATEST_DATA_VERSION) {
+				if  (model.getImpModel().getDataFileVersion()>=WalletModel.LATEST_DATA_VERSION) {
 					//it is compressed.
 					attachmentBytes = _impBytes;
 				}
@@ -589,10 +589,10 @@ public class AttachmentService {
 				// no change, this is an transfer to the new store. need to read the filecontent from the old store.
 				// could be upgrade scenario as well.
 				// should be able to skip the compression-decompression process.
-				byte[] _bytes =readCompressedFileContent( model.getCurrentDataFileVersion(),
+				byte[] _bytes =readCompressedFileContent( model.getDataFileVersion(),
 						oldStoreFileName, fileAccessEntry, oldEncryptorForRead);
 
-				if  (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+				if  (model.getDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
 					//it was not compressed.
 					attachmentBytes = CompressionUtil.getCompressedBytes(new ByteArrayInputStream(_bytes));
 					logger.fine("\t transfer from old store. compress contennt. before "+ _bytes.length +", after:" + attachmentBytes.length);
@@ -606,7 +606,7 @@ public class AttachmentService {
 				//since v14 , start to compress the contents.
 				File f = fileAccessEntry.getFile();
 				FileInputStream sourceInputStream = new FileInputStream(f);
-				if (model.getCurrentDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
+				if (model.getDataFileVersion()<WalletModel.LATEST_DATA_VERSION) {
 					//for testing, write the old version format. un-compressed
 					attachmentBytes = FileUtils.readFile(sourceInputStream);
 					logger.fine("\t write entry by reading from file, not compressed: " + fileAccessEntry.getFile()

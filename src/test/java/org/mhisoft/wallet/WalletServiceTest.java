@@ -23,9 +23,8 @@
 
 package org.mhisoft.wallet;
 
-import java.io.File;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mhisoft.common.util.security.HashingUtils;
 import org.mhisoft.wallet.model.PassCombinationEncryptionAdaptor;
 import org.mhisoft.wallet.model.PassCombinationVO;
@@ -33,7 +32,8 @@ import org.mhisoft.wallet.model.WalletModel;
 import org.mhisoft.wallet.service.ServiceRegistry;
 import org.mhisoft.wallet.service.StoreVO;
 
-import static org.junit.Assert.assertEquals;
+import java.io.File;
+
 
 /**
  * Description:
@@ -42,51 +42,61 @@ import static org.junit.Assert.assertEquals;
  * @since Nov, 2017
  */
 public class WalletServiceTest extends WalletFileTest {
+    PassCombinationVO passVO2;
+
+    WalletModel expModel;
 
 
-	@Test
-	public void testExportEntry() {
-		String eVaultFileExp = "test_vault_001_exported.dat";
-		File f=null;
-		try {
+    public void parepareSourceVault(String eVaultFileExp) {
+
+        try {
+            model.setVaultFileName("test_vault_001.dat");
+            ServiceRegistry.instance.getWalletForm().setModel(model);
+            PassCombinationVO passVO = new PassCombinationEncryptionAdaptor("testPa!ss213%", "112233");
+            String hash = HashingUtils.createHash(passVO.getPass());
+            String combinationHash = HashingUtils.createHash(passVO.getCombination());
+            model.setHash(hash, combinationHash);
+            model.initEncryptor(passVO);
+
+            passVO2 = new PassCombinationEncryptionAdaptor("testPa!ss213%_new", "030405");
+            expModel = new WalletModel();
+            expModel.initEncryptor(passVO2);
+
+            new File(eVaultFileExp).delete();
 
 
-			model.getItemsFlatList().clear();
-			model.setupTestData();
-			model.setVaultFileName("test_vault_001.dat");
-			ServiceRegistry.instance.getWalletForm().setModel(model);
-			PassCombinationVO passVO = new PassCombinationEncryptionAdaptor("testPa!ss213%", "112233") ;
-			String hash = HashingUtils.createHash(passVO.getPass());
-			String combinationHash = HashingUtils.createHash(passVO.getCombination());
-			model.setHash(hash, combinationHash);
-			model.initEncryptor(passVO);
+        } catch (HashingUtils.CannotPerformOperationException e) {
+            e.printStackTrace();
+        }
+        finally {
+            new File(eVaultFileExp).delete();
+        }
+    }
 
 
-			PassCombinationVO passVO2 = new PassCombinationEncryptionAdaptor("testPa!ss213%_new","030405") ;
-			WalletModel expModel = new WalletModel();
-			expModel.initEncryptor(passVO2);
+    @Test
+    public void testExportEntry() {
 
-			//save to the export vault.
-			f = new File(eVaultFileExp);
-			f.delete();
+        String eVaultFileExp = "test_vault_001_exported_1.dat";
+        parepareSourceVault(eVaultFileExp);
+
+        walletService.exportItem(cNode, passVO2, eVaultFileExp);
+
+        try {
+            // read it back
+            String hash2 = HashingUtils.createHash(passVO2.getPass());
+            String combinationHash2 = HashingUtils.createHash(passVO2.getCombination());
+            expModel.setHash(hash2, combinationHash2);
+
+            StoreVO fc = walletService.loadVault(eVaultFileExp, expModel.getEncryptor());
+
+            if (!new File(eVaultFileExp).delete())
 
 
-			walletService.exportItem(dNode, passVO2, eVaultFileExp );
-			walletService.exportItem(eNode, passVO2, eVaultFileExp );
+            model.getItemsFlatList().clear();
+            model.setItemsFlatList(fc.getWalletItems());
+            model.buildTreeFromFlatList();
 
-
-		   //rest read it back
-
-
-			String hash2 = HashingUtils.createHash(passVO2.getPass());
-			String combinationHash2 = HashingUtils.createHash(passVO2.getCombination());
-			expModel.setHash(hash2, combinationHash2);
-
-			StoreVO fc  = walletService.loadVault(eVaultFileExp, expModel.getEncryptor() );
-
-			model.getItemsFlatList().clear();
-			model.setItemsFlatList(fc.getWalletItems());
-			model.buildTreeFromFlatList();
 
 			/*
 
@@ -95,21 +105,78 @@ public class WalletServiceTest extends WalletFileTest {
 			         --dNode
 			         --eNode
 			 */
-			assertEquals(4, fc.getWalletItems().size()); //root and dnote
-			assertEquals(fc.getWalletItems().get(1), cNode);
-			assertEquals(fc.getWalletItems().get(2), dNode);
-			assertEquals(fc.getWalletItems().get(3), eNode);
-			assertEquals(dNode.getParent(), cNode);
-			assertEquals(eNode.getParent(), cNode);
 
-		} catch (HashingUtils.CannotPerformOperationException e) {
-			e.printStackTrace();
-		}
-		finally {
-			if (f!=null)
-				f.delete();
-		}
+            Assertions.assertEquals(4, fc.getWalletItems().size());
+            Assertions.assertTrue(fc.getWalletItems().get(1).isSame(cNode));
+            Assertions.assertTrue(fc.getWalletItems().get(2).isSame(dNode));
+            Assertions.assertTrue(fc.getWalletItems().get(3).isSame(eNode));
+            Assertions.assertTrue(dNode.getParent().isSame(cNode));
+            Assertions.assertTrue(eNode.getParent().isSame(cNode));
 
-	}
+        } catch (HashingUtils.CannotPerformOperationException e) {
+            e.printStackTrace();
+        }
+        finally {
+            new File(eVaultFileExp).delete();
+        }
+
+
+    }
+
+    @Test
+    public void exportRoot() {
+
+        String eVaultFileExp = "test_vault_001_exported_2.dat";
+
+        parepareSourceVault(eVaultFileExp);
+
+        walletService.exportItem(root, passVO2, eVaultFileExp);
+
+        try {
+            // read it back
+            String hash2 = HashingUtils.createHash(passVO2.getPass());
+            String combinationHash2 = HashingUtils.createHash(passVO2.getCombination());
+            expModel.setHash(hash2, combinationHash2);
+
+            StoreVO fc = walletService.loadVault(eVaultFileExp, expModel.getEncryptor());
+
+            model.getItemsFlatList().clear();
+            model.setItemsFlatList(fc.getWalletItems());
+            model.buildTreeFromFlatList();
+
+
+		/*
+		     root
+		        --b
+		        --c
+		        	--d
+		            --e
+		        --f
+		        	--g
+
+		 */
+            Assertions.assertEquals(7, fc.getWalletItems().size()); //root and dnote
+            Assertions.assertTrue(fc.getWalletItems().get(0).isSame(root));
+            Assertions.assertTrue(fc.getWalletItems().get(1).isSame(bNode));
+            Assertions.assertTrue(fc.getWalletItems().get(2).isSame(cNode));
+            Assertions.assertTrue(fc.getWalletItems().get(3).isSame(dNode));
+            Assertions.assertTrue(fc.getWalletItems().get(4).isSame(eNode));
+            Assertions.assertTrue(fc.getWalletItems().get(5).isSame(fNode));
+            Assertions.assertTrue(fc.getWalletItems().get(6).isSame(gNode));
+
+            Assertions.assertEquals(3, fc.getWalletItems().get(0).getChildren().size()); //root has three children
+            Assertions.assertNull( fc.getWalletItems().get(1).getChildren()); //bnode
+            Assertions.assertEquals(2, fc.getWalletItems().get(2).getChildren().size()); //cnode has 2 children
+            Assertions.assertEquals(1, fc.getWalletItems().get(5).getChildren().size()); //fnode has 1 children
+
+
+        } catch (HashingUtils.CannotPerformOperationException e) {
+            e.printStackTrace();
+        }
+        finally {
+            new File(eVaultFileExp).delete();
+        }
+
+    }
 
 }
