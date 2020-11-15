@@ -30,9 +30,6 @@ dist/evault-1.3.5.exe
 dist/evault-1.3.6.jar
 dist/MHISoft-eVault-1.3.6-bin-for-WindowsOS.zip
 Thumbs.db
-dist/MHISoft eVault 1.3 alias
-dist/MHISoft eVault 1.3-bin-for-MacOS.zip
-dist/MHISoft eVault 1.3.5 alias
-dist/MHISoft eVault 1.3.5-bin-for-MacOS.zip
-dist/MHISoft eVault 1.3.6 alias
-dist/MHISoft-eVault-1.3.8-bin-for-WindowsOS.zip
+dist/MHISoft eVault * alias
+dist/MHISoft eVault *-bin-for-MacOS.zip
+dist/MHISoft-*-bin-for-WindowsOS.zip
