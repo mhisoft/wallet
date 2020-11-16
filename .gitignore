@@ -43,3 +43,5 @@ dist/MHISoft-*-bin-for-WindowsOS.zip
 .idea/**/dictionaries
 .idea/**/shelf
 .idea/**/libraries
+.idea/**/vcs.xml
+.idea/**/gradle.xml
