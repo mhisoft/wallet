@@ -44,14 +44,15 @@ also add the entry to the MANIFEST.MF
 
     <property environment="env"/>
 
-    <!-- adjust to your location -->
-    <property name="launch4j.home.dir" value="c:/bin/Launch4j"/>
 
     <!--
          PROPERTY FILE HIERARCHY:
             first declared properties wins!
      -->
     <property file="local.properties"/>
+    <!-- adjust to your location -->
+    <property name="launch4j.home.dir" value="c:/bin/Launch4j"/>
+
 
     <property name="version" value="1.4.0"/>
     <property name="commonutil.version" value="1.0"/>
@@ -61,7 +62,6 @@ also add the entry to the MANIFEST.MF
 
     <property name="application.title" value="MHISoft eVault"/>
     <property name="launch4j.tmp.make.dir" value="dist/tmp_make_exe"/>
-    <!--<property name="launch4j.home.dir" location="/Users/i831964/bin/launch4j" />-->
 
     <property name="MAC_JRE_BUNDLE_DIR" value="dist/MAC/jdk1.8.0_51.jdk/Contents/Home"/>
 
@@ -131,18 +131,18 @@ also add the entry to the MANIFEST.MF
         <copy file="target/${ARTIFACT_NAME}.jar" todir="dist" overwrite="true" failonerror="true"/>
         <copy file="../common-utils/target/common-utils-${commonutil.version}.jar" todir="dist\lib" overwrite="true"/>
 
-        <!--<if>-->
-            <!--<equals arg1="${isWindows}" arg2="true"/>-->
-            <!--<then>-->
-                <!--<antcall target="package-app"/>-->
-            <!--</then>-->
 
+        <if>
+            <equals arg1="${isWindows}" arg2="true"/>
+            <then>
+                <antcall target="package-windows-exe-app"/>
+            </then>
+            <else>
+                <antcall target="bundle-mac-app"/>
+            </else>
 
-        <!--</if>-->
+        </if>
 
-        <antcall target="package-windows-exe-app"/>
-
-        <antcall target="bundle-mac-app"/>
 
     </target>
 
@@ -237,16 +237,6 @@ also add the entry to the MANIFEST.MF
 
 
 
-    <!--<if>-->
-        <!--<equals arg1="${isWindows}" arg2="true"/>-->
-        <!--<then>-->
-            <!--<taskdef name="launch4j"-->
-                     <!--classname="net.sf.launch4j.ant.Launch4jTask"-->
-                     <!--classpath="${launch4j.home.dir}/launch4j.jar:${launch4j.home.dir}/lib/xstream.jar" />-->
-
-        <!--</then>-->
-
-    <!--</if>-->
 
 
     <!--https://java.net/downloads/appbundler/appbundler.html-->
